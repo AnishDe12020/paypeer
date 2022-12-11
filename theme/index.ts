@@ -1,9 +1,12 @@
 import { extendTheme } from "@chakra-ui/react";
-import { mainColors } from "./colors";
+import { accentPurple, accentTokens, mainColors, stateColors } from "./colors";
+import { components } from "./components";
 
 const theme = extendTheme({
+  components,
+  colors: { ...accentPurple },
   semanticTokens: {
-    colors: { ...mainColors },
+    colors: { ...mainColors, ...stateColors, ...accentTokens },
   },
   config: {
     initialColorMode: "dark",
