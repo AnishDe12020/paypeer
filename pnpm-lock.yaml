@@ -4,6 +4,8 @@ specifiers:
   '@chakra-ui/react': ^2.4.3
   '@emotion/react': ^11.10.5
   '@emotion/styled': ^11.10.5
+  '@solana/pay': ^0.2.4
+  '@solana/spl-token': ^0.3.6
   '@solana/wallet-adapter-base': ^0.9.19
   '@solana/wallet-adapter-react': ^0.15.25
   '@solana/wallet-adapter-react-ui': ^0.9.23
@@ -12,6 +14,7 @@ specifiers:
   '@types/node': 18.11.13
   '@types/react': 18.0.26
   '@types/react-dom': 18.0.9
+  bignumber.js: ^9.1.1
   eslint: 8.29.0
   eslint-config-next: 13.0.6
   framer-motion: ^7.6.19
@@ -24,6 +27,8 @@ dependencies:
   '@chakra-ui/react': 2.4.3_366jsnbj2fqgpp64v3qddukxli
   '@emotion/react': 11.10.5_kzbn2opkn2327fwg5yzwzya5o4
   '@emotion/styled': 11.10.5_qvatmowesywn4ye42qoh247szu
+  '@solana/pay': 0.2.4
+  '@solana/spl-token': 0.3.6_@solana+web3.js@1.70.1
   '@solana/wallet-adapter-base': 0.9.19_@solana+web3.js@1.70.1
   '@solana/wallet-adapter-react': 0.15.25_lxsl5z2jz7w6udxjif6gg5cwji
   '@solana/wallet-adapter-react-ui': 0.9.23_3y2saa73momv6heiy72tuneowm
@@ -32,6 +37,7 @@ dependencies:
   '@types/node': 18.11.13
   '@types/react': 18.0.26
   '@types/react-dom': 18.0.9
+  bignumber.js: 9.1.1
   eslint: 8.29.0
   eslint-config-next: 13.0.6_ha6vam6werchizxrnqvarmz2zu
   framer-motion: 7.6.19_biqbaboplfbrettd7655fr4n2y
@@ -1820,11 +1826,64 @@ packages:
       - react-native
     dev: false
 
+  /@solana/buffer-layout-utils/0.2.0:
+    resolution: {integrity: sha512-szG4sxgJGktbuZYDg2FfNmkMi0DYQoVjN2h7ta1W1hPrwzarcFLBq9UpX1UjNXsNpT9dn+chgprtWGioUAr4/g==}
+    engines: {node: '>= 10'}
+    dependencies:
+      '@solana/buffer-layout': 4.0.1
+      '@solana/web3.js': 1.70.1
+      bigint-buffer: 1.1.5
+      bignumber.js: 9.1.1
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
+    dev: false
+
   /@solana/buffer-layout/4.0.1:
     resolution: {integrity: sha512-E1ImOIAD1tBZFRdjeM4/pzTiTApC0AOBGwyAMS4fwIodCWArzJ3DWdoh8cKxeFM2fElkxBh2Aqts1BPC373rHA==}
     engines: {node: '>=5.10'}
     dependencies:
       buffer: 6.0.3
+    dev: false
+
+  /@solana/pay/0.2.4:
+    resolution: {integrity: sha512-noJHpq56vRY25X2AZlyhEjzZ3x9No88SlkT3I1+DZJyyR6pofVQK1gwHScYwvWbOUZrcsDFmHgrZ3shXudOMNg==}
+    engines: {node: '>=16'}
+    dependencies:
+      '@solana/qr-code-styling': 1.6.0-beta.0
+      '@solana/spl-token': 0.3.6_@solana+web3.js@1.70.1
+      '@solana/web3.js': 1.70.1
+      bignumber.js: 9.1.1
+      cross-fetch: 3.1.5
+      js-base64: 3.7.3
+      tweetnacl: 1.0.3
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
+    dev: false
+
+  /@solana/qr-code-styling/1.6.0-beta.0:
+    resolution: {integrity: sha512-JYV016q+PeHdK6GGGFzqWSR7x35gFS6I1bYAQEQ60aApGE7+2OM3q4he3Nzg3Hdxl/frMnli6Z0bQ4Xm+i76Kg==}
+    dependencies:
+      qrcode-generator: 1.4.4
+    dev: false
+
+  /@solana/spl-token/0.3.6_@solana+web3.js@1.70.1:
+    resolution: {integrity: sha512-P9pTXjDIRvVbjr3J0mCnSamYqLnICeds7IoH1/Ro2R9OBuOHdp5pqKZoscfZ3UYrgnCWUc1bc9M2m/YPHjw+1g==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      '@solana/web3.js': ^1.47.4
+    dependencies:
+      '@solana/buffer-layout': 4.0.1
+      '@solana/buffer-layout-utils': 0.2.0
+      '@solana/web3.js': 1.70.1
+      buffer: 6.0.3
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
     dev: false
 
   /@solana/wallet-adapter-alpha/0.1.6_@solana+web3.js@1.70.1:
@@ -3808,6 +3867,14 @@ packages:
       sha.js: 2.4.11
     dev: false
 
+  /cross-fetch/3.1.5:
+    resolution: {integrity: sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==}
+    dependencies:
+      node-fetch: 2.6.7
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
   /cross-spawn/7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
     engines: {node: '>= 8'}
@@ -5732,6 +5799,10 @@ packages:
     resolution: {integrity: sha512-c4iYnWb+k2E+vYpRimHqSu575b1/wKl4XFeJGpFmrJQz5I88v9aY2czh7s0w36srfCM1sXgC/xpoJz5dJfq+OQ==}
     dev: false
 
+  /qrcode-generator/1.4.4:
+    resolution: {integrity: sha512-HM7yY8O2ilqhmULxGMpcHSF1EhJJ9yBj8gvDEuZ6M+KGJ0YY2hKpnXvRD+hZPLrDVck3ExIGhmPtSdcjC+guuw==}
+    dev: false
+
   /qrcode.react/1.0.1_react@16.13.1:
     resolution: {integrity: sha512-8d3Tackk8IRLXTo67Y+c1rpaiXjoz/Dd2HpcMdW//62/x8J1Nbho14Kh8x974t9prsLHN6XqVgcnRiBGFptQmg==}
     peerDependencies:
@@ -6467,6 +6538,10 @@ packages:
     dependencies:
       tslib: 1.14.1
       typescript: 4.9.4
+    dev: false
+
+  /tweetnacl/1.0.3:
+    resolution: {integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==}
     dev: false
 
   /type-check/0.4.0:
