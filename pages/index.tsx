@@ -110,34 +110,34 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (!publicKey) {
-      toast({
-        title: "Wallet not connected",
-        description: "Please connect your wallet to continue",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    if (!amount) {
-      toast({
-        title: "Amount not specified",
-        description: "Please enter the amount to continue",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-      return;
-    }
-
     if (txStatus !== TxStatus.PENDING) return;
 
     console.log("polling...", reference);
 
     const interval = setInterval(async () => {
       try {
+        if (!publicKey) {
+          toast({
+            title: "Wallet not connected",
+            description: "Please connect your wallet to continue",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+          return;
+        }
+
+        if (!amount) {
+          toast({
+            title: "Amount not specified",
+            description: "Please enter the amount to continue",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+          return;
+        }
+
         const signatureInfo = await findReference(
           connection,
           new PublicKey(reference as string),
