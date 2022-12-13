@@ -1,5 +1,6 @@
-import { HStack } from "@chakra-ui/react";
+import { HStack, Icon, Link } from "@chakra-ui/react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import NextLink from "next/link";
 
 const Header = () => {
   return (
@@ -7,10 +8,20 @@ const Header = () => {
       as="nav"
       px={[8, 16, 24]}
       py={6}
-      justifyContent="end"
+      justifyContent="space-between"
       alignItems="center"
       gap={4}
     >
+      <NextLink href="/" passHref>
+        <Link _hover={{ opacity: 0.6 }}>Home</Link>
+        {/* TODO: Replace with logo */}
+      </NextLink>
+      <HStack>
+        <NextLink href="/payment" passHref>
+          <Link _hover={{ opacity: 0.6 }}>Payment</Link>
+        </NextLink>
+      </HStack>
+
       <WalletMultiButton />
     </HStack>
   );
