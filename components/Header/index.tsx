@@ -20,6 +20,9 @@ const Header = () => {
         <NextLink href="/payment" passHref>
           <Link _hover={{ opacity: 0.6 }}>Payment</Link>
         </NextLink>
+        <NextLink href="/qr" passHref>
+          <Link _hover={{ opacity: 0.6 }}>QR Code</Link>
+        </NextLink>
       </HStack>
 
       <WalletMultiButton />

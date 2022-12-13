@@ -18,10 +18,8 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import SolanaIcon from "../../components/Icons/Solana";
+import { truncateString } from "../../utils/truncate";
 
-// TODO: truncate signature
-// TODO: truncate reference
-// TODO: mobile responsive UI
 // TODO: add Solscan
 
 const PaymentConfirmedPage: NextPage = () => {
@@ -68,9 +66,10 @@ const PaymentConfirmedPage: NextPage = () => {
             spacing={6}
             textAlign="center"
             role="group"
+            fontWeight="normal"
           >
             <Text color="gray.300" fontFamily="mono">
-              Reference: {router.query.reference}
+              Reference: {truncateString(router.query.reference as string)}
             </Text>
             <chakra.span
               bg={hasCopiedReference ? "green.600" : "brand.tertiary"}
@@ -107,13 +106,15 @@ const PaymentConfirmedPage: NextPage = () => {
             border="1px solid"
             borderColor="brand.tertiary"
           >
-            <Text>{router.query.signature}</Text>
+            <Text color="gray.300" fontFamily="mono">
+              {truncateString(router.query.signature as string)}
+            </Text>
 
             <HStack spacing={4}>
               <Tooltip label="Copy Signature">
                 <IconButton
                   aria-label="Copy Signature"
-                  bg={hasCopiedReference ? "green.600" : "brand.tertiary"}
+                  bg={hasCopiedSignature ? "green.600" : "brand.tertiary"}
                   rounded="full"
                   w={8}
                   h={8}
@@ -121,12 +122,13 @@ const PaymentConfirmedPage: NextPage = () => {
                   alignItems="center"
                   justifyContent="center"
                   cursor="copy"
+                  onClick={onSignatureCopy}
                   _hover={{
-                    bg: hasCopiedReference ? "green.500" : "brand.quaternary",
+                    bg: hasCopiedSignature ? "green.500" : "brand.quaternary",
                   }}
                   icon={
                     <Icon
-                      as={hasCopiedReference ? CheckIcon : CopyIcon}
+                      as={hasCopiedSignature ? CheckIcon : CopyIcon}
                       aria-label={"Copy Command"}
                       w={4}
                       h={4}
