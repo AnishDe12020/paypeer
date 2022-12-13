@@ -104,7 +104,7 @@ export default function Home() {
 
     console.log(url);
 
-    const qr = createQR(url, size, "transparent", "#b579ff");
+    const qr = createQR(url, size, "#c9c9c9", "#000000");
     if (qrRef.current) {
       qrRef.current.innerHTML = "";
       qr.append(qrRef.current);
@@ -226,7 +226,7 @@ export default function Home() {
           </FormControl>
           <Button onClick={gen}>Generate QR Code</Button>
         </VStack>
-        <Box color="white" ref={qrRef} />
+        <Box p={4} rounded="xl" ref={qrRef} />
 
         {txStatus === TxStatus.PENDING && (
           <HStack gap={6}>
