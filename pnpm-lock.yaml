@@ -27,6 +27,7 @@ specifiers:
   next: 13.0.6
   react: 18.2.0
   react-dom: 18.2.0
+  react-qr-code: ^2.0.10
   typescript: 4.9.4
 
 dependencies:
@@ -55,6 +56,7 @@ dependencies:
   next: 13.0.6_biqbaboplfbrettd7655fr4n2y
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
+  react-qr-code: 2.0.10_react@18.2.0
   typescript: 4.9.4
 
 devDependencies:
@@ -6627,6 +6629,20 @@ packages:
       react-dom: 16.13.1_react@16.13.1
       react-lifecycles-compat: 3.0.4
       warning: 4.0.3
+    dev: false
+
+  /react-qr-code/2.0.10_react@18.2.0:
+    resolution: {integrity: sha512-1vjChDgzlv04MbdHgrCTu5td2Z0sNjqzLV8scd4tP1Iv3WmT1qYW/pHODLUFaLJjZzawXz7JKUU+k8/9uIJBoA==}
+    peerDependencies:
+      react: ^16.x || ^17.x || ^18.x
+      react-native-svg: '*'
+    peerDependenciesMeta:
+      react-native-svg:
+        optional: true
+    dependencies:
+      prop-types: 15.8.1
+      qr.js: 0.0.0
+      react: 18.2.0
     dev: false
 
   /react-qr-reader/2.2.1_5owmthsvj5ictknaj3ev736ofq:
