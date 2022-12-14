@@ -14,7 +14,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { encodeURL, TransferRequestURLFields } from "@solana/pay";
-import { useConnection } from "@solana/wallet-adapter-react";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import BigNumber from "bignumber.js";
 import { NextPage } from "next";
@@ -46,21 +45,30 @@ const QRMerchantPage: NextPage = () => {
       splToken: USDC_ADDRESS,
       amount: new BigNumber(amount ?? 0),
       reference: new PublicKey(ref),
-      label: "Merchant Inc",
+      label: (router.query.shopName as string) ?? "Merchant Inc",
       message: message ?? "",
     };
 
     const link = encodeURL(urlParams).toString();
 
     setLink(link);
-  }, [amount, message, toast, router.query.pubkey]);
+  }, [amount, message, toast, router.query.pubkey, router.query.shopName]);
 
   return (
     <Container>
       <VStack gap={16}>
-        <Heading>Pay {truncateString(router.query.pubkey as string)}</Heading>
         <VStack gap={4}>
-          <FormControl>
+          <Heading>
+            Pay{" "}
+            {router.query.shopName ??
+              truncateString(router.query.pubkey as string)}
+          </Heading>
+          {router.query.shopName && (
+            <Text fontSize="xs">{router.query.pubkey}</Text>
+          )}
+        </VStack>
+        <VStack gap={4}>
+          <FormControl isRequired>
             <FormLabel>Amount</FormLabel>
             <Input
               placeholder="5"
@@ -77,7 +85,7 @@ const QRMerchantPage: NextPage = () => {
               onChange={(e) => setMessage(e.target.value)}
               value={message}
             />
-            <FormHelperText>Optional</FormHelperText>
+            <FormHelperText>(Optional)</FormHelperText>
           </FormControl>
 
           <Button as={Link} isExternal href={link}>

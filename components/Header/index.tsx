@@ -10,13 +10,14 @@ const Header = () => {
       py={6}
       justifyContent="space-between"
       alignItems="center"
-      gap={4}
+      gap={[2, 4]}
+      fontSize={["sm", "md"]}
     >
       <NextLink href="/" passHref>
         <Link _hover={{ opacity: 0.6 }}>Home</Link>
         {/* TODO: Replace with logo */}
       </NextLink>
-      <HStack>
+      <HStack gap={2}>
         <NextLink href="/payment" passHref>
           <Link _hover={{ opacity: 0.6 }}>Payment</Link>
         </NextLink>

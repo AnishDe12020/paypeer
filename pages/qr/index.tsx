@@ -10,6 +10,10 @@ import {
   Button,
   chakra,
   Icon,
+  FormControl,
+  FormLabel,
+  Input,
+  FormHelperText,
 } from "@chakra-ui/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
@@ -25,14 +29,20 @@ const QRPage: NextPage = () => {
       ? 400
       : Math.min(window.screen.availWidth - 48, 400)
   );
+  const [shopName, setShopName] = useState<string | undefined>();
+  const [shopLogo, setShopLogo] = useState<string | undefined>();
 
   const { onCopy, hasCopied, setValue, value } = useClipboard("");
 
   useEffect(() => {
     if (publicKey) {
-      setValue(`http://localhost:3000/qr/${publicKey}`);
+      setValue(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/qr/${publicKey}${
+          shopName ? `?shopName=${shopName}` : ""
+        }`
+      );
     }
-  }, [publicKey, setValue]);
+  }, [publicKey, setValue, shopName, shopLogo]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -49,12 +59,7 @@ const QRPage: NextPage = () => {
         {publicKey ? (
           <>
             <Box p={8} bg="#c9c9c9">
-              <QRCode
-                value={`http://localhost:3000/qr/${publicKey}`}
-                size={size}
-                bgColor="#c9c9c9"
-                level="M"
-              />
+              <QRCode value={value} size={size} bgColor="#c9c9c9" level="M" />
             </Box>
 
             <Button
@@ -90,13 +95,25 @@ const QRPage: NextPage = () => {
               >
                 <Icon
                   as={hasCopied ? CheckIcon : CopyIcon}
-                  aria-label={"Copy Command"}
+                  aria-label={"Copy URL"}
                   w={4}
                   h={4}
                   textAlign="center"
                 />
               </chakra.span>
             </Button>
+
+            <VStack gap={4}>
+              <FormControl>
+                <FormLabel>Shop Name</FormLabel>
+                <Input
+                  placeholder="ACME Inc."
+                  onChange={(e) => setShopName(e.target.value)}
+                  value={shopName}
+                />
+                <FormHelperText>(Optional)</FormHelperText>
+              </FormControl>
+            </VStack>
           </>
         ) : (
           <WalletMultiButton />
