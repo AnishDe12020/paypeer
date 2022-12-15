@@ -18,6 +18,7 @@ import {
   findReference,
   FindReferenceError,
   TransferRequestURLFields,
+  TransactionRequestURLFields,
   validateTransfer,
   ValidateTransferError,
 } from "@solana/pay";
@@ -76,18 +77,32 @@ const QRMerchantPage: NextPage = () => {
 
     setReference(ref);
 
-    const merchantAddress = new PublicKey(router.query.pubkey as string);
+    const merchantAddress = router.query.pubkey as string;
 
-    const urlParams: TransferRequestURLFields = {
-      recipient: merchantAddress,
-      splToken: USDC_ADDRESS,
-      amount: new BigNumber(amount ?? 0),
-      reference: new PublicKey(ref),
-      label: (router.query.shopName as string) ?? "Merchant Inc",
-      message: message ?? "",
+    const txApiParams = new URLSearchParams();
+    txApiParams.append("reference", ref);
+    txApiParams.append("merchantAddress", merchantAddress);
+    txApiParams.append("amount", amount);
+    txApiParams.append(
+      "label",
+      (router.query.shopName as string) ?? "Merchant Inc"
+    );
+
+    if (message) {
+      txApiParams.append("message", message);
+    }
+
+    const { location } = window;
+
+    const apiUrl = `${location.protocol}//${
+      location.host
+    }/api/tx?${txApiParams.toString()}`;
+
+    const txUrlParams: TransactionRequestURLFields = {
+      link: new URL(apiUrl),
     };
 
-    const url = encodeURL(urlParams);
+    const url = encodeURL(txUrlParams);
 
     console.log("url", url);
 

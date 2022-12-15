@@ -16,15 +16,16 @@ import {
   getMint,
 } from "@solana/spl-token";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { isConstructorDeclaration } from "typescript";
 
 const splToken = new PublicKey(process.env.USDC_MINT as string);
-const MERCHANT_WALLET = new PublicKey(process.env.MERCHANT_WALLET as string);
+// const MERCHANT_WALLET = new PublicKey(process.env.MERCHANT_WALLET as string);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "GET":
-      const label = "Test Merchant";
-      const icon = "https://tenor.com/bKSc4.gif";
+      const label = req.query.shopName ?? "Test Merchant";
+      const icon = req.query.shopLogo ?? "https://tenor.com/bKSc4.gif";
 
       res.status(200).send({
         label,
@@ -40,13 +41,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return;
       }
 
-      const amount = req.body.amount;
-      if (!amount) {
+      let amountQuery = req.query.amount;
+      if (!amountQuery) {
         res.status(400).json({
           error: "Missing amount parameter",
         });
         return;
       }
+
+      console.log("amountQuery", amountQuery);
+
+      const amount = Number(amountQuery);
 
       if (amount <= 0) {
         res.status(400).json({
@@ -55,7 +60,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return;
       }
 
-      const reference = req.body.reference;
+      const reference = req.query.reference;
       if (!reference) {
         res.status(400).json({
           error: "Missing reference parameter",
@@ -63,7 +68,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return;
       }
 
+      const merchantAddress = req.query.merchantAddress;
+      if (!merchantAddress) {
+        res.status(400).json({
+          error: "Missing merchantAddress parameter",
+        });
+        return;
+      }
+
       const buyerPubkey = new PublicKey(buyerAccount);
+      const merchantPubkey = new PublicKey(merchantAddress);
+
+      console.log("buyer", buyerPubkey.toBase58());
 
       const network = WalletAdapterNetwork.Devnet;
       const endpoint = clusterApiUrl(network);
@@ -76,7 +92,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       );
       const merchantUsdcAddress = await getAssociatedTokenAddress(
         splToken,
-        MERCHANT_WALLET
+        merchantPubkey
       );
 
       const { blockhash, lastValidBlockHeight } =
@@ -98,7 +114,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       );
 
       transferIx.keys.push({
-        pubkey: reference,
+        pubkey: new PublicKey(reference),
         isSigner: false,
         isWritable: false,
       });
@@ -109,7 +125,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const base64Tx = serializedTx.toString("base64");
 
       res.status(200).send({
-        tx: base64Tx,
+        transaction: base64Tx,
       });
 
       break;
