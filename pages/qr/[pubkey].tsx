@@ -13,7 +13,15 @@ import {
   Link,
   useToast,
 } from "@chakra-ui/react";
-import { encodeURL, TransferRequestURLFields } from "@solana/pay";
+import {
+  encodeURL,
+  findReference,
+  FindReferenceError,
+  TransferRequestURLFields,
+  validateTransfer,
+  ValidateTransferError,
+} from "@solana/pay";
+import { useConnection } from "@solana/wallet-adapter-react";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import BigNumber from "bignumber.js";
 import { NextPage } from "next";
@@ -25,20 +33,50 @@ const USDC_ADDRESS = new PublicKey(
   "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
 );
 
+enum TxStatus {
+  PENDING = "pending",
+  SUCCESS = "success",
+  ERROR = "error",
+}
+
 const QRMerchantPage: NextPage = () => {
   const router = useRouter();
   const toast = useToast();
+  const { connection } = useConnection();
 
   const [amount, setAmount] = useState<string | undefined>();
   const [message, setMessage] = useState<string | undefined>();
-  const [link, setLink] = useState<string | undefined>();
+  const [reference, setReference] = useState<string | undefined>();
+  const [txStatus, setTxStatus] = useState<TxStatus>();
 
-  useEffect(() => {
-    if (!router.query.pubkey) return;
+  const pay = async () => {
+    if (!router.query.pubkey) {
+      toast({
+        title: "Wallet not connected",
+        description: "Please connect your wallet to continue",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
 
-    const merchantAddress = new PublicKey(router.query.pubkey as string);
+    if (!amount) {
+      toast({
+        title: "Amount not specified",
+        description: "Please enter the amount to continue",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
 
     const ref = Keypair.generate().publicKey.toString();
+
+    setReference(ref);
+
+    const merchantAddress = new PublicKey(router.query.pubkey as string);
 
     const urlParams: TransferRequestURLFields = {
       recipient: merchantAddress,
@@ -49,10 +87,103 @@ const QRMerchantPage: NextPage = () => {
       message: message ?? "",
     };
 
-    const link = encodeURL(urlParams).toString();
+    const url = encodeURL(urlParams);
 
-    setLink(link);
-  }, [amount, message, toast, router.query.pubkey, router.query.shopName]);
+    console.log("url", url);
+
+    setTxStatus(TxStatus.PENDING);
+
+    window.open(url);
+  };
+
+  useEffect(() => {
+    if (txStatus !== TxStatus.PENDING) return;
+
+    console.log("polling...", reference);
+
+    const interval = setInterval(async () => {
+      try {
+        if (!router.query.pubkey) return;
+
+        if (!amount) {
+          toast({
+            title: "Amount not specified",
+            description: "Please enter the amount to continue",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+          return;
+        }
+
+        const signatureInfo = await findReference(
+          connection,
+          new PublicKey(reference as string),
+          {
+            finality: "confirmed",
+          }
+        );
+
+        console.log("signatureInfo", signatureInfo);
+
+        await validateTransfer(
+          connection,
+          signatureInfo.signature,
+          {
+            recipient: new PublicKey(router.query.pubkey as string),
+            amount: new BigNumber(amount),
+            splToken: USDC_ADDRESS,
+            reference: new PublicKey(reference as string),
+          },
+          { commitment: "confirmed" }
+        );
+
+        console.log("success");
+
+        setTxStatus(TxStatus.SUCCESS);
+
+        router.push(
+          `/qr/success?signature=${signatureInfo.signature}&reference=${reference}`
+        );
+
+        toast({
+          title: "Amount received!",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      } catch (e) {
+        if (e instanceof FindReferenceError) {
+          // No transaction found yet, ignore this error
+          console.log("nah");
+          return;
+        }
+        if (e instanceof ValidateTransferError) {
+          setTxStatus(TxStatus.ERROR);
+          console.error("Transaction is invalid", e);
+          toast({
+            title: "Transaction is invalid",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+          return;
+        }
+        setTxStatus(TxStatus.ERROR);
+        toast({
+          title: "Unknown error",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        console.error("Unknown error", e);
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [txStatus]);
 
   return (
     <Container>
@@ -88,10 +219,13 @@ const QRMerchantPage: NextPage = () => {
             <FormHelperText>(Optional)</FormHelperText>
           </FormControl>
 
-          <Button as={Link} isExternal href={link}>
-            Pay with Solana Pay
-          </Button>
+          <Button onClick={pay}>Pay</Button>
         </VStack>
+        {txStatus === TxStatus.PENDING && (
+          <HStack gap={6}>
+            <Text>Waiting for payment...</Text> <Spinner />
+          </HStack>
+        )}
       </VStack>
     </Container>
   );
