@@ -38,7 +38,7 @@ const QRPage: NextPage = () => {
     if (publicKey) {
       setValue(
         `${
-          process.env.VERCEL_URL || process.env.NEXT_PUBLIC_BASE_URL
+          process.env.NEXT_PUBLIC_VERCEL_URL || process.env.NEXT_PUBLIC_BASE_URL
         }/qr/${publicKey}${shopName ? `?shopName=${shopName}` : ""}`
       );
     }
