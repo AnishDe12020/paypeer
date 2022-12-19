@@ -37,9 +37,9 @@ const QRPage: NextPage = () => {
   useEffect(() => {
     if (publicKey) {
       setValue(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/qr/${publicKey}${
-          shopName ? `?shopName=${shopName}` : ""
-        }`
+        `${
+          process.env.VERCEL_URL || process.env.NEXT_PUBLIC_BASE_URL
+        }/qr/${publicKey}${shopName ? `?shopName=${shopName}` : ""}`
       );
     }
   }, [publicKey, setValue, shopName, shopLogo]);
