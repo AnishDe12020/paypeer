@@ -18,12 +18,14 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import SolanaIcon from "../../components/Icons/Solana";
+import useCluster from "../../hooks/useCluster";
 import { truncateString } from "../../utils/truncate";
 
 // TODO: add Solscan
 
 const PaymentConfirmedPage: NextPage = () => {
   const router = useRouter();
+  const { cluster } = useCluster();
 
   const {
     onCopy: onReferenceCopy,
@@ -142,7 +144,7 @@ const PaymentConfirmedPage: NextPage = () => {
               <Tooltip label="View on Solana Explorer">
                 <Link
                   isExternal
-                  href={`https://explorer.solana.com/tx/${router.query.signature}?cluster=devnet`}
+                  href={`https://explorer.solana.com/tx/${router.query.signature}?cluster=${cluster}`}
                   bg="brand.tertiary"
                   rounded="full"
                   _hover={{ bg: "brand.quaternary" }}

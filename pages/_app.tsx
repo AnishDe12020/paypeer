@@ -18,6 +18,7 @@ import dynamic from "next/dynamic";
 import Header from "../components/Header";
 
 import "../styles/wallet-adapter.css";
+import useCluster from "../hooks/useCluster";
 
 const ReactUIWalletModalProviderDynamic = dynamic(
   async () =>
@@ -26,6 +27,8 @@ const ReactUIWalletModalProviderDynamic = dynamic(
 );
 
 export default function App({ Component, pageProps }: AppProps) {
+  const { rpc } = useCluster();
+
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
@@ -35,10 +38,8 @@ export default function App({ Component, pageProps }: AppProps) {
     []
   );
 
-  const endpoint = useMemo(() => clusterApiUrl("devnet"), []);
-
   return (
-    <ConnectionProvider endpoint={endpoint}>
+    <ConnectionProvider endpoint={rpc}>
       <ChakraProvider theme={theme}>
         <WalletProvider wallets={wallets} autoConnect>
           <ReactUIWalletModalProviderDynamic>

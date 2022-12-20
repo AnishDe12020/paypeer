@@ -1,8 +1,11 @@
-import { HStack, Icon, Link } from "@chakra-ui/react";
+import { HStack, Icon, Link, Select } from "@chakra-ui/react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import NextLink from "next/link";
+import useCluster from "../../hooks/useCluster";
 
 const Header = () => {
+  const { cluster, setCluster } = useCluster();
+
   return (
     <HStack
       as="nav"
@@ -17,6 +20,7 @@ const Header = () => {
         <Link _hover={{ opacity: 0.6 }}>Home</Link>
         {/* TODO: Replace with logo */}
       </NextLink>
+      falst
       <HStack gap={2}>
         <NextLink href="/payment" passHref>
           <Link _hover={{ opacity: 0.6 }}>Payment</Link>
@@ -25,8 +29,14 @@ const Header = () => {
           <Link _hover={{ opacity: 0.6 }}>QR Code</Link>
         </NextLink>
       </HStack>
+      <HStack>
+        <WalletMultiButton />
 
-      <WalletMultiButton />
+        <Select onChange={(e) => setCluster(e.target.value)} value={cluster}>
+          <option value="mainnet-beta">Mainnet</option>
+          <option value="devnet">Devnet</option>
+        </Select>
+      </HStack>
     </HStack>
   );
 };

@@ -1,24 +1,14 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import {
-  clusterApiUrl,
-  Connection,
-  Keypair,
-  PublicKey,
-  Transaction,
-} from "@solana/web3.js";
-import BigNumber from "bignumber.js";
+import { Connection, PublicKey, Transaction } from "@solana/web3.js";
 import {
   createTransferCheckedInstruction,
-  getAccount,
   getAssociatedTokenAddress,
   getMint,
 } from "@solana/spl-token";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { isConstructorDeclaration } from "typescript";
+import { getRpc, getUSDCMint } from "../../utils/cluster";
 
-const splToken = new PublicKey(process.env.USDC_MINT as string);
 // const MERCHANT_WALLET = new PublicKey(process.env.MERCHANT_WALLET as string);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -76,24 +66,40 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return;
       }
 
+      const cluster = req.query.cluster;
+      if (!cluster) {
+        res.status(400).json({
+          error: "Missing cluster parameter",
+        });
+        return;
+      }
+
       const buyerPubkey = new PublicKey(buyerAccount);
       const merchantPubkey = new PublicKey(merchantAddress);
 
-      console.log("buyer", buyerPubkey.toBase58());
+      const usdcAddress = getUSDCMint(cluster as string);
 
-      const network = WalletAdapterNetwork.Devnet;
-      const endpoint = clusterApiUrl(network);
+      console.log("buyer", buyerPubkey.toBase58());
+      console.log("merchant", merchantPubkey.toBase58());
+      console.log("splToken", usdcAddress.toBase58());
+
+      const endpoint = getRpc(cluster as string);
       const connection = new Connection(endpoint);
 
-      const usdcMint = await getMint(connection, splToken);
+      console.log("endpoint", endpoint);
+
+      const usdcMint = await getMint(connection, usdcAddress);
       const buyerUsdcAddress = await getAssociatedTokenAddress(
-        splToken,
+        usdcAddress,
         buyerPubkey
       );
       const merchantUsdcAddress = await getAssociatedTokenAddress(
-        splToken,
+        usdcAddress,
         merchantPubkey
       );
+
+      console.log("buyerUsdcAddress", buyerUsdcAddress.toBase58());
+      console.log("merchantUsdcAddress", merchantUsdcAddress.toBase58());
 
       const { blockhash, lastValidBlockHeight } =
         await connection.getLatestBlockhash("finalized");
@@ -106,7 +112,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       const transferIx = createTransferCheckedInstruction(
         buyerUsdcAddress,
-        splToken,
+        usdcAddress,
         merchantUsdcAddress,
         buyerPubkey,
         amount * 10 ** usdcMint.decimals,

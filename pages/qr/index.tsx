@@ -20,6 +20,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { NextPage } from "next";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
+import useCluster from "../../hooks/useCluster";
 import { truncateURL } from "../../utils/truncate";
 
 const QRPage: NextPage = () => {
@@ -34,15 +35,19 @@ const QRPage: NextPage = () => {
 
   const { onCopy, hasCopied, setValue, value } = useClipboard("");
 
+  const { cluster } = useCluster();
+
   useEffect(() => {
     if (publicKey) {
       setValue(
         `${
           process.env.NEXT_PUBLIC_VERCEL_URL || process.env.NEXT_PUBLIC_BASE_URL
-        }/qr/${publicKey}${shopName ? `?shopName=${shopName}` : ""}`
+        }/qr/${publicKey}?cluster=${cluster}${
+          shopName ? `&shopName=${shopName}` : ""
+        }`
       );
     }
-  }, [publicKey, setValue, shopName, shopLogo]);
+  }, [publicKey, setValue, shopName, shopLogo, cluster]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;

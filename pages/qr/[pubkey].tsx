@@ -80,6 +80,11 @@ const QRMerchantPage: NextPage = () => {
     const merchantAddress = router.query.pubkey as string;
 
     const txApiParams = new URLSearchParams();
+    if (router.query.cluster) {
+      txApiParams.append("cluster", router.query.cluster as string);
+    } else {
+      console.error("Cluster not specified");
+    }
     txApiParams.append("reference", ref);
     txApiParams.append("merchantAddress", merchantAddress);
     txApiParams.append("amount", amount);
