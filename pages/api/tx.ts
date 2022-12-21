@@ -1,13 +1,11 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { Connection, PublicKey, Transaction } from "@solana/web3.js";
-import {
-  createTransferCheckedInstruction,
-  getAssociatedTokenAddress,
-  getMint,
-} from "@solana/spl-token";
+import { Connection, PublicKey } from "@solana/web3.js";
+
 import { getRpc, getUSDCMint } from "../../utils/cluster";
+import { createTransfer } from "@solana/pay";
+import BigNumber from "bignumber.js";
 
 // const MERCHANT_WALLET = new PublicKey(process.env.MERCHANT_WALLET as string);
 
@@ -41,9 +39,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       console.log("amountQuery", amountQuery);
 
-      const amount = Number(amountQuery);
+      const amount = new BigNumber(amountQuery as string);
 
-      if (amount <= 0) {
+      if (amount.isLessThanOrEqualTo(0)) {
         res.status(400).json({
           error: "Amount must be greater than 0",
         });
@@ -88,44 +86,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       console.log("endpoint", endpoint);
 
-      const usdcMint = await getMint(connection, usdcAddress);
-      const buyerUsdcAddress = await getAssociatedTokenAddress(
-        usdcAddress,
-        buyerPubkey
-      );
-      const merchantUsdcAddress = await getAssociatedTokenAddress(
-        usdcAddress,
-        merchantPubkey
-      );
-
-      console.log("buyerUsdcAddress", buyerUsdcAddress.toBase58());
-      console.log("merchantUsdcAddress", merchantUsdcAddress.toBase58());
-
-      const { blockhash, lastValidBlockHeight } =
-        await connection.getLatestBlockhash("finalized");
-
-      const tx = new Transaction({
-        blockhash,
-        lastValidBlockHeight,
-        feePayer: buyerPubkey,
+      const tx = await createTransfer(connection, buyerPubkey, {
+        recipient: merchantPubkey,
+        amount,
+        reference: new PublicKey(reference as string),
+        splToken: usdcAddress,
       });
-
-      const transferIx = createTransferCheckedInstruction(
-        buyerUsdcAddress,
-        usdcAddress,
-        merchantUsdcAddress,
-        buyerPubkey,
-        amount * 10 ** usdcMint.decimals,
-        usdcMint.decimals
-      );
-
-      transferIx.keys.push({
-        pubkey: new PublicKey(reference),
-        isSigner: false,
-        isWritable: false,
-      });
-
-      tx.add(transferIx);
 
       const serializedTx = tx.serialize({ requireAllSignatures: false });
       const base64Tx = serializedTx.toString("base64");
