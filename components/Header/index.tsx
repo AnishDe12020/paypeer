@@ -1,7 +1,8 @@
-import { HStack, Icon, Link, Select } from "@chakra-ui/react";
+import { HStack, Link, Select } from "@chakra-ui/react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import NextLink from "next/link";
 import useCluster from "../../hooks/useCluster";
+import { Cluster } from "../../types/cluster";
 
 const Header = () => {
   const { cluster, setCluster } = useCluster();
@@ -32,7 +33,10 @@ const Header = () => {
       <HStack>
         <WalletMultiButton />
 
-        <Select onChange={(e) => setCluster(e.target.value)} value={cluster}>
+        <Select
+          onChange={(e) => setCluster(e.target.value as Cluster)}
+          value={cluster}
+        >
           <option value="mainnet-beta">Mainnet</option>
           <option value="devnet">Devnet</option>
         </Select>
