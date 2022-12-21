@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { Connection, PublicKey } from "@solana/web3.js";
 
-import { getRpc, getUSDCMint } from "../../utils/cluster";
+import { getRpc, getUSDCAddress } from "../../utils/cluster";
 import { createTransfer } from "@solana/pay";
 import BigNumber from "bignumber.js";
 
@@ -75,7 +75,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const buyerPubkey = new PublicKey(buyerAccount);
       const merchantPubkey = new PublicKey(merchantAddress);
 
-      const usdcAddress = getUSDCMint(cluster as string);
+      const usdcAddress = getUSDCAddress(cluster as string);
 
       console.log("buyer", buyerPubkey.toBase58());
       console.log("merchant", merchantPubkey.toBase58());

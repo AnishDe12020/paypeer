@@ -21,7 +21,7 @@ export const getRpc = (cluster: string) => {
   }
 };
 
-export const getUSDCMint = (cluster: string) => {
+export const getUSDCAddress = (cluster: string) => {
   switch (cluster) {
     case Cluster.MainnetBeta:
       return USDC_MINT_MAINNET;
