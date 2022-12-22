@@ -17,18 +17,16 @@ const Header = () => {
       gap={[2, 4]}
       fontSize={["sm", "md"]}
     >
-      <NextLink href="/" passHref>
-        <Link _hover={{ opacity: 0.6 }}>Home</Link>
-        {/* TODO: Replace with logo */}
-      </NextLink>
-      falst
       <HStack gap={2}>
-        <NextLink href="/payment" passHref>
-          <Link _hover={{ opacity: 0.6 }}>Payment</Link>
-        </NextLink>
-        <NextLink href="/qr" passHref>
-          <Link _hover={{ opacity: 0.6 }}>QR Code</Link>
-        </NextLink>
+        <Link as={NextLink} href="/" _hover={{ opacity: 0.6 }}>
+          Home
+        </Link>
+        <Link as={NextLink} href="/payment" _hover={{ opacity: 0.6 }}>
+          Payment
+        </Link>
+        <Link as={NextLink} href="/qr" _hover={{ opacity: 0.6 }}>
+          QR Code
+        </Link>
       </HStack>
       <HStack>
         <WalletMultiButton />
