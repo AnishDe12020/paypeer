@@ -209,7 +209,7 @@ const QRMerchantPage: NextPage = () => {
     <Container>
       <VStack gap={16}>
         <VStack gap={4}>
-          <Heading>
+          <Heading textAlign="center">
             Pay{" "}
             {router.query.shopName ??
               truncateString(router.query.pubkey as string)}
@@ -240,6 +240,11 @@ const QRMerchantPage: NextPage = () => {
           </FormControl>
 
           <Button onClick={pay}>Pay</Button>
+
+          <Text textAlign="center">
+            Note: make sure you have sufficient funds in your wallet or else the
+            transaction <b>will fail.</b>
+          </Text>
         </VStack>
         {txStatus === TxStatus.PENDING && (
           <HStack gap={6}>

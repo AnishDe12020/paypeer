@@ -21,6 +21,7 @@ import {
   AlertDialog,
   AlertDescription,
   useToast,
+  Heading,
 } from "@chakra-ui/react";
 import {
   createAssociatedTokenAccountInstruction,
@@ -178,7 +179,23 @@ const QRPage: NextPage = () => {
           isLoadingTokenAccount ? (
             <Spinner />
           ) : hasTokenAccount ? (
-            <>
+            <VStack gap={8}>
+              <VStack gap={4}>
+                <Heading fontSize="4xl" textAlign="center">
+                  Scan this with your phone&apos;s QR Code scanner or the camera
+                  app.
+                </Heading>
+
+                <Text
+                  fontSize="xl"
+                  textAlign="center"
+                  textColor="whiteAlpha.700"
+                >
+                  Don&apos;t use the QR code scanner in your Solana wallet app
+                  (Phantom, Glow, Solflare, etc.)
+                </Text>
+              </VStack>
+
               <Box p={8} bg="#c9c9c9">
                 <QRCode value={value} size={size} bgColor="#c9c9c9" level="M" />
               </Box>
@@ -235,7 +252,7 @@ const QRPage: NextPage = () => {
                   <FormHelperText>(Optional)</FormHelperText>
                 </FormControl>
               </VStack>
-            </>
+            </VStack>
           ) : (
             <Alert status="error" rounded="lg">
               <VStack alignItems="start" gap={4}>
