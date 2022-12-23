@@ -24,6 +24,7 @@ specifiers:
   eslint: 8.29.0
   eslint-config-next: 13.0.6
   framer-motion: ^7.6.19
+  hamburger-react: ^2.5.0
   jotai: ^1.12.0
   next: 13.0.6
   react: 18.2.0
@@ -55,6 +56,7 @@ dependencies:
   eslint: 8.29.0
   eslint-config-next: 13.0.6_ha6vam6werchizxrnqvarmz2zu
   framer-motion: 7.6.19_biqbaboplfbrettd7655fr4n2y
+  hamburger-react: 2.5.0_react@18.2.0
   jotai: 1.12.0_react@18.2.0
   next: 13.0.6_biqbaboplfbrettd7655fr4n2y
   react: 18.2.0
@@ -5307,6 +5309,14 @@ packages:
 
   /grapheme-splitter/1.0.4:
     resolution: {integrity: sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==}
+    dev: false
+
+  /hamburger-react/2.5.0_react@18.2.0:
+    resolution: {integrity: sha512-5GSXe+ucxTPJ0SkhIsPQ/PRDweZPIKya1lfahAuExx31SdheeUA4uOPfQIAirbKona8hvo79VDr5LJQzPXsdpw==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /has-bigints/1.0.2:
