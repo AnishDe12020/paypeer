@@ -10,14 +10,12 @@ import {
   VStack,
   Text,
   Spinner,
-  Link,
   useToast,
 } from "@chakra-ui/react";
 import {
   encodeURL,
   findReference,
   FindReferenceError,
-  TransferRequestURLFields,
   TransactionRequestURLFields,
   validateTransfer,
   ValidateTransferError,
@@ -28,7 +26,7 @@ import BigNumber from "bignumber.js";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { truncateString } from "../../utils/truncate";
+import { truncateString } from "../../src/utils/truncate";
 
 const USDC_ADDRESS = new PublicKey(
   "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"

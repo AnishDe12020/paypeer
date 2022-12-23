@@ -1,4 +1,4 @@
-import "../styles/globals.css";
+import "../src/styles/globals.css";
 import type { AppProps } from "next/app";
 import { ChakraProvider } from "@chakra-ui/react";
 import {
@@ -10,15 +10,14 @@ import {
   ConnectionProvider,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
-import { clusterApiUrl } from "@solana/web3.js";
 import { useMemo } from "react";
 
-import theme from "../theme";
+import theme from "../src/theme";
 import dynamic from "next/dynamic";
-import Header from "../components/Header";
+import Header from "../src/components/Header";
 
-import "../styles/wallet-adapter.css";
-import useCluster from "../hooks/useCluster";
+import "../src/styles/wallet-adapter.css";
+import useCluster from "../src/hooks/useCluster";
 
 const ReactUIWalletModalProviderDynamic = dynamic(
   async () =>

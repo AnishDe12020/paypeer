@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { Connection, PublicKey } from "@solana/web3.js";
 
-import { getRpc, getUSDCAddress } from "../../utils/cluster";
+import { getRpc, getUSDCAddress } from "../../src/utils/cluster";
 import { createTransfer } from "@solana/pay";
 import BigNumber from "bignumber.js";
 

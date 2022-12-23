@@ -17,9 +17,9 @@ import {
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import SolanaIcon from "../../components/Icons/Solana";
-import useCluster from "../../hooks/useCluster";
-import { truncateString } from "../../utils/truncate";
+import SolanaIcon from "../../src/components/Icons/Solana";
+import useCluster from "../../src/hooks/useCluster";
+import { truncateString } from "../../src/utils/truncate";
 
 // TODO: add Solscan
 

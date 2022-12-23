@@ -18,7 +18,6 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
-  AlertDialog,
   AlertDescription,
   useToast,
   Heading,
@@ -36,8 +35,8 @@ import { Transaction } from "@solana/web3.js";
 import { NextPage } from "next";
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
-import useCluster from "../../hooks/useCluster";
-import { truncateURL } from "../../utils/truncate";
+import useCluster from "../../src/hooks/useCluster";
+import { truncateURL } from "../../src/utils/truncate";
 
 const QRPage: NextPage = () => {
   const { publicKey, sendTransaction } = useWallet();
