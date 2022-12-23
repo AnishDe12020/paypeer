@@ -1,6 +1,5 @@
 import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import {
-  Container,
   Heading,
   Link,
   Text,
@@ -19,6 +18,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import SolanaIcon from "../../src/components/Icons/Solana";
 import useCluster from "../../src/hooks/useCluster";
+import BaseLayout from "../../src/layouts/BaseLayout";
 import { truncateString } from "../../src/utils/truncate";
 
 // TODO: add Solscan
@@ -48,7 +48,7 @@ const PaymentConfirmedPage: NextPage = () => {
   }, [router.query.signature, setSignature]);
 
   return (
-    <Container>
+    <BaseLayout>
       <VStack gap={8}>
         <Heading fontSize="4xl" fontWeight="bold">
           Payment Confirmed!
@@ -161,7 +161,7 @@ const PaymentConfirmedPage: NextPage = () => {
           </HStack>
         </VStack>
       </VStack>
-    </Container>
+    </BaseLayout>
   );
 };
 

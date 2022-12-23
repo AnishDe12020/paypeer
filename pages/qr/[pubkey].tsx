@@ -1,6 +1,5 @@
 import {
   Button,
-  Container,
   FormControl,
   FormHelperText,
   FormLabel,
@@ -26,6 +25,7 @@ import BigNumber from "bignumber.js";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import BaseLayout from "../../src/layouts/BaseLayout";
 import { truncateString } from "../../src/utils/truncate";
 
 const USDC_ADDRESS = new PublicKey(
@@ -204,7 +204,7 @@ const QRMerchantPage: NextPage = () => {
   }, [txStatus]);
 
   return (
-    <Container>
+    <BaseLayout>
       <VStack gap={16}>
         <VStack gap={4}>
           <Heading textAlign="center">
@@ -250,7 +250,7 @@ const QRMerchantPage: NextPage = () => {
           </HStack>
         )}
       </VStack>
-    </Container>
+    </BaseLayout>
   );
 };
 

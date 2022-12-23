@@ -14,7 +14,6 @@ import { useMemo } from "react";
 
 import theme from "../src/theme";
 import dynamic from "next/dynamic";
-import Header from "../src/components/Header";
 
 import "../src/styles/wallet-adapter.css";
 import useCluster from "../src/hooks/useCluster";
@@ -42,7 +41,6 @@ export default function App({ Component, pageProps }: AppProps) {
       <ChakraProvider theme={theme}>
         <WalletProvider wallets={wallets} autoConnect>
           <ReactUIWalletModalProviderDynamic>
-            <Header />
             <Component {...pageProps} />
           </ReactUIWalletModalProviderDynamic>
         </WalletProvider>

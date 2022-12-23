@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Container,
   FormControl,
   FormHelperText,
   FormLabel,
@@ -26,6 +25,7 @@ import { Keypair, PublicKey } from "@solana/web3.js";
 import BigNumber from "bignumber.js";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import MainLayout from "../../src/layouts/MainLayout";
 
 const USDC_ADDRESS = new PublicKey(
   "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr"
@@ -212,7 +212,7 @@ export default function Home() {
   }, [txStatus]);
 
   return (
-    <Container>
+    <MainLayout>
       <VStack>
         <VStack mt={16} alignItems="start" gap={6} w="full">
           <FormControl>
@@ -234,6 +234,6 @@ export default function Home() {
           </HStack>
         )}
       </VStack>
-    </Container>
+    </MainLayout>
   );
 }

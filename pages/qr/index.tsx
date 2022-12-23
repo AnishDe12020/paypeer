@@ -1,6 +1,5 @@
 import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import {
-  Container,
   Flex,
   HStack,
   useClipboard,
@@ -36,6 +35,7 @@ import { NextPage } from "next";
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import useCluster from "../../src/hooks/useCluster";
+import MainLayout from "../../src/layouts/MainLayout";
 import { truncateURL } from "../../src/utils/truncate";
 
 const QRPage: NextPage = () => {
@@ -44,7 +44,7 @@ const QRPage: NextPage = () => {
   const [size, setSize] = useState(() =>
     typeof window === "undefined"
       ? 400
-      : Math.min(window.screen.availWidth - 48, 400)
+      : Math.min(window.screen.availWidth - 160, 400)
   );
   const [shopName, setShopName] = useState<string | undefined>();
   const [shopLogo, setShopLogo] = useState<string | undefined>();
@@ -172,8 +172,8 @@ const QRPage: NextPage = () => {
   }, [connection, publicKey, usdcAddress, sendTransaction, toast]);
 
   return (
-    <Container>
-      <VStack mt={16} gap={8}>
+    <MainLayout>
+      <VStack gap={8}>
         {publicKey ? (
           isLoadingTokenAccount ? (
             <Spinner />
@@ -284,7 +284,7 @@ const QRPage: NextPage = () => {
           <WalletMultiButton />
         )}
       </VStack>
-    </Container>
+    </MainLayout>
   );
 };
 
