@@ -2,11 +2,14 @@ import { useAtom } from "jotai";
 import { web3authAtom } from "../state/web3auth";
 import useProvider from "./useProvider";
 import RPC from "../lib/solanaRPC";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const useWeb3Auth = () => {
   const [web3auth, setWeb3auth] = useAtom(web3authAtom);
 
   const { provider, setProvider } = useProvider();
+
+  const [address, setAddress] = useState<string | null>(null);
 
   const login = async () => {
     if (!web3auth) {
@@ -23,7 +26,7 @@ const useWeb3Auth = () => {
       return;
     }
     const user = await web3auth.getUserInfo();
-    console.log(user);
+    return user;
   };
 
   const logout = async () => {
@@ -35,15 +38,15 @@ const useWeb3Auth = () => {
     setProvider(null);
   };
 
-  const getAccounts = async () => {
+  const getAccounts = useCallback(async () => {
     if (!provider) {
       console.error("provider not initialized yet");
-      return;
+      return [];
     }
     const rpc = new RPC(provider);
     const address = await rpc.getAccounts();
-    console.log(address);
-  };
+    return address;
+  }, [provider]);
 
   const getBalance = async () => {
     if (!provider) {
@@ -52,7 +55,7 @@ const useWeb3Auth = () => {
     }
     const rpc = new RPC(provider);
     const balance = await rpc.getBalance();
-    console.log(balance);
+    return balance;
   };
 
   const sendTransaction = async () => {
@@ -72,8 +75,16 @@ const useWeb3Auth = () => {
     }
     const rpc = new RPC(provider);
     const signedMessage = await rpc.signMessage();
-    console.log(signedMessage);
+    return signedMessage;
   };
+
+  useEffect(() => {
+    const getAddress = async () => {
+      const address = await getAccounts();
+      setAddress(address[0]);
+    };
+    getAddress();
+  }, [getAccounts]);
 
   return {
     web3auth,
@@ -85,6 +96,7 @@ const useWeb3Auth = () => {
     getBalance,
     sendTransaction,
     signMessage,
+    address,
   };
 };
 

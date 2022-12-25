@@ -8,6 +8,7 @@ import {
   List,
   ListItem,
   Select,
+  Text,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
@@ -44,7 +45,9 @@ const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  const { login } = useWeb3Auth();
+  const { login, address } = useWeb3Auth();
+
+  console.log("address", address);
 
   return (
     <HStack
@@ -113,7 +116,11 @@ const Header = () => {
       </HStack>
       <HStack>
         {/* <WalletMultiButton /> */}
-        <Button onClick={login}>Sign In</Button>
+        {address ? (
+          <Text>{address}</Text>
+        ) : (
+          <Button onClick={login}>Sign In</Button>
+        )}
 
         <Select
           onChange={(e) => setCluster(e.target.value as Cluster)}
