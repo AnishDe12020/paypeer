@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Drawer,
   DrawerContent,
   HStack,
@@ -16,6 +17,7 @@ import { useRef } from "react";
 import useCluster from "../../hooks/useCluster";
 import { Cluster } from "../../types/cluster";
 import { Rotate } from "hamburger-react";
+import useWeb3Auth from "../../hooks/useWeb3Auth";
 
 interface INavLink {
   content: string;
@@ -41,6 +43,8 @@ const Header = () => {
   const { cluster, setCluster } = useCluster();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  const { login } = useWeb3Auth();
 
   return (
     <HStack
@@ -108,7 +112,8 @@ const Header = () => {
         ))}
       </HStack>
       <HStack>
-        <WalletMultiButton />
+        {/* <WalletMultiButton /> */}
+        <Button onClick={login}>Sign In</Button>
 
         <Select
           onChange={(e) => setCluster(e.target.value as Cluster)}
