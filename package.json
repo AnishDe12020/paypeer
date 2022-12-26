@@ -19,6 +19,7 @@
     "@chakra-ui/theme-tools": "^2.0.14",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@prisma/client": "^4.8.0",
     "@solana/pay": "^0.2.4",
     "@solana/spl-token": "^0.3.6",
     "@solana/wallet-adapter-base": "^0.9.19",
@@ -35,6 +36,7 @@
     "@web3auth/openlogin-adapter": "^4.0.0",
     "@web3auth/solana-provider": "^4.0.0",
     "@web3auth/solflare-adapter": "^4.0.0",
+    "axios": "^1.2.1",
     "bignumber.js": "^9.1.1",
     "eslint": "8.29.0",
     "eslint-config-next": "13.0.6",
@@ -49,6 +51,7 @@
     "typescript": "4.9.4"
   },
   "devDependencies": {
-    "@chakra-ui/cli": "^2.2.0"
+    "@chakra-ui/cli": "^2.2.0",
+    "prisma": "^4.8.0"
   }
 }

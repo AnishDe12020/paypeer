@@ -1,0 +1,56 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider          = "mysql"
+    url               = env("DATABASE_URL")
+    shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+    relationMode      = "prisma"
+}
+
+model User {
+    id        String          @id @default(uuid())
+    createdAt DateTime        @default(now())
+    updatedAt DateTime        @updatedAt
+    pubkey    String          @unique
+    stores    StoresOnUsers[]
+}
+
+model Store {
+    id           String          @id @default(uuid())
+    createdAt    DateTime        @default(now())
+    updatedAt    DateTime        @updatedAt
+    name         String          @unique
+    fundsPubkey  String
+    website      String?
+    twitter      String?
+    users        StoresOnUsers[]
+    transactions Transaction[]
+}
+
+model Transaction {
+    id             String   @id @default(uuid())
+    createdAt      DateTime @default(now())
+    amount         BigInt
+    tokenPubkey    String
+    reference      String
+    signature      String
+    customerPubkey String
+    messsage       String?
+    store          Store    @relation(fields: [storeId], references: [id])
+    storeId        String
+
+    @@index([storeId])
+}
+
+model StoresOnUsers {
+    user    User   @relation(fields: [userId], references: [id])
+    userId  String
+    store   Store  @relation(fields: [storeId], references: [id])
+    storeId String
+
+    @@id([userId, storeId])
+    @@index([userId])
+    @@index([storeId])
+}

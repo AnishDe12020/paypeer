@@ -3,6 +3,7 @@ import { web3authAtom } from "../state/web3auth";
 import useProvider from "./useProvider";
 import RPC from "../lib/solanaRPC";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import axios from "axios";
 
 const useWeb3Auth = () => {
   const [web3auth, setWeb3auth] = useAtom(web3authAtom);
@@ -17,6 +18,18 @@ const useWeb3Auth = () => {
       return;
     }
     const web3authProvider = await web3auth.connect();
+    if (!web3authProvider) {
+      console.error("web3authProvider not initialized yet");
+      return;
+    }
+    const rpc = new RPC(web3authProvider);
+    const addresses = await rpc.getAccounts();
+    const address = addresses[0];
+    const user = await axios.get(`/api/user?pubkey=${address}`);
+    if (!user.data) {
+      await axios.put(`/api/user`, { pubkey: address });
+    }
+    setAddress(address);
     setProvider(web3authProvider);
   };
 
@@ -35,6 +48,7 @@ const useWeb3Auth = () => {
       return;
     }
     await web3auth.logout();
+    setAddress(null);
     setProvider(null);
   };
 
@@ -44,8 +58,8 @@ const useWeb3Auth = () => {
       return [];
     }
     const rpc = new RPC(provider);
-    const address = await rpc.getAccounts();
-    return address;
+    const addresses = await rpc.getAccounts();
+    return addresses;
   }, [provider]);
 
   const getBalance = async () => {
@@ -77,14 +91,6 @@ const useWeb3Auth = () => {
     const signedMessage = await rpc.signMessage();
     return signedMessage;
   };
-
-  useEffect(() => {
-    const getAddress = async () => {
-      const address = await getAccounts();
-      setAddress(address[0]);
-    };
-    getAddress();
-  }, [getAccounts]);
 
   return {
     web3auth,
