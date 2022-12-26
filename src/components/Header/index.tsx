@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   Drawer,
@@ -7,6 +8,11 @@ import {
   Link,
   List,
   ListItem,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
   Select,
   Text,
   useDisclosure,
@@ -19,6 +25,7 @@ import useCluster from "../../hooks/useCluster";
 import { Cluster } from "../../types/cluster";
 import { Rotate } from "hamburger-react";
 import useWeb3Auth from "../../hooks/useWeb3Auth";
+import Blockies from "react-blockies";
 
 interface INavLink {
   content: string;
@@ -45,7 +52,7 @@ const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  const { login, address } = useWeb3Auth();
+  const { login, address, logout } = useWeb3Auth();
 
   console.log("address", address);
 
@@ -114,14 +121,7 @@ const Header = () => {
           </ListItem>
         ))}
       </HStack>
-      <HStack>
-        {/* <WalletMultiButton /> */}
-        {address ? (
-          <Text>{address}</Text>
-        ) : (
-          <Button onClick={login}>Sign In</Button>
-        )}
-
+      <HStack gap={4}>
         <Select
           onChange={(e) => setCluster(e.target.value as Cluster)}
           value={cluster}
@@ -129,6 +129,39 @@ const Header = () => {
           <option value="mainnet-beta">Mainnet</option>
           <option value="devnet">Devnet</option>
         </Select>
+
+        {address ? (
+          <Menu>
+            <MenuButton>
+              <Avatar as={Blockies} seed={address} size="sm" />
+            </MenuButton>
+            <MenuList background="brand.primary">
+              <MenuItem
+                background="brand.primary"
+                _hover={{
+                  background: "brand.secondary",
+                }}
+              >
+                Account
+              </MenuItem>
+              <MenuDivider />
+              <MenuItem
+                background="brand.primary"
+                _hover={{
+                  background: "brand.secondary",
+                }}
+                textColor="red.500"
+                onClick={logout}
+              >
+                Logout
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        ) : (
+          <Button size="lg" w={32} onClick={login}>
+            Sign In
+          </Button>
+        )}
       </HStack>
     </HStack>
   );

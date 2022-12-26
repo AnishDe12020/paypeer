@@ -27,9 +27,6 @@
     "@solana/wallet-adapter-react-ui": "^0.9.23",
     "@solana/wallet-adapter-wallets": "^0.19.8",
     "@solana/web3.js": "^1.70.1",
-    "@types/node": "18.11.13",
-    "@types/react": "18.0.26",
-    "@types/react-dom": "18.0.9",
     "@walletconnect/client": "^1.8.0",
     "@web3auth/base": "^4.0.0",
     "@web3auth/modal": "^4.0.0",
@@ -45,6 +42,7 @@
     "jotai": "^1.12.0",
     "next": "13.0.6",
     "react": "18.2.0",
+    "react-blockies": "^1.4.1",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.40.0",
     "react-qr-code": "^2.0.10",
@@ -52,6 +50,10 @@
   },
   "devDependencies": {
     "@chakra-ui/cli": "^2.2.0",
-    "prisma": "^4.8.0"
+    "@types/react-blockies": "^1.4.1",
+    "prisma": "^4.8.0",
+    "@types/node": "18.11.13",
+    "@types/react": "18.0.26",
+    "@types/react-dom": "18.0.9"
   }
 }

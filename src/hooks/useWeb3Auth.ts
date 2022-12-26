@@ -92,6 +92,19 @@ const useWeb3Auth = () => {
     return signedMessage;
   };
 
+  useEffect(() => {
+    const setUserIfProvider = async () => {
+      if (provider) {
+        const rpc = new RPC(provider);
+        const addresses = await rpc.getAccounts();
+        const address = addresses[0];
+        setAddress(address);
+      }
+    };
+
+    setUserIfProvider();
+  }, [provider]);
+
   return {
     web3auth,
     setWeb3auth,
