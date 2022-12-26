@@ -10,23 +10,26 @@ datasource db {
 }
 
 model User {
-    id        String          @id @default(uuid())
-    createdAt DateTime        @default(now())
-    updatedAt DateTime        @updatedAt
-    pubkey    String          @unique
-    stores    StoresOnUsers[]
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    pubkey    String   @unique
+    stores    Store[]
 }
 
 model Store {
-    id           String          @id @default(uuid())
-    createdAt    DateTime        @default(now())
-    updatedAt    DateTime        @updatedAt
-    name         String          @unique
+    id           String        @id @default(uuid())
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime      @updatedAt
+    name         String        @unique
     fundsPubkey  String
     website      String?
     twitter      String?
-    users        StoresOnUsers[]
+    owner        User          @relation(fields: [ownerId], references: [id])
+    ownerId      String
     transactions Transaction[]
+
+    @@index([ownerId])
 }
 
 model Transaction {
@@ -41,16 +44,5 @@ model Transaction {
     store          Store    @relation(fields: [storeId], references: [id])
     storeId        String
 
-    @@index([storeId])
-}
-
-model StoresOnUsers {
-    user    User   @relation(fields: [userId], references: [id])
-    userId  String
-    store   Store  @relation(fields: [storeId], references: [id])
-    storeId String
-
-    @@id([userId, storeId])
-    @@index([userId])
     @@index([storeId])
 }

@@ -29,6 +29,7 @@ const useWeb3Auth = () => {
     if (!user.data) {
       await axios.put(`/api/user`, { pubkey: address });
     }
+
     setAddress(address);
     setProvider(web3authProvider);
   };

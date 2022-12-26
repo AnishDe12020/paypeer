@@ -26,6 +26,8 @@ import useProvider from "../src/hooks/useProvider";
 import { SolflareAdapter } from "@web3auth/solflare-adapter";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 
+import { QueryClient, QueryClientProvider } from "react-query";
+
 const ReactUIWalletModalProviderDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletModalProvider,
@@ -33,6 +35,8 @@ const ReactUIWalletModalProviderDynamic = dynamic(
 );
 
 const WEB3AUTH_CLIENT_ID = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
+
+const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
   const { rpc, web3authChainId } = useCluster();
@@ -149,7 +153,9 @@ export default function App({ Component, pageProps }: AppProps) {
       <ChakraProvider theme={theme}>
         <WalletProvider wallets={wallets} autoConnect>
           <ReactUIWalletModalProviderDynamic>
-            <Component {...pageProps} />
+            <QueryClientProvider client={queryClient}>
+              <Component {...pageProps} />
+            </QueryClientProvider>
           </ReactUIWalletModalProviderDynamic>
         </WalletProvider>
       </ChakraProvider>
