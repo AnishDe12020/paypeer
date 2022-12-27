@@ -1,7 +1,26 @@
+import { createRemoteJWKSet, jwtVerify } from "jose";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../src/lib/db";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  if (!req.headers.authorization) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!req.query.pubkey) {
+    return res.status(400).json({ message: "Bad request" });
+  }
+
+  const idToken = req.headers.authorization?.split(" ")[1];
+
+  const jwks = createRemoteJWKSet(new URL("https://authjs.web3auth.io/jwks"));
+
+  const jwtDecoded = await jwtVerify(idToken, jwks, { algorithms: ["ES256"] });
+
+  if (!((jwtDecoded.payload as any).wallets[0].address = req.query.pubkey)) {
+    res.status(401).json({ message: "Unauthorized" });
+  }
+
   switch (req.method) {
     case "GET":
       await handleGetOrganizations(req, res);

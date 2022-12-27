@@ -4,6 +4,7 @@ import useProvider from "./useProvider";
 import RPC from "../lib/solanaRPC";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import Cookie from "js-cookie";
 
 const useWeb3Auth = () => {
   const [web3auth, setWeb3auth] = useAtom(web3authAtom);
@@ -30,6 +31,9 @@ const useWeb3Auth = () => {
       await axios.put(`/api/profiles`, { pubkey: address });
     }
 
+    const { idToken } = await web3auth.authenticateUser();
+    Cookie.set("idToken", idToken, { expires: 1 });
+
     setProvider(web3authProvider);
   };
 
@@ -48,6 +52,7 @@ const useWeb3Auth = () => {
       return;
     }
     await web3auth.logout();
+    Cookie.remove("idToken");
     setProvider(null);
   };
 

@@ -74,18 +74,19 @@ export default function App({ Component, pageProps }: AppProps) {
             network: "cyan",
             uxMode: "popup",
           },
+          sessionTime: 60 * 60 * 24, // 1 day in seconds
         });
         web3auth.configureAdapter(openloginAdapter);
 
         const solflareAdapter = new SolflareAdapter({
           clientId: WEB3AUTH_CLIENT_ID,
-          sessionTime: 3600, // 1 hour in seconds
           web3AuthNetwork: "cyan",
           chainConfig: {
             chainNamespace: CHAIN_NAMESPACES.SOLANA,
             chainId: web3authChainId,
             rpcTarget: rpc,
           },
+          sessionTime: 60 * 60 * 24, // 1 day in second
         });
 
         web3auth.configureAdapter(solflareAdapter);
@@ -93,6 +94,7 @@ export default function App({ Component, pageProps }: AppProps) {
         setWeb3auth(web3auth);
 
         await web3auth.initModal({
+          // @ts-ignore
           modalConfig: {
             [WALLET_ADAPTERS.OPENLOGIN]: {
               label: "openlogin",
