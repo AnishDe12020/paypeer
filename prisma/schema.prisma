@@ -3,46 +3,61 @@ generator client {
 }
 
 datasource db {
-    provider          = "mysql"
+    provider          = "postgresql"
     url               = env("DATABASE_URL")
     shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-    relationMode      = "prisma"
 }
 
-model User {
-    id        String   @id @default(uuid())
+enum Role {
+    OWNER // Admin but superuser
+    ADMIN // All access except delete, change admins
+    MEMBER // Can create, read, update, delete
+    VIEWER // Can read
+}
+
+model Profile {
+    id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    pubkey    String   @unique
-    stores    Store[]
+    pubkey    String   @unique @db.VarChar(44)
+    name      String?
+    email     String?
+    avatarUrl String?
+    Member    Member[]
 }
 
-model Store {
-    id           String        @id @default(uuid())
+model Member {
+    id             String       @id @default(cuid())
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @updatedAt
+    profile        Profile      @relation(fields: [profileId], references: [id])
+    profileId      String
+    Organization   Organization @relation(fields: [organizationId], references: [id])
+    organizationId String
+    role           Role
+}
+
+model Organization {
+    id           String        @id @default(cuid())
     createdAt    DateTime      @default(now())
     updatedAt    DateTime      @updatedAt
-    name         String        @unique
-    fundsPubkey  String
+    name         String
+    fundsPubkey  String        @db.VarChar(44)
     website      String?
     twitter      String?
-    owner        User          @relation(fields: [ownerId], references: [id])
-    ownerId      String
+    logoUrl      String?
+    members      Member[]
     transactions Transaction[]
-
-    @@index([ownerId])
 }
 
 model Transaction {
-    id             String   @id @default(uuid())
-    createdAt      DateTime @default(now())
+    id             String       @id @default(cuid())
+    createdAt      DateTime     @default(now())
     amount         BigInt
     tokenPubkey    String
-    reference      String
     signature      String
     customerPubkey String
     messsage       String?
-    store          Store    @relation(fields: [storeId], references: [id])
-    storeId        String
-
-    @@index([storeId])
+    organization   Organization @relation(fields: [organizationId], references: [id])
+    organizationId String
 }

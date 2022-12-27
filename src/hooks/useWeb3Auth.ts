@@ -25,12 +25,11 @@ const useWeb3Auth = () => {
     const rpc = new RPC(web3authProvider);
     const addresses = await rpc.getAccounts();
     const address = addresses[0];
-    const user = await axios.get(`/api/user?pubkey=${address}`);
-    if (!user.data) {
-      await axios.put(`/api/user`, { pubkey: address });
+    const { data } = await axios.get(`/api/profiles?pubkey=${address}`);
+    if (!data.profile) {
+      await axios.put(`/api/profiles`, { pubkey: address });
     }
 
-    setAddress(address);
     setProvider(web3authProvider);
   };
 
@@ -49,7 +48,6 @@ const useWeb3Auth = () => {
       return;
     }
     await web3auth.logout();
-    setAddress(null);
     setProvider(null);
   };
 
@@ -100,6 +98,8 @@ const useWeb3Auth = () => {
         const addresses = await rpc.getAccounts();
         const address = addresses[0];
         setAddress(address);
+      } else {
+        setAddress(null);
       }
     };
 
