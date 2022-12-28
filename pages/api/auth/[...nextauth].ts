@@ -4,8 +4,15 @@ import nacl from "tweetnacl";
 import bs58 from "bs58";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../src/lib/db";
+import { IncomingMessage } from "http";
 
-export const authOptions = (req: NextApiRequest): AuthOptions => {
+type ServerSidePropsReq = IncomingMessage & {
+  cookies: Partial<{ [key: string]: string }>;
+};
+
+export const authOptions = (
+  req: NextApiRequest | ServerSidePropsReq
+): AuthOptions => {
   return {
     providers: [
       CredentialsProvider({

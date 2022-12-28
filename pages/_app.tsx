@@ -30,7 +30,10 @@ const ReactUIWalletModalProviderDynamic = dynamic(
 
 const queryClient = new QueryClient();
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   const { rpc } = useCluster();
 
   const wallets = useMemo(
@@ -49,7 +52,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <WalletProvider wallets={wallets} autoConnect>
           <ReactUIWalletModalProviderDynamic>
             <QueryClientProvider client={queryClient}>
-              <SessionProvider>
+              <SessionProvider session={session}>
                 <Component {...pageProps} />
               </SessionProvider>
             </QueryClientProvider>

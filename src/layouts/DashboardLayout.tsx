@@ -12,39 +12,17 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { Organization } from "@prisma/client";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { ReactNode, useState } from "react";
-import { useQuery } from "react-query";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { ReactNode, useEffect, useState } from "react";
 import ConnectWallet from "../components/ConnectWallet";
 
 interface DashboardLayoutProps {
   children: ReactNode;
+  orgs: Organization[];
 }
 
-const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
-  const { publicKey } = useWallet();
-
-  const { data: orgs } = useQuery<Organization[]>(
-    "orgs",
-    async () => {
-      const res = await axios.get(`/api/organizations?pubkey=${publicKey}`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("idToken")}`,
-        },
-      });
-
-      if (!selectedOrg && res.data.organizations.length > 0) {
-        setSelectedOrg(res.data.organizations[0]);
-      }
-
-      return res.data.organizations;
-    },
-    {
-      enabled: !!publicKey,
-    }
+const DashboardLayout = ({ children, orgs }: DashboardLayoutProps) => {
+  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(
+    orgs.length > 0 ? orgs[0] : null
   );
 
   return (
