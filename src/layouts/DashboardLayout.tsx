@@ -8,8 +8,6 @@ import {
   Text,
   MenuItem,
   MenuList,
-  Avatar,
-  MenuDivider,
   Button,
   Box,
 } from "@chakra-ui/react";
@@ -18,21 +16,21 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { ReactNode, useState } from "react";
 import { useQuery } from "react-query";
-import useWeb3Auth from "../hooks/useWeb3Auth";
-import Blockies from "react-blockies";
+import { useWallet } from "@solana/wallet-adapter-react";
+import ConnectWallet from "../components/ConnectWallet";
 
 interface DashboardLayoutProps {
   children: ReactNode;
 }
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const { address, logout } = useWeb3Auth();
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
+  const { publicKey } = useWallet();
 
   const { data: orgs } = useQuery<Organization[]>(
     "orgs",
     async () => {
-      const res = await axios.get(`/api/organizations?pubkey=${address}`, {
+      const res = await axios.get(`/api/organizations?pubkey=${publicKey}`, {
         headers: {
           Authorization: `Bearer ${Cookies.get("idToken")}`,
         },
@@ -45,7 +43,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       return res.data.organizations;
     },
     {
-      enabled: !!address,
+      enabled: !!publicKey,
     }
   );
 
@@ -91,34 +89,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           ) : (
             <Spinner />
           )}
-          {address && (
-            <Menu>
-              <MenuButton>
-                <Avatar as={Blockies} seed={address} size="sm" />
-              </MenuButton>
-              <MenuList background="brand.primary">
-                <MenuItem
-                  background="brand.primary"
-                  _hover={{
-                    background: "brand.secondary",
-                  }}
-                >
-                  Account
-                </MenuItem>
-                <MenuDivider />
-                <MenuItem
-                  background="brand.primary"
-                  _hover={{
-                    background: "brand.secondary",
-                  }}
-                  textColor="red.500"
-                  onClick={logout}
-                >
-                  Logout
-                </MenuItem>
-              </MenuList>
-            </Menu>
-          )}
+          <ConnectWallet />
         </HStack>
       </VStack>
       <Box as="main" py={8}>

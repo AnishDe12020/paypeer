@@ -1,29 +1,21 @@
-import {
-  createRemoteJWKSet,
-  jwtVerify,
-  JWTVerifyResult,
-  ResolvedKey,
-} from "jose";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { unstable_getServerSession } from "next-auth";
 import { prisma } from "../../../src/lib/db";
+import { authOptions } from "../auth/[...nextauth]";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (!req.headers.authorization) {
+  const session = await unstable_getServerSession(req, res, authOptions(req));
+
+  if (!session?.user?.name) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const idToken = req.headers.authorization?.split(" ")[1];
-
-  const jwks = createRemoteJWKSet(new URL("https://authjs.web3auth.io/jwks"));
-
-  const jwtDecoded = await jwtVerify(idToken, jwks, { algorithms: ["ES256"] });
-
   switch (req.method) {
     case "GET":
-      await handleGetOrganizations(req, res, jwtDecoded);
+      await handleGetOrganizations(req, res, session.user.name);
       break;
     case "PUT":
-      await handleCreateOrganization(req, res, jwtDecoded);
+      await handleCreateOrganization(req, res, session.user.name);
       break;
     default:
       res.status(405).json({ message: "Method not allowed" });
@@ -33,23 +25,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 const handleGetOrganizations = async (
   req: NextApiRequest,
   res: NextApiResponse,
-  jwtDecoded: JWTVerifyResult & ResolvedKey
+  pubkey: string
 ) => {
-  if (!req.query.pubkey) {
-    return res.status(400).json({ message: "Bad request" });
-  }
-
-  if (!((jwtDecoded.payload as any).wallets[0].address = req.query.pubkey)) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
   try {
     const organizations = await prisma.organization.findMany({
       where: {
         members: {
           some: {
             profile: {
-              pubkey: req.query.pubkey as string,
+              pubkey,
             },
           },
         },
@@ -66,7 +50,7 @@ const handleGetOrganizations = async (
 const handleCreateOrganization = async (
   req: NextApiRequest,
   res: NextApiResponse,
-  jwtDecoded: JWTVerifyResult & ResolvedKey
+  pubkey: string
 ) => {
   if (!req.body.pubkey) {
     return res.status(400).json({ message: "Bad request" });
@@ -78,10 +62,6 @@ const handleCreateOrganization = async (
 
   if (!req.body.fundsPubkey) {
     return res.status(400).json({ message: "Bad request" });
-  }
-
-  if (!((jwtDecoded.payload as any).wallets[0].address = req.body.pubkey)) {
-    return res.status(401).json({ message: "Unauthorized" });
   }
 
   try {
@@ -97,7 +77,7 @@ const handleCreateOrganization = async (
             role: "OWNER",
             profile: {
               connect: {
-                pubkey: req.body.pubkey,
+                pubkey,
               },
             },
           },

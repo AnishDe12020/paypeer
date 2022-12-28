@@ -5,7 +5,7 @@ import bs58 from "bs58";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../src/lib/db";
 
-const nextAuthOptions = (req: NextApiRequest): AuthOptions => {
+export const authOptions = (req: NextApiRequest): AuthOptions => {
   return {
     providers: [
       CredentialsProvider({
@@ -79,7 +79,7 @@ const nextAuthOptions = (req: NextApiRequest): AuthOptions => {
 };
 
 const handler = (req: NextApiRequest, res: NextApiResponse) => {
-  return NextAuth(req, res, nextAuthOptions(req));
+  return NextAuth(req, res, authOptions(req));
 };
 
 export default handler;
