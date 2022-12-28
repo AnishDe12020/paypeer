@@ -1,11 +1,11 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import nacl from "tweetnacl";
 import bs58 from "bs58";
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../src/lib/db";
 
-const nextAuthOptions = (req: NextApiRequest) => {
+const nextAuthOptions = (req: NextApiRequest): AuthOptions => {
   return {
     providers: [
       CredentialsProvider({
@@ -72,6 +72,9 @@ const nextAuthOptions = (req: NextApiRequest) => {
         },
       }),
     ],
+    pages: {
+      signIn: "/auth",
+    },
   };
 };
 
