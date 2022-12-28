@@ -35,6 +35,7 @@ CREATE TABLE "Organization" (
     "fundsPubkey" VARCHAR(44) NOT NULL,
     "website" TEXT,
     "twitter" TEXT,
+    "logoUrl" TEXT,
 
     CONSTRAINT "Organization_pkey" PRIMARY KEY ("id")
 );

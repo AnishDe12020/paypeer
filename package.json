@@ -19,6 +19,7 @@
     "@chakra-ui/theme-tools": "^2.0.14",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@next-auth/prisma-adapter": "^1.0.5",
     "@prisma/client": "^4.8.0",
     "@solana/pay": "^0.2.4",
     "@solana/spl-token": "^0.3.6",
