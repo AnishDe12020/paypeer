@@ -1,9 +1,9 @@
 import { GetServerSideProps, NextPage } from "next";
-import DashboardLayout from "../src/layouts/DashboardLayout";
+import DashboardLayout from "../../src/layouts/DashboardLayout";
 import { Text } from "@chakra-ui/react";
-import { authOptions } from "./api/auth/[...nextauth]";
+import { authOptions } from "../api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth";
-import { prisma } from "../src/lib/db";
+import { prisma } from "../../src/lib/db";
 import { Organization } from "@prisma/client";
 
 interface DashboardPageProps {

@@ -18,6 +18,8 @@ import {
   Text,
   useDisclosure,
   Image,
+  chakra,
+  HStack,
 } from "@chakra-ui/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
@@ -30,6 +32,7 @@ import { MouseEventHandler, useCallback } from "react";
 import Blockies from "react-blockies";
 import { signIn, signOut, useSession } from "next-auth/react";
 import base58 from "bs58";
+import { truncateString } from "../../utils/truncate";
 
 interface ConnectWalletProps extends ButtonProps {
   callbackUrl?: string;
@@ -55,6 +58,10 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
     } = useWallet();
 
     const { data: session } = useSession();
+
+    const ChakraBlockies = chakra(Blockies, {
+      shouldForwardProp: (prop) => prop === "size",
+    });
 
     const connectWithWallet: MouseEventHandler<HTMLButtonElement> = useCallback(
       async (e) => {
@@ -128,8 +135,24 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
 
     return publicKey && session ? (
       <Menu>
-        <MenuButton>
-          <Avatar as={Blockies} seed={publicKey.toBase58()} size="sm" />
+        <MenuButton
+          _hover={{
+            background: "brand.secondary",
+          }}
+          as={Button}
+          variant="unstyled"
+          p={2}
+          h="fit-content"
+          minW="36"
+        >
+          <HStack gap={2}>
+            <ChakraBlockies
+              size={8}
+              rounded="full"
+              seed={publicKey.toBase58()}
+            />
+            <Text fontSize="xs">{truncateString(publicKey.toBase58())}</Text>
+          </HStack>
         </MenuButton>
         <MenuList background="brand.primary">
           <MenuItem

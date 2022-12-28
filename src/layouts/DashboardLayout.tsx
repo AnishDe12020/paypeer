@@ -10,10 +10,13 @@ import {
   MenuList,
   Button,
   Box,
+  Divider,
 } from "@chakra-ui/react";
 import { Organization } from "@prisma/client";
 import { ReactNode, useEffect, useState } from "react";
 import ConnectWallet from "../components/ConnectWallet";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -25,52 +28,57 @@ const DashboardLayout = ({ children, orgs }: DashboardLayoutProps) => {
     orgs.length > 0 ? orgs[0] : null
   );
 
+  const router = useRouter();
+
   return (
     <HStack h="100vh" alignItems="start">
       <VStack
         as="nav"
         h="full"
-        w="60"
-        px={4}
+        w="48"
         py={8}
+        px={4}
         borderRight="1px solid"
         borderRightColor="brand.tertiary"
+        justifyContent="space-between"
+        alignItems="start"
       >
-        <HStack justifyContent="space-between" w="full">
-          {orgs ? (
-            orgs.length > 0 ? (
-              <Menu>
-                <MenuButton as={Button}>
-                  <Text>{selectedOrg?.name}</Text>
-                </MenuButton>
-                <MenuList background="brand.primary">
-                  {orgs.map((org) => (
-                    <MenuItem
-                      key={org.id}
-                      background="brand.primary"
-                      _hover={{
-                        background: "brand.secondary",
-                      }}
-                      onSelect={() => setSelectedOrg(org)}
-                      icon={
-                        selectedOrg?.id === org.id ? <CheckIcon /> : undefined
-                      }
-                    >
-                      {org.name}
-                    </MenuItem>
-                  ))}
-                </MenuList>
-              </Menu>
-            ) : (
-              <p>implement create org</p>
-            )
+        {orgs ? (
+          orgs.length > 0 ? (
+            <Menu>
+              <MenuButton as={Button} size="sm">
+                {selectedOrg?.name}
+              </MenuButton>
+              <MenuList background="brand.primary">
+                {orgs.map((org) => (
+                  <MenuItem
+                    key={org.id}
+                    background="brand.primary"
+                    _hover={{
+                      background: "brand.secondary",
+                    }}
+                    onSelect={() => setSelectedOrg(org)}
+                    icon={
+                      selectedOrg?.id === org.id ? <CheckIcon /> : undefined
+                    }
+                  >
+                    {org.name}
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Menu>
           ) : (
-            <Spinner />
-          )}
-          <ConnectWallet />
-        </HStack>
+            <Button onClick={() => router.push("/dashboard/new-org")}>
+              New Organization
+            </Button>
+          )
+        ) : (
+          <Spinner />
+        )}
+
+        <ConnectWallet />
       </VStack>
-      <Box as="main" py={8}>
+      <Box as="main" py={8} pl={8}>
         {children}
       </Box>
     </HStack>

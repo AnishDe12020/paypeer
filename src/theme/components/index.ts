@@ -6,6 +6,7 @@ import Textarea from "./textarea";
 import Tooltip from "./tooltip";
 import Card from "./card";
 import Modal from "./modal";
+import Popover from "./popover";
 
 export { Button };
 export { Input };
@@ -15,6 +16,7 @@ export { Textarea };
 export { Tooltip };
 export { Card };
 export { Modal };
+export { Popover };
 
 export const components = {
   Button,
@@ -25,4 +27,5 @@ export const components = {
   Tooltip,
   Card,
   Modal,
+  Popover,
 };
