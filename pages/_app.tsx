@@ -20,6 +20,7 @@ import "../src/styles/wallet-adapter.css";
 import useCluster from "../src/hooks/useCluster";
 
 import { QueryClient, QueryClientProvider } from "react-query";
+import { SessionProvider } from "next-auth/react";
 
 const ReactUIWalletModalProviderDynamic = dynamic(
   async () =>
@@ -48,7 +49,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <WalletProvider wallets={wallets} autoConnect>
           <ReactUIWalletModalProviderDynamic>
             <QueryClientProvider client={queryClient}>
-              <Component {...pageProps} />
+              <SessionProvider>
+                <Component {...pageProps} />
+              </SessionProvider>
             </QueryClientProvider>
           </ReactUIWalletModalProviderDynamic>
         </WalletProvider>

@@ -18,6 +18,7 @@ specifiers:
   '@solana/wallet-adapter-react-ui': ^0.9.23
   '@solana/wallet-adapter-wallets': ^0.19.8
   '@solana/web3.js': ^1.70.1
+  '@types/cookie': ^0.5.1
   '@types/js-cookie': ^3.0.2
   '@types/node': 18.11.13
   '@types/react': 18.0.26
@@ -31,7 +32,9 @@ specifiers:
   '@web3auth/solflare-adapter': ^4.0.0
   axios: ^1.2.1
   bignumber.js: ^9.1.1
+  bs58: ^5.0.0
   chakra-react-select: ^4.4.3
+  cookie: ^0.5.0
   eslint: 8.29.0
   eslint-config-next: 13.0.6
   framer-motion: ^7.6.19
@@ -40,6 +43,7 @@ specifiers:
   jotai: ^1.12.0
   js-cookie: ^3.0.1
   next: 13.0.6
+  next-auth: ^4.18.7
   prisma: ^4.8.0
   react: 18.2.0
   react-blockies: ^1.4.1
@@ -47,6 +51,7 @@ specifiers:
   react-hook-form: ^7.40.0
   react-qr-code: ^2.0.10
   react-query: ^3.39.2
+  tweetnacl: ^1.0.3
   typescript: 4.9.4
 
 dependencies:
@@ -62,10 +67,11 @@ dependencies:
   '@solana/pay': 0.2.4
   '@solana/spl-token': 0.3.6_@solana+web3.js@1.70.1
   '@solana/wallet-adapter-base': 0.9.19_@solana+web3.js@1.70.1
-  '@solana/wallet-adapter-react': 0.15.25_lxsl5z2jz7w6udxjif6gg5cwji
-  '@solana/wallet-adapter-react-ui': 0.9.23_3y2saa73momv6heiy72tuneowm
-  '@solana/wallet-adapter-wallets': 0.19.8_3y2saa73momv6heiy72tuneowm
+  '@solana/wallet-adapter-react': 0.15.25_rls543pkcroo4v2t2uhagjqgxy
+  '@solana/wallet-adapter-react-ui': 0.9.23_wc7h4k3fjapmrluwl6y7r2ogmi
+  '@solana/wallet-adapter-wallets': 0.19.8_wc7h4k3fjapmrluwl6y7r2ogmi
   '@solana/web3.js': 1.70.1
+  '@types/cookie': 0.5.1
   '@walletconnect/client': 1.8.0
   '@web3auth/base': 4.0.0
   '@web3auth/modal': 4.0.0_rudctyfgzfdezqgll4zlnfrzdm
@@ -74,7 +80,9 @@ dependencies:
   '@web3auth/solflare-adapter': 4.0.0_@solana+web3.js@1.70.1
   axios: 1.2.1
   bignumber.js: 9.1.1
+  bs58: 5.0.0
   chakra-react-select: 4.4.3_4llgpzr5xwpi7n6npcru5odvvu
+  cookie: 0.5.0
   eslint: 8.29.0
   eslint-config-next: 13.0.6_ha6vam6werchizxrnqvarmz2zu
   framer-motion: 7.6.19_biqbaboplfbrettd7655fr4n2y
@@ -83,12 +91,14 @@ dependencies:
   jotai: 1.12.0_react@18.2.0
   js-cookie: 3.0.1
   next: 13.0.6_biqbaboplfbrettd7655fr4n2y
+  next-auth: 4.18.7_6jx7hpii6hgsrmhxgqrmo3277u
   react: 18.2.0
   react-blockies: 1.4.1_react@18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-hook-form: 7.40.0_react@18.2.0
   react-qr-code: 2.0.10_react@18.2.0
   react-query: 3.39.2_biqbaboplfbrettd7655fr4n2y
+  tweetnacl: 1.0.3
   typescript: 4.9.4
 
 devDependencies:
@@ -2228,6 +2238,10 @@ packages:
       fastq: 1.14.0
     dev: false
 
+  /@panva/hkdf/1.0.2:
+    resolution: {integrity: sha512-MSAs9t3Go7GUkMhpKC44T58DJ5KGk2vBo+h1cqQeqlMfdGkxaVB78ZWpv9gYi/g2fa4sopag9gJsNvS8XGgWJA==}
+    dev: false
+
   /@particle-network/auth/0.5.6:
     resolution: {integrity: sha512-QhRr76BamasIatyWc68Whk/JpjomKUFbxT4KoHxrSWD8lmyWTOP5T8Jo8hQliyjtO2Iuzv9KLpuJ55w7mgaC/A==}
     dependencies:
@@ -2235,7 +2249,7 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /@particle-network/solana-wallet/0.5.6_@solana+web3.js@1.70.1:
+  /@particle-network/solana-wallet/0.5.6_3di4hgk53gurwvepm5h6hv4azm:
     resolution: {integrity: sha512-Ad0hwJsWRCbptp+mmLFsbrERDQbW+QhFQOmWRT8+6gGrY6qNTApwI9+jlpkxOzEI9rvSqFD1qKKMlqy1n+fJNA==}
     peerDependencies:
       '@solana/web3.js': ^1.50.1
@@ -2243,6 +2257,7 @@ packages:
     dependencies:
       '@particle-network/auth': 0.5.6
       '@solana/web3.js': 1.70.1
+      bs58: 5.0.0
     dev: false
 
   /@pedrouid/environment/1.0.1:
@@ -2736,13 +2751,13 @@ packages:
       '@solana/web3.js': 1.70.1
     dev: false
 
-  /@solana/wallet-adapter-particle/0.1.6_@solana+web3.js@1.70.1:
+  /@solana/wallet-adapter-particle/0.1.6_3di4hgk53gurwvepm5h6hv4azm:
     resolution: {integrity: sha512-vOD3iD5jepjhY10qkpfDe4bTzAgbakkRuLFSXCU1zZgzcWvSpriRx3LXXDBKd+Wsag+7QhxJALjRSE9dTtl4XQ==}
     engines: {node: '>=16'}
     peerDependencies:
       '@solana/web3.js': ^1.58.0
     dependencies:
-      '@particle-network/solana-wallet': 0.5.6_@solana+web3.js@1.70.1
+      '@particle-network/solana-wallet': 0.5.6_3di4hgk53gurwvepm5h6hv4azm
       '@solana/wallet-adapter-base': 0.9.19_@solana+web3.js@1.70.1
       '@solana/web3.js': 1.70.1
     transitivePeerDependencies:
@@ -2759,7 +2774,7 @@ packages:
       '@solana/web3.js': 1.70.1
     dev: false
 
-  /@solana/wallet-adapter-react-ui/0.9.23_3y2saa73momv6heiy72tuneowm:
+  /@solana/wallet-adapter-react-ui/0.9.23_wc7h4k3fjapmrluwl6y7r2ogmi:
     resolution: {integrity: sha512-L4fj+wwBPMo312hc+TDK62w5XAaKeoXYJC3rSZY9jfYJ6OAN5c39LA4efsq0zoxVqYB6EAIKFquaM5XHLRC8KA==}
     engines: {node: '>=16'}
     peerDependencies:
@@ -2768,7 +2783,7 @@ packages:
       react-dom: '*'
     dependencies:
       '@solana/wallet-adapter-base': 0.9.19_@solana+web3.js@1.70.1
-      '@solana/wallet-adapter-react': 0.15.25_lxsl5z2jz7w6udxjif6gg5cwji
+      '@solana/wallet-adapter-react': 0.15.25_rls543pkcroo4v2t2uhagjqgxy
       '@solana/web3.js': 1.70.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -2777,7 +2792,7 @@ packages:
       - react-native
     dev: false
 
-  /@solana/wallet-adapter-react/0.15.25_lxsl5z2jz7w6udxjif6gg5cwji:
+  /@solana/wallet-adapter-react/0.15.25_rls543pkcroo4v2t2uhagjqgxy:
     resolution: {integrity: sha512-LyWtCu9LRhtXLDkF11IYxxrrF32/F7AVmbELXavEMyVxoWB7WD93bVikaJvypQRHc3eM5rxlEcKSHFIqCewtgg==}
     engines: {node: '>=16'}
     peerDependencies:
@@ -2786,7 +2801,7 @@ packages:
     dependencies:
       '@solana-mobile/wallet-adapter-mobile': 0.9.9_@solana+web3.js@1.70.1
       '@solana/wallet-adapter-base': 0.9.19_@solana+web3.js@1.70.1
-      '@solana/wallet-standard-wallet-adapter-react': 1.0.0_h2e46sofaf6sy3lh4vxt2ycrha
+      '@solana/wallet-standard-wallet-adapter-react': 1.0.0_ulef3ar3ojdd3aqm5jyyempauy
       '@solana/web3.js': 1.70.1
       react: 18.2.0
     transitivePeerDependencies:
@@ -2981,7 +2996,7 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@solana/wallet-adapter-wallets/0.19.8_3y2saa73momv6heiy72tuneowm:
+  /@solana/wallet-adapter-wallets/0.19.8_wc7h4k3fjapmrluwl6y7r2ogmi:
     resolution: {integrity: sha512-JNCRLd9QKB9Ojv26C/AlYhZhQeeKIOJQG5NVQsG4AxWbGrXiWLFxVXDganoIRpy6UqJ6zry6T3ira+Vyq07OhQ==}
     engines: {node: '>=16'}
     peerDependencies:
@@ -3013,7 +3028,7 @@ packages:
       '@solana/wallet-adapter-nightly': 0.1.11_@solana+web3.js@1.70.1
       '@solana/wallet-adapter-nufi': 0.1.12_@solana+web3.js@1.70.1
       '@solana/wallet-adapter-onto': 0.1.3_@solana+web3.js@1.70.1
-      '@solana/wallet-adapter-particle': 0.1.6_@solana+web3.js@1.70.1
+      '@solana/wallet-adapter-particle': 0.1.6_3di4hgk53gurwvepm5h6hv4azm
       '@solana/wallet-adapter-phantom': 0.9.18_@solana+web3.js@1.70.1
       '@solana/wallet-adapter-safepal': 0.5.14_@solana+web3.js@1.70.1
       '@solana/wallet-adapter-saifu': 0.1.11_@solana+web3.js@1.70.1
@@ -3081,7 +3096,7 @@ packages:
       '@solana/wallet-standard-features': 1.0.0
     dev: false
 
-  /@solana/wallet-standard-wallet-adapter-base/1.0.0_@solana+web3.js@1.70.1:
+  /@solana/wallet-standard-wallet-adapter-base/1.0.0_3di4hgk53gurwvepm5h6hv4azm:
     resolution: {integrity: sha512-PG5Ik96nt+wCVCESbj1QD5X9iExIChHRivsIi26CMpOR4jm3lOIBshqTl65NJLOWJN+An5bYRswyuUEOMxfFiA==}
     engines: {node: '>=16'}
     peerDependencies:
@@ -3097,9 +3112,10 @@ packages:
       '@wallet-standard/base': 1.0.1
       '@wallet-standard/features': 1.0.1
       '@wallet-standard/wallet': 1.0.1
+      bs58: 5.0.0
     dev: false
 
-  /@solana/wallet-standard-wallet-adapter-react/1.0.0_h2e46sofaf6sy3lh4vxt2ycrha:
+  /@solana/wallet-standard-wallet-adapter-react/1.0.0_ulef3ar3ojdd3aqm5jyyempauy:
     resolution: {integrity: sha512-lIXQ6U1F2jeFCoOY5bsCR+FUQ6uLbZbLOUF4YuItG0gvAL/2/92DyelKmdkocbSpINIwd/jwIZmtkLMi9X4tYA==}
     engines: {node: '>=16'}
     peerDependencies:
@@ -3107,7 +3123,7 @@ packages:
       react: '*'
     dependencies:
       '@solana/wallet-adapter-base': 0.9.19_@solana+web3.js@1.70.1
-      '@solana/wallet-standard-wallet-adapter-base': 1.0.0_@solana+web3.js@1.70.1
+      '@solana/wallet-standard-wallet-adapter-base': 1.0.0_3di4hgk53gurwvepm5h6hv4azm
       '@wallet-standard/app': 1.0.1
       '@wallet-standard/base': 1.0.1
       react: 18.2.0
@@ -3635,6 +3651,10 @@ packages:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
       '@types/node': 18.11.13
+    dev: false
+
+  /@types/cookie/0.5.1:
+    resolution: {integrity: sha512-COUnqfB2+ckwXXSFInsFdOAWQzCCx+a5hq2ruyj+Vjund94RJQd4LG2u9hnvJrTgunKAaax7ancBYlDrNYxA0g==}
     dev: false
 
   /@types/js-cookie/3.0.2:
@@ -5195,6 +5215,11 @@ packages:
 
   /convert-source-map/1.9.0:
     resolution: {integrity: sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==}
+    dev: false
+
+  /cookie/0.5.0:
+    resolution: {integrity: sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==}
+    engines: {node: '>= 0.6'}
     dev: false
 
   /copy-to-clipboard/3.3.1:
@@ -7274,6 +7299,32 @@ packages:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: false
 
+  /next-auth/4.18.7_6jx7hpii6hgsrmhxgqrmo3277u:
+    resolution: {integrity: sha512-kR3s1JVPMaDuSAlFxcGyv7Ec3fdE6za71r1F77IOII5zJmW2wfkIA2xj223fM0D20ip2pzFpHfk/qN4L6l5XMA==}
+    engines: {node: ^12.19.0 || ^14.15.0 || ^16.13.0 || ^18.12.0}
+    peerDependencies:
+      next: ^12.2.5 || ^13
+      nodemailer: ^6.6.5
+      react: ^17.0.2 || ^18
+      react-dom: ^17.0.2 || ^18
+    peerDependenciesMeta:
+      nodemailer:
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.20.6
+      '@panva/hkdf': 1.0.2
+      cookie: 0.5.0
+      jose: 4.11.1
+      next: 13.0.6_biqbaboplfbrettd7655fr4n2y
+      oauth: 0.9.15
+      openid-client: 5.3.1
+      preact: 10.11.3
+      preact-render-to-string: 5.2.6_preact@10.11.3
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      uuid: 8.3.2
+    dev: false
+
   /next/13.0.6_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-COvigvms2LRt1rrzfBQcMQ2GZd86Mvk1z+LOLY5pniFtL4VrTmhZ9salrbKfSiXbhsD01TrDdD68ec3ABDyscA==}
     engines: {node: '>=14.6.0'}
@@ -7349,9 +7400,18 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /oauth/0.9.15:
+    resolution: {integrity: sha512-a5ERWK1kh38ExDEfoO6qUHJb32rd7aYmPHuyCu3Fta/cnICvYmgd2uhuKXvPD+PXB+gCEYYEaQdIRAjCOwAKNA==}
+    dev: false
+
   /object-assign/4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  /object-hash/2.2.0:
+    resolution: {integrity: sha512-gScRMn0bS5fH+IuwyIFgnh9zBdo4DV+6GhygmWM9HyNJSgS0hScp1f5vjtm7oIIOiT9trXrShAkLFSc2IqKNgw==}
+    engines: {node: '>= 6'}
     dev: false
 
   /object-inspect/1.12.2:
@@ -7423,6 +7483,11 @@ packages:
     resolution: {integrity: sha512-Oh+8fK09mgGmAshFdH6hSVco6KZmd1tTwNFWj35OvzdmJTMZtAkbn05zar2iG3v6sDs1JLEtOiBGNb6BHwkb2w==}
     dev: false
 
+  /oidc-token-hash/5.0.1:
+    resolution: {integrity: sha512-EvoOtz6FIEBzE+9q253HsLCVRiK/0doEJ2HCvvqMQb3dHZrP3WlJKYtJ55CRTw4jmYomzH4wkPuCj/I3ZvpKxQ==}
+    engines: {node: ^10.13.0 || >=12.0.0}
+    dev: false
+
   /once/1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
     dependencies:
@@ -7442,6 +7507,15 @@ packages:
       define-lazy-prop: 2.0.0
       is-docker: 2.2.1
       is-wsl: 2.2.0
+    dev: false
+
+  /openid-client/5.3.1:
+    resolution: {integrity: sha512-RLfehQiHch9N6tRWNx68cicf3b1WR0x74bJWHRc25uYIbSRwjxYcTFaRnzbbpls5jroLAaB/bFIodTgA5LJMvw==}
+    dependencies:
+      jose: 4.11.1
+      lru-cache: 6.0.0
+      object-hash: 2.2.0
+      oidc-token-hash: 5.0.1
     dev: false
 
   /optionator/0.9.1:
@@ -7641,6 +7715,19 @@ packages:
       source-map-js: 1.0.2
     dev: false
 
+  /preact-render-to-string/5.2.6_preact@10.11.3:
+    resolution: {integrity: sha512-JyhErpYOvBV1hEPwIxc/fHWXPfnEGdRKxc8gFdAZ7XV4tlzyzG847XAyEZqoDnynP88akM4eaHcSOzNcLWFguw==}
+    peerDependencies:
+      preact: '>=10'
+    dependencies:
+      preact: 10.11.3
+      pretty-format: 3.8.0
+    dev: false
+
+  /preact/10.11.3:
+    resolution: {integrity: sha512-eY93IVpod/zG3uMF22Unl8h9KkrcKIRs2EGar8hwLZZDU1lkjph303V9HZBwufh2s736U6VXuhD109LYqPoffg==}
+    dev: false
+
   /preact/10.4.1:
     resolution: {integrity: sha512-WKrRpCSwL2t3tpOOGhf2WfTpcmbpxaWtDbdJdKdjd0aEiTkvOmS4NBkG6kzlaAHI9AkQ3iVqbFWM3Ei7mZ4o1Q==}
     dev: false
@@ -7660,6 +7747,10 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
+
+  /pretty-format/3.8.0:
+    resolution: {integrity: sha512-WuxUnVtlWL1OfZFQFuqvnvs6MiAGk9UNsBostyBOB0Is9wb5uRESevA6rnl/rkksXaGX3GzZhPup5d6Vp1nFew==}
+    dev: false
 
   /prisma/4.8.0:
     resolution: {integrity: sha512-DWIhxvxt8f4h6MDd35mz7BJff+fu7HItW3WPDIEpCR3RzcOWyiHBbLQW5/DOgmf+pRLTjwXQob7kuTZVYUAw5w==}

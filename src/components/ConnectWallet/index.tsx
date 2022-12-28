@@ -17,12 +17,19 @@ import {
   Divider,
   Text,
   useDisclosure,
+  Image,
 } from "@chakra-ui/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { TorusWalletName } from "@solana/wallet-adapter-wallets";
+import {
+  BackpackWalletName,
+  TorusWalletName,
+} from "@solana/wallet-adapter-wallets";
+import axios from "axios";
 import { MouseEventHandler, useCallback } from "react";
 import Blockies from "react-blockies";
+import { signIn, signOut, useSession } from "next-auth/react";
+import base58 from "bs58";
 
 const ConnectWallet = forwardRef<ButtonProps, "button">((props, ref) => {
   const {
@@ -32,13 +39,21 @@ const ConnectWallet = forwardRef<ButtonProps, "button">((props, ref) => {
   } = useDisclosure();
 
   const modalState = useWalletModal();
-  const { wallet, connect, select, publicKey, disconnect } = useWallet();
+  const {
+    wallet,
+    connect,
+    select,
+    publicKey,
+    disconnect,
+    signMessage,
+    wallets,
+  } = useWallet();
+
+  const { data: session } = useSession();
 
   const connectWithWallet: MouseEventHandler<HTMLButtonElement> = useCallback(
-    (e) => {
+    async (e) => {
       if (e.defaultPrevented) return;
-
-      onModalClose();
 
       if (!wallet) {
         modalState.setVisible(true);
@@ -46,18 +61,25 @@ const ConnectWallet = forwardRef<ButtonProps, "button">((props, ref) => {
         connect().catch(() => {});
       }
     },
-    [wallet, connect, modalState, onModalClose]
+    [wallet, connect, modalState]
+  );
+
+  const connectWithBackpack: MouseEventHandler<HTMLButtonElement> = useCallback(
+    async (e) => {
+      if (e.defaultPrevented) return;
+
+      select(BackpackWalletName);
+    },
+    [select]
   );
 
   const connectWithTorus: MouseEventHandler<HTMLButtonElement> = useCallback(
-    (e) => {
+    async (e) => {
       if (e.defaultPrevented) return;
-
-      onModalClose();
 
       select(TorusWalletName);
     },
-    [select, onModalClose]
+    [select]
   );
 
   const logout: MouseEventHandler<HTMLButtonElement> = useCallback(
@@ -65,11 +87,40 @@ const ConnectWallet = forwardRef<ButtonProps, "button">((props, ref) => {
       if (e.defaultPrevented) return;
 
       disconnect();
+
+      signOut();
     },
     [disconnect]
   );
 
-  return publicKey ? (
+  const login = useCallback(async () => {
+    const res = await axios.get("/api/nonce");
+
+    if (res.status != 200) {
+      console.error("failed to fetch nonce");
+      return;
+    }
+
+    const { nonce } = res.data;
+
+    const message = `Sign this message for authenticating with your wallet. Nonce: ${nonce}`;
+    const encodedMessage = new TextEncoder().encode(message);
+
+    if (!signMessage) {
+      console.error("signMessage is not defined");
+      return;
+    }
+
+    const signedMessage = await signMessage(encodedMessage);
+
+    signIn("credentials", {
+      publicKey: publicKey?.toBase58(),
+      signature: base58.encode(signedMessage),
+      callbackUrl: `${window.location.origin}/`,
+    });
+  }, [signMessage, publicKey]);
+
+  return publicKey && session ? (
     <Menu>
       <MenuButton>
         <Avatar as={Blockies} seed={publicKey.toBase58()} size="sm" />
@@ -107,54 +158,57 @@ const ConnectWallet = forwardRef<ButtonProps, "button">((props, ref) => {
         <ModalContent>
           <ModalBody p={2}>
             <VStack>
-              <Button
-                onClick={connectWithWallet}
-                variant="unstyled"
-                w="full"
-                _hover={{
-                  background: "brand.secondary",
-                }}
-                h="fit-content"
-                py={4}
-              >
-                <VStack gap={4}>
-                  <AvatarGroup>
-                    <Avatar name="Phantom" src="/assets/phantom.png" />
-                    <Avatar
-                      name="Solflare"
-                      src="/assets/solflare.svg"
-                      backgroundColor="brand.secondary"
-                    />
-                    <Avatar name="Glow" src="/assets/glow.png" />
-                    <Avatar name="Backpack" src="/assets/backpack.png" />
-                  </AvatarGroup>
-
-                  <Text>Solana Wallet</Text>
-                </VStack>
-              </Button>
-              <Divider />
-              <Button
-                onClick={connectWithTorus}
-                variant="unstyled"
-                w="full"
-                _hover={{
-                  background: "brand.secondary",
-                }}
-                h="fit-content"
-                py={4}
-              >
-                <VStack gap={4}>
-                  <AvatarGroup>
-                    <Avatar
-                      name="Google"
-                      src="/assets/google.png"
-                      backgroundColor="brand.secondary"
-                    />
-                    <Avatar name="Torus" src="/assets/torus.svg" />
-                  </AvatarGroup>
-                  <Text wordBreak="break-all">Login with email or Google</Text>
-                </VStack>
-              </Button>
+              {publicKey ? (
+                <Button onClick={login}>Sign Message</Button>
+              ) : (
+                <>
+                  <VStack my={4} gap={4}>
+                    {wallets
+                      .filter((wallet) => wallet.readyState === "Installed")
+                      .map((wallet) => (
+                        <Button
+                          key={wallet.adapter.name}
+                          onClick={() => select(wallet.adapter.name)}
+                          leftIcon={
+                            <Image
+                              src={wallet.adapter.icon}
+                              alt={wallet.adapter.name}
+                              h={6}
+                              w={6}
+                            />
+                          }
+                        >
+                          <Text>{wallet.adapter.name}</Text>
+                        </Button>
+                      ))}
+                  </VStack>
+                  <Divider />
+                  <Button
+                    onClick={connectWithTorus}
+                    variant="unstyled"
+                    w="full"
+                    _hover={{
+                      background: "brand.secondary",
+                    }}
+                    h="fit-content"
+                    py={4}
+                  >
+                    <VStack gap={4}>
+                      <AvatarGroup>
+                        <Avatar
+                          name="Google"
+                          src="/assets/google.png"
+                          backgroundColor="brand.secondary"
+                        />
+                        <Avatar name="Torus" src="/assets/torus.svg" />
+                      </AvatarGroup>
+                      <Text wordBreak="break-all">
+                        Login with email or Google
+                      </Text>
+                    </VStack>
+                  </Button>
+                </>
+              )}
             </VStack>
           </ModalBody>
         </ModalContent>
