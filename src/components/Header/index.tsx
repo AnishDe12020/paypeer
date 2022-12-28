@@ -1,31 +1,21 @@
 import {
-  Avatar,
   Box,
-  Button,
   Drawer,
   DrawerContent,
   HStack,
   Link,
   List,
   ListItem,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
   Select,
-  Text,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import NextLink from "next/link";
 import { useRef } from "react";
 import useCluster from "../../hooks/useCluster";
 import { Cluster } from "../../types/cluster";
 import { Rotate } from "hamburger-react";
-import useWeb3Auth from "../../hooks/useWeb3Auth";
-import Blockies from "react-blockies";
+import ConnectWallet from "../ConnectWallet";
 
 interface INavLink {
   content: string;
@@ -51,10 +41,6 @@ const Header = () => {
   const { cluster, setCluster } = useCluster();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-
-  const { login, address, logout } = useWeb3Auth();
-
-  console.log("address", address);
 
   return (
     <HStack
@@ -125,43 +111,13 @@ const Header = () => {
         <Select
           onChange={(e) => setCluster(e.target.value as Cluster)}
           value={cluster}
+          h="8"
         >
           <option value="mainnet-beta">Mainnet</option>
           <option value="devnet">Devnet</option>
         </Select>
 
-        {address ? (
-          <Menu>
-            <MenuButton>
-              <Avatar as={Blockies} seed={address} size="sm" />
-            </MenuButton>
-            <MenuList background="brand.primary">
-              <MenuItem
-                background="brand.primary"
-                _hover={{
-                  background: "brand.secondary",
-                }}
-              >
-                Account
-              </MenuItem>
-              <MenuDivider />
-              <MenuItem
-                background="brand.primary"
-                _hover={{
-                  background: "brand.secondary",
-                }}
-                textColor="red.500"
-                onClick={logout}
-              >
-                Logout
-              </MenuItem>
-            </MenuList>
-          </Menu>
-        ) : (
-          <Button size="lg" w={32} onClick={login}>
-            Sign In
-          </Button>
-        )}
+        <ConnectWallet />
       </HStack>
     </HStack>
   );

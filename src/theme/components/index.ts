@@ -5,6 +5,7 @@ import FormError from "./form-error";
 import Textarea from "./textarea";
 import Tooltip from "./tooltip";
 import Card from "./card";
+import Modal from "./modal";
 
 export { Button };
 export { Input };
@@ -13,6 +14,7 @@ export { FormError };
 export { Textarea };
 export { Tooltip };
 export { Card };
+export { Modal };
 
 export const components = {
   Button,
@@ -22,4 +24,5 @@ export const components = {
   Textarea,
   Tooltip,
   Card,
+  Modal,
 };
