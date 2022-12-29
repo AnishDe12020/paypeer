@@ -52,10 +52,6 @@ const handleCreateOrganization = async (
   res: NextApiResponse,
   pubkey: string
 ) => {
-  if (!req.body.pubkey) {
-    return res.status(400).json({ message: "Bad request" });
-  }
-
   if (!req.body.name) {
     return res.status(400).json({ message: "Bad request" });
   }

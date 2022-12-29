@@ -285,7 +285,7 @@ export const buttonTheme = defineStyleConfig({
   sizes,
   defaultProps: {
     variant: "solid-border",
-    size: "md",
+    size: "sm",
     colorScheme: "brand",
   },
 });

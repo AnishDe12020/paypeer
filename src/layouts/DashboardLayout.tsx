@@ -11,6 +11,7 @@ import {
   Button,
   Box,
   Divider,
+  MenuDivider,
 } from "@chakra-ui/react";
 import { Organization } from "@prisma/client";
 import { ReactNode, useEffect, useState } from "react";
@@ -65,6 +66,18 @@ const DashboardLayout = ({ children, orgs }: DashboardLayoutProps) => {
                     {org.name}
                   </MenuItem>
                 ))}
+
+                <MenuDivider />
+
+                <MenuItem
+                  background="brand.primary"
+                  _hover={{
+                    background: "brand.secondary",
+                  }}
+                  onClick={() => router.push("/dashboard/new-org")}
+                >
+                  New Organization
+                </MenuItem>
               </MenuList>
             </Menu>
           ) : (

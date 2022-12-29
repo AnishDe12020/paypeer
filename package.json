@@ -11,6 +11,8 @@
     "theme:watch": "chakra-cli tokens theme/index.ts --watch"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.238.0",
+    "@aws-sdk/s3-request-presigner": "^3.238.0",
     "@chakra-ui/anatomy": "^2.1.0",
     "@chakra-ui/icons": "^2.0.13",
     "@chakra-ui/react": "^2.4.3",
@@ -42,6 +44,7 @@
     "cookie": "^0.5.0",
     "eslint": "8.29.0",
     "eslint-config-next": "13.0.6",
+    "firebase-admin": "^11.4.1",
     "framer-motion": "^7.6.19",
     "hamburger-react": "^2.5.0",
     "jose": "^4.11.1",
@@ -52,6 +55,8 @@
     "react": "18.2.0",
     "react-blockies": "^1.4.1",
     "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.3",
+    "react-feather": "^2.0.10",
     "react-hook-form": "^7.40.0",
     "react-qr-code": "^2.0.10",
     "react-query": "^3.39.2",
