@@ -14,6 +14,7 @@ import {
   MenuDivider,
   Link,
   Icon,
+  Avatar,
 } from "@chakra-ui/react";
 import { Organization } from "@prisma/client";
 import { ReactNode, useEffect, useState } from "react";
@@ -33,9 +34,7 @@ interface DashboardLayoutProps {
 const DashboardLayout = ({ children, initialOrgs }: DashboardLayoutProps) => {
   const { selectedOrg, setSelectedOrg } = useSelectedOrganization();
 
-  const { data: session } = useSession();
-
-  const { data: orgs } = useQuery<Organization[]>("posts", getAllOrgs, {
+  const { data: orgs } = useQuery<Organization[]>("orgs", getAllOrgs, {
     initialData: initialOrgs,
   });
 
@@ -63,7 +62,13 @@ const DashboardLayout = ({ children, initialOrgs }: DashboardLayoutProps) => {
         {orgs ? (
           orgs.length > 0 ? (
             <Menu>
-              <MenuButton as={Button} size="sm">
+              <MenuButton
+                as={Button}
+                size="sm"
+                leftIcon={
+                  <Avatar src={selectedOrg?.logoUrl ?? undefined} h={5} w={5} />
+                }
+              >
                 {selectedOrg?.name}
               </MenuButton>
               <MenuList background="brand.primary">
@@ -76,10 +81,13 @@ const DashboardLayout = ({ children, initialOrgs }: DashboardLayoutProps) => {
                     }}
                     onClick={() => setSelectedOrg(org)}
                     icon={
-                      selectedOrg?.id === org.id ? <CheckIcon /> : undefined
+                      <Avatar src={org?.logoUrl ?? undefined} h={5} w={5} />
                     }
                   >
-                    {org.name}
+                    <HStack justifyContent="space-between" gap={2}>
+                      <Text>{org.name}</Text>
+                      {selectedOrg?.id === org.id && <CheckIcon />}
+                    </HStack>
                   </MenuItem>
                 ))}
 

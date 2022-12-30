@@ -14,7 +14,7 @@ import { GetServerSideProps, NextPage } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import FileUpload from "../../src/components/FileUpload";
 import useSelectedOrganization from "../../src/hooks/useSelectedOrganization";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
@@ -39,6 +39,8 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ orgs }) => {
     selectedOrg?.logoUrl ?? undefined
   );
 
+  const queryClient = useQueryClient();
+
   const handleUpdateOrg = useCallback(
     async (data: UpdateOrgForm) => {
       const org = await axios.patch(`/api/organizations/${selectedOrg?.id}`, {
@@ -49,9 +51,10 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ orgs }) => {
         logoUrl: logoUrl,
       });
 
+      await queryClient.refetchQueries("orgs");
       setSelectedOrg(org.data.organization);
     },
-    [setSelectedOrg, selectedOrg?.id, logoUrl]
+    [setSelectedOrg, selectedOrg?.id, logoUrl, queryClient]
   );
 
   const { mutate, isLoading } = useMutation(handleUpdateOrg);
