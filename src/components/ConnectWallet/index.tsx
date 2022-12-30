@@ -20,6 +20,9 @@ import {
   Image,
   chakra,
   HStack,
+  Collapse,
+  Link,
+  Icon,
 } from "@chakra-ui/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
@@ -33,6 +36,7 @@ import Blockies from "react-blockies";
 import { signIn, signOut, useSession } from "next-auth/react";
 import base58 from "bs58";
 import { truncateString } from "../../utils/truncate";
+import { ExternalLink } from "react-feather";
 
 interface ConnectWalletProps extends ButtonProps {
   callbackUrl?: string;
@@ -56,6 +60,11 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
       signMessage,
       wallets,
     } = useWallet();
+
+    const {
+      isOpen: isCollapsedWalletsOpen,
+      onToggle: onCollapsedWalletsToggle,
+    } = useDisclosure();
 
     const { data: session } = useSession();
 
@@ -189,24 +198,103 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
                 ) : (
                   <>
                     <VStack my={4} gap={4}>
-                      {wallets
-                        .filter((wallet) => wallet.readyState === "Installed")
-                        .map((wallet) => (
+                      {wallets.filter(
+                        (wallet) => wallet.readyState === "Installed"
+                      ).length > 0 ? (
+                        wallets
+                          .filter((wallet) => wallet.readyState === "Installed")
+                          .map((wallet) => (
+                            <Button
+                              key={wallet.adapter.name}
+                              onClick={() => select(wallet.adapter.name)}
+                              leftIcon={
+                                <Image
+                                  src={wallet.adapter.icon}
+                                  alt={wallet.adapter.name}
+                                  h={6}
+                                  w={6}
+                                />
+                              }
+                            >
+                              <Text>{wallet.adapter.name}</Text>
+                            </Button>
+                          ))
+                      ) : (
+                        <>
+                          <Text mx={4} textAlign="center">
+                            Looks like you don&apos;t have a Solana wallet
+                            installed. We recommend using{" "}
+                            <Link
+                              href="https://phantom.app"
+                              color="purple.400"
+                              _hover={{ color: "purple.500" }}
+                            >
+                              Phantom
+                            </Link>{" "}
+                            if you are just starting out.
+                          </Text>
+
                           <Button
-                            key={wallet.adapter.name}
-                            onClick={() => select(wallet.adapter.name)}
+                            isExternal
+                            href="https://phantom.app"
+                            as={Link}
                             leftIcon={
-                              <Image
-                                src={wallet.adapter.icon}
-                                alt={wallet.adapter.name}
-                                h={6}
-                                w={6}
-                              />
+                              <Avatar src="/assets/phantom.png" h={5} w={5} />
                             }
+                            rightIcon={<Icon as={ExternalLink} />}
                           >
-                            <Text>{wallet.adapter.name}</Text>
+                            Get Phantom
                           </Button>
-                        ))}
+
+                          <Text mx={4} textAlign="center">
+                            Alternatively, click on the button below to login
+                            with Google or email (this uses{" "}
+                            <Link
+                              href="https://tor.us"
+                              color="blue.400"
+                              _hover={{ color: "blue.500" }}
+                            >
+                              Torus
+                            </Link>{" "}
+                            which creates a non-custodial wallet associated to
+                            your login method)
+                          </Text>
+                        </>
+                      )}
+
+                      <Button onClick={onCollapsedWalletsToggle}>
+                        Show unavailable wallets
+                      </Button>
+                      <Collapse in={isCollapsedWalletsOpen} unmountOnExit>
+                        <VStack my={4} gap={4}>
+                          {wallets.filter(
+                            (wallet) => wallet.readyState !== "Installed"
+                          ).length > 0 ? (
+                            wallets
+                              .filter(
+                                (wallet) => wallet.readyState !== "Installed"
+                              )
+                              .map((wallet) => (
+                                <Button
+                                  key={wallet.adapter.name}
+                                  onClick={() => select(wallet.adapter.name)}
+                                  leftIcon={
+                                    <Image
+                                      src={wallet.adapter.icon}
+                                      alt={wallet.adapter.name}
+                                      h={6}
+                                      w={6}
+                                    />
+                                  }
+                                >
+                                  <Text>{wallet.adapter.name}</Text>
+                                </Button>
+                              ))
+                          ) : (
+                            <Text>No unavailable wallets!</Text>
+                          )}
+                        </VStack>
+                      </Collapse>
                     </VStack>
                     <Divider />
                     <Button
