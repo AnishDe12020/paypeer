@@ -12,7 +12,7 @@ interface DashboardPageProps {
 
 const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
   return (
-    <DashboardLayout orgs={orgs}>
+    <DashboardLayout initialOrgs={orgs}>
       <Text>test</Text>
     </DashboardLayout>
   );

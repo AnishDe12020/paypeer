@@ -96,12 +96,12 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
     );
 
     const logout: MouseEventHandler<HTMLButtonElement> = useCallback(
-      (e) => {
+      async (e) => {
         if (e.defaultPrevented) return;
 
-        disconnect();
+        await disconnect();
 
-        signOut();
+        await signOut();
       },
       [disconnect]
     );
@@ -136,14 +136,11 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
     return publicKey && session ? (
       <Menu>
         <MenuButton
-          _hover={{
-            background: "brand.secondary",
-          }}
           as={Button}
-          variant="unstyled"
-          p={2}
+          variant="ghost"
           h="fit-content"
           minW="36"
+          py={2}
         >
           <HStack gap={2}>
             <ChakraBlockies

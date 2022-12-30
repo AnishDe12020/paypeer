@@ -12,22 +12,38 @@ import {
   Box,
   Divider,
   MenuDivider,
+  Link,
+  Icon,
 } from "@chakra-ui/react";
 import { Organization } from "@prisma/client";
 import { ReactNode, useEffect, useState } from "react";
 import ConnectWallet from "../components/ConnectWallet";
-import NextLink from "next/link";
 import { useRouter } from "next/router";
+import useSelectedOrganization from "../hooks/useSelectedOrganization";
+import { useSession } from "next-auth/react";
+import { getAllOrgs } from "../utils/queries";
+import { useQuery } from "react-query";
+import { Settings } from "react-feather";
 
 interface DashboardLayoutProps {
   children: ReactNode;
-  orgs: Organization[];
+  initialOrgs: Organization[];
 }
 
-const DashboardLayout = ({ children, orgs }: DashboardLayoutProps) => {
-  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(
-    orgs.length > 0 ? orgs[0] : null
-  );
+const DashboardLayout = ({ children, initialOrgs }: DashboardLayoutProps) => {
+  const { selectedOrg, setSelectedOrg } = useSelectedOrganization();
+
+  const { data: session } = useSession();
+
+  const { data: orgs } = useQuery<Organization[]>("posts", getAllOrgs, {
+    initialData: initialOrgs,
+  });
+
+  useEffect(() => {
+    if (orgs && orgs.length > 0 && !selectedOrg) {
+      setSelectedOrg(orgs[0]);
+    }
+  }, [selectedOrg, orgs, setSelectedOrg]);
 
   const router = useRouter();
 
@@ -58,7 +74,7 @@ const DashboardLayout = ({ children, orgs }: DashboardLayoutProps) => {
                     _hover={{
                       background: "brand.secondary",
                     }}
-                    onSelect={() => setSelectedOrg(org)}
+                    onClick={() => setSelectedOrg(org)}
                     icon={
                       selectedOrg?.id === org.id ? <CheckIcon /> : undefined
                     }
@@ -88,8 +104,17 @@ const DashboardLayout = ({ children, orgs }: DashboardLayoutProps) => {
         ) : (
           <Spinner />
         )}
-
-        <ConnectWallet />
+        <VStack>
+          <Button
+            variant="ghost"
+            onClick={() => router.push("/dashboard/settings")}
+            leftIcon={<Icon as={Settings} />}
+            w="full"
+          >
+            Org Settings
+          </Button>
+          <ConnectWallet />
+        </VStack>
       </VStack>
       <Box as="main" py={8} pl={8}>
         {children}

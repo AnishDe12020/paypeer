@@ -28,6 +28,8 @@ import { freezeAccountInstructionData } from "@solana/spl-token";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { useMutation } from "react-query";
+import useSelectedOrganization from "../../src/hooks/useSelectedOrganization";
+import { useRouter } from "next/router";
 
 interface DashboardPageProps {
   orgs: Organization[];
@@ -44,14 +46,23 @@ const DashboardNewOrgPage: NextPage<DashboardPageProps> = ({ orgs }) => {
 
   const { data: session } = useSession();
 
-  const handleCreateOrg = useCallback(async (data: NewOrgForm) => {
-    // console.log(data);
-    const org = await axios.put("/api/organizations", {
-      name: data.name,
-      fundsPubkey: data.fundsPubkey,
-    });
-    console.log(org);
-  }, []);
+  const { setSelectedOrg } = useSelectedOrganization();
+
+  const router = useRouter();
+
+  const handleCreateOrg = useCallback(
+    async (data: NewOrgForm) => {
+      const org = await axios.put("/api/organizations", {
+        name: data.name,
+        fundsPubkey: data.fundsPubkey,
+      });
+
+      setSelectedOrg(org.data.organization);
+
+      router.push("/dashboard");
+    },
+    [setSelectedOrg, router]
+  );
 
   const { mutate, isLoading } = useMutation(handleCreateOrg);
 
@@ -68,7 +79,7 @@ const DashboardNewOrgPage: NextPage<DashboardPageProps> = ({ orgs }) => {
   });
 
   return (
-    <DashboardLayout orgs={orgs}>
+    <DashboardLayout initialOrgs={orgs}>
       <VStack gap={4} as="form" onSubmit={handleSubmit((data) => mutate(data))}>
         {/* <VStack gap={2}>
           <Avatar src={logoUrl} />

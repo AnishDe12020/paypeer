@@ -28,7 +28,14 @@ const ReactUIWalletModalProviderDynamic = dynamic(
   { ssr: false }
 );
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function App({
   Component,
