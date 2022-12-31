@@ -55,6 +55,7 @@ model Transaction {
     createdAt      DateTime     @default(now())
     amount         BigInt
     tokenPubkey    String
+    reference      String
     signature      String
     customerPubkey String
     messsage       String?

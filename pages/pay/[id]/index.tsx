@@ -16,28 +16,40 @@ import { encodeURL, TransactionRequestURLFields } from "@solana/pay";
 import { Keypair } from "@solana/web3.js";
 import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import BaseLayout from "../../src/layouts/BaseLayout";
-import { prisma } from "../../src/lib/db";
+import { useMemo, useState } from "react";
+import useTransactionListener from "../../../src/hooks/useTransactionListener";
+import BaseLayout from "../../../src/layouts/BaseLayout";
+import { prisma } from "../../../src/lib/db";
+import { TxStatus } from "../../../src/types/pay";
 
 interface PayPageProps {
   org: Organization;
 }
 
-enum TxStatus {
-  PENDING = "pending",
-  SUCCESS = "success",
-  ERROR = "error",
-}
-
 const PayPage: NextPage<PayPageProps> = ({ org }) => {
   const [amount, setAmount] = useState<string | undefined>();
   const [message, setMessage] = useState<string | undefined>();
-  const [reference, setReference] = useState<string | undefined>();
   const [txStatus, setTxStatus] = useState<TxStatus>();
 
   const toast = useToast();
   const router = useRouter();
+
+  const reference = useMemo(() => Keypair.generate().publicKey, []);
+
+  useTransactionListener(
+    reference,
+    txStatus,
+    org.fundsPubkey,
+    amount,
+    setTxStatus,
+    () => {
+      // router.push(`/pay/${org.id}/success`);
+    },
+
+    () => {
+      // router.push(`/pay/${org.id}/fail`);
+    }
+  );
 
   const pay = async () => {
     if (!amount) {
@@ -51,17 +63,13 @@ const PayPage: NextPage<PayPageProps> = ({ org }) => {
       return;
     }
 
-    const ref = Keypair.generate().publicKey.toString();
-
-    setReference(ref);
-
     const txApiParams = new URLSearchParams();
     if (router.query.cluster) {
       txApiParams.append("cluster", router.query.cluster as string);
     } else {
       console.error("Cluster not specified");
     }
-    txApiParams.append("reference", ref);
+    txApiParams.append("reference", reference.toString());
     txApiParams.append("amount", amount);
     if (message) {
       txApiParams.append("message", message);
@@ -125,6 +133,14 @@ const PayPage: NextPage<PayPageProps> = ({ org }) => {
           <HStack gap={6}>
             <Text>Waiting for payment...</Text> <Spinner />
           </HStack>
+        )}
+
+        {txStatus === TxStatus.SUCCESS && (
+          <Text textAlign="center">Payment successful!</Text>
+        )}
+
+        {txStatus === TxStatus.ERROR && (
+          <Text textAlign="center">Payment failed.</Text>
         )}
       </VStack>
     </BaseLayout>
