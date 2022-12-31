@@ -67,12 +67,16 @@ export async function validateTransfer(
 
   let transferred: boolean = false;
 
+  console.log("before for loop");
+
   for (const instruction of instructions) {
     if (splToken) {
       const recipientATA = await getAssociatedTokenAddress(splToken, recipient);
       const accountIndex = message.accountKeys.findIndex((pubkey) =>
         pubkey.equals(recipientATA)
       );
+
+      console.log("accountIndex: " + accountIndex);
 
       const decodedInstruction = decodeInstruction(instruction);
       if (

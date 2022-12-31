@@ -1,9 +1,5 @@
-import { User, Store } from "@prisma/client";
+import { Organization, Transaction } from "@prisma/client";
 
-export type StoreWithOwner = Store & {
-  owner: User;
-};
-
-export type StoresQuery = {
-  data: StoreWithOwner[];
+export type TransactionWithOrganization = Transaction & {
+  organization: Organization;
 };

@@ -14,7 +14,7 @@ export default function useTransactionListener(
   amount: string | undefined,
 
   setTxStatus: (txStatus: TxStatus) => void,
-  onSuccess?: () => void,
+  onSuccess?: (signature: string, customerPubkey: string) => void,
   onFail?: () => void
 ) {
   const { connection } = useConnection();
@@ -55,7 +55,7 @@ export default function useTransactionListener(
           response.transaction.message.accountKeys[0].toString();
 
         setTxStatus(TxStatus.SUCCESS);
-        onSuccess?.();
+        onSuccess?.(signatureInfo.signature, customerPubkey);
       } catch (e) {
         if (e instanceof FindReferenceError) {
           // No transaction found yet, ignore this error

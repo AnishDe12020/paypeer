@@ -14,9 +14,11 @@ import {
 import { Organization } from "@prisma/client";
 import { encodeURL, TransactionRequestURLFields } from "@solana/pay";
 import { Keypair } from "@solana/web3.js";
+import axios from "axios";
 import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
+import useCluster from "../../../src/hooks/useCluster";
 import useTransactionListener from "../../../src/hooks/useTransactionListener";
 import BaseLayout from "../../../src/layouts/BaseLayout";
 import { prisma } from "../../../src/lib/db";
@@ -33,6 +35,7 @@ const PayPage: NextPage<PayPageProps> = ({ org }) => {
 
   const toast = useToast();
   const router = useRouter();
+  const { usdcAddress } = useCluster();
 
   const reference = useMemo(() => Keypair.generate().publicKey, []);
 
@@ -42,12 +45,21 @@ const PayPage: NextPage<PayPageProps> = ({ org }) => {
     org.fundsPubkey,
     amount,
     setTxStatus,
-    () => {
-      // router.push(`/pay/${org.id}/success`);
+    async (signature, customerPubkey) => {
+      const tx = await axios.put("/api/transactions", {
+        organizationId: org.id,
+        signature,
+        reference: reference.toString(),
+        amount,
+        tokenPubkey: usdcAddress.toString(),
+        customerPubkey: customerPubkey,
+      });
+
+      router.push(`/pay/${org.id}/success?txId=${tx.data.id}`);
     },
 
     () => {
-      // router.push(`/pay/${org.id}/fail`);
+      router.push(`/pay/${org.id}/fail`);
     }
   );
 
