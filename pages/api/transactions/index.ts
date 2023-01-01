@@ -55,7 +55,7 @@ const handleGetTransactions = async (
       return res.status(404).json({ message: "Not found" });
     }
 
-    const transactions = prisma.transaction.findMany({
+    const transactions = await prisma.transaction.findMany({
       where: {
         organizationId: req.query.organizationId as string,
       },
