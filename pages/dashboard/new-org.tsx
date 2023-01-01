@@ -1,13 +1,9 @@
 import { GetServerSideProps, NextPage } from "next";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import {
-  Avatar,
-  Box,
   FormControl,
   FormLabel,
-  Text,
   VStack,
-  chakra,
   Button,
   Input,
   FormHelperText,
@@ -18,13 +14,8 @@ import { unstable_getServerSession } from "next-auth";
 import { prisma } from "../../src/lib/db";
 import { Organization } from "@prisma/client";
 import { useCallback, useState } from "react";
-import { ArrowUpIcon } from "@chakra-ui/icons";
 
-import { useDropzone } from "react-dropzone";
-import FileUpload from "../../src/components/FileUpload";
 import { useForm } from "react-hook-form";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { freezeAccountInstructionData } from "@solana/spl-token";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { useMutation } from "react-query";

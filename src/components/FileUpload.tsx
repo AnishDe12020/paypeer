@@ -1,17 +1,6 @@
-import {
-  Input,
-  FormControl,
-  FormLabel,
-  InputGroup,
-  InputLeftElement,
-  FormErrorMessage,
-  Icon,
-  Button,
-  Text,
-} from "@chakra-ui/react";
-import { useController } from "react-hook-form";
+import { FormControl, InputGroup, Icon, Button } from "@chakra-ui/react";
 import { ChangeEvent, useRef, useState } from "react";
-import { Upload } from "react-feather";
+import { Upload } from "lucide-react";
 import axios from "axios";
 
 interface FileUploadProps {

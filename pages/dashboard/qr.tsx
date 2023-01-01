@@ -1,4 +1,3 @@
-import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import {
   Flex,
   HStack,
@@ -9,10 +8,6 @@ import {
   Button,
   chakra,
   Icon,
-  FormControl,
-  FormLabel,
-  Input,
-  FormHelperText,
   Spinner,
   Alert,
   AlertIcon,
@@ -32,6 +27,7 @@ import {
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { PublicKey, Transaction } from "@solana/web3.js";
+import { Check, ClipboardCopy } from "lucide-react";
 import { GetServerSideProps, NextPage } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { useCallback, useEffect, useState } from "react";
@@ -39,7 +35,6 @@ import QRCode from "react-qr-code";
 import useCluster from "../../src/hooks/useCluster";
 import useSelectedOrganization from "../../src/hooks/useSelectedOrganization";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
-import MainLayout from "../../src/layouts/MainLayout";
 import { prisma } from "../../src/lib/db";
 import { truncateURL } from "../../src/utils/truncate";
 import { authOptions } from "../api/auth/[...nextauth]";
@@ -259,7 +254,7 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
                   }}
                 >
                   <Icon
-                    as={hasCopied ? CheckIcon : CopyIcon}
+                    as={hasCopied ? Check : ClipboardCopy}
                     aria-label={"Copy URL"}
                     w={4}
                     h={4}

@@ -1,4 +1,3 @@
-import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import {
   Flex,
   HStack,
@@ -31,6 +30,7 @@ import {
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Transaction } from "@solana/web3.js";
+import { Check, ClipboardCopy } from "lucide-react";
 import { NextPage } from "next";
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
@@ -231,7 +231,7 @@ const QRPage: NextPage = () => {
                   }}
                 >
                   <Icon
-                    as={hasCopied ? CheckIcon : CopyIcon}
+                    as={hasCopied ? Check : ClipboardCopy}
                     aria-label={"Copy URL"}
                     w={4}
                     h={4}

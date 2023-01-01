@@ -36,7 +36,7 @@ import Blockies from "react-blockies";
 import { signIn, signOut, useSession } from "next-auth/react";
 import base58 from "bs58";
 import { truncateString } from "../../utils/truncate";
-import { ExternalLink } from "react-feather";
+import { ExternalLink } from "lucide-react";
 
 interface ConnectWalletProps extends ButtonProps {
   callbackUrl?: string;

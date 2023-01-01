@@ -1,4 +1,3 @@
-import { CheckIcon } from "@chakra-ui/icons";
 import {
   HStack,
   Menu,
@@ -16,13 +15,13 @@ import {
   Avatar,
 } from "@chakra-ui/react";
 import { Organization } from "@prisma/client";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import ConnectWallet from "../components/ConnectWallet";
 import { useRouter } from "next/router";
 import useSelectedOrganization from "../hooks/useSelectedOrganization";
 import { getAllOrgs } from "../utils/queries";
 import { useQuery } from "react-query";
-import { Settings } from "react-feather";
+import { Settings, QrCode, Check } from "lucide-react";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -88,7 +87,7 @@ const DashboardLayout = ({ children, initialOrgs }: DashboardLayoutProps) => {
                     >
                       <HStack justifyContent="space-between" gap={2}>
                         <Text>{org.name}</Text>
-                        {selectedOrg?.id === org.id && <CheckIcon />}
+                        {selectedOrg?.id === org.id && <Check />}
                       </HStack>
                     </MenuItem>
                   ))}
@@ -120,7 +119,7 @@ const DashboardLayout = ({ children, initialOrgs }: DashboardLayoutProps) => {
           <Button
             variant="ghost"
             onClick={() => router.push("/dashboard/qr")}
-            leftIcon={<Icon as={Settings} />}
+            leftIcon={<Icon as={QrCode} />}
             mx={4}
           >
             QR Code

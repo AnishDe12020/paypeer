@@ -5,7 +5,6 @@ specifiers:
   '@aws-sdk/s3-request-presigner': ^3.238.0
   '@chakra-ui/anatomy': ^2.1.0
   '@chakra-ui/cli': ^2.2.0
-  '@chakra-ui/icons': ^2.0.13
   '@chakra-ui/react': ^2.4.3
   '@chakra-ui/styled-system': ^2.4.0
   '@chakra-ui/system': ^2.3.4
@@ -42,14 +41,13 @@ specifiers:
   jose: ^4.11.1
   jotai: ^1.12.0
   js-cookie: ^3.0.1
+  lucide-react: 0.105.0-alpha.4
   next: 13.0.6
   next-auth: ^4.18.7
   prisma: ^4.8.0
   react: 18.2.0
   react-blockies: ^1.4.1
   react-dom: 18.2.0
-  react-dropzone: ^14.2.3
-  react-feather: ^2.0.10
   react-hook-form: ^7.40.0
   react-qr-code: ^2.0.10
   react-query: ^3.39.2
@@ -60,7 +58,6 @@ dependencies:
   '@aws-sdk/client-s3': 3.238.0
   '@aws-sdk/s3-request-presigner': 3.238.0
   '@chakra-ui/anatomy': 2.1.0
-  '@chakra-ui/icons': 2.0.13_xivvz2l3eyrkvszadds3phcwaq
   '@chakra-ui/react': 2.4.3_366jsnbj2fqgpp64v3qddukxli
   '@chakra-ui/styled-system': 2.4.0
   '@chakra-ui/system': 2.3.4_dovxhg2tvkkxkdnqyoum6wzcxm
@@ -91,13 +88,12 @@ dependencies:
   jose: 4.11.1
   jotai: 1.12.0_react@18.2.0
   js-cookie: 3.0.1
+  lucide-react: 0.105.0-alpha.4_react@18.2.0
   next: 13.0.6_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.18.7_6jx7hpii6hgsrmhxgqrmo3277u
   react: 18.2.0
   react-blockies: 1.4.1_react@18.2.0
   react-dom: 18.2.0_react@18.2.0
-  react-dropzone: 14.2.3_react@18.2.0
-  react-feather: 2.0.10_react@18.2.0
   react-hook-form: 7.40.0_react@18.2.0
   react-qr-code: 2.0.10_react@18.2.0
   react-query: 3.39.2_biqbaboplfbrettd7655fr4n2y
@@ -1501,17 +1497,6 @@ packages:
       react: '>=18'
     dependencies:
       '@chakra-ui/shared-utils': 2.0.3
-      '@chakra-ui/system': 2.3.4_dovxhg2tvkkxkdnqyoum6wzcxm
-      react: 18.2.0
-    dev: false
-
-  /@chakra-ui/icons/2.0.13_xivvz2l3eyrkvszadds3phcwaq:
-    resolution: {integrity: sha512-86X+NXAr2N/whkp8vNt0Qf5udqSPVc3lAe4U4w7SkSa/+PnDggfAM6Sc5HwLp8Er0h/RF97DuwFi9YZ/ZRJCDA==}
-    peerDependencies:
-      '@chakra-ui/system': '>=2.0.0'
-      react: '>=18'
-    dependencies:
-      '@chakra-ui/icon': 3.0.13_xivvz2l3eyrkvszadds3phcwaq
       '@chakra-ui/system': 2.3.4_dovxhg2tvkkxkdnqyoum6wzcxm
       react: 18.2.0
     dev: false
@@ -5232,11 +5217,6 @@ packages:
     engines: {node: '>=8.0.0'}
     dev: false
 
-  /attr-accept/2.2.2:
-    resolution: {integrity: sha512-7prDjvt9HmqiZ0cl5CRjtS84sEyhsHP2coDkaZKRKVfCDo9s7iw7ChVmar78Gu9pC4SoR/28wFu/G5JJhTnqEg==}
-    engines: {node: '>=4'}
-    dev: false
-
   /available-typed-arrays/1.0.5:
     resolution: {integrity: sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==}
     engines: {node: '>= 0.4'}
@@ -6766,13 +6746,6 @@ packages:
       flat-cache: 3.0.4
     dev: false
 
-  /file-selector/0.6.0:
-    resolution: {integrity: sha512-QlZ5yJC0VxHxQQsQhXvBaC7VRJ2uaxTf+Tfpu4Z/OcVQJVpZO+DGU0rkoVW5ce2SccxugvpBJoMvUs59iILYdw==}
-    engines: {node: '>= 12'}
-    dependencies:
-      tslib: 2.4.1
-    dev: false
-
   /file-uri-to-path/1.0.0:
     resolution: {integrity: sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==}
     dev: false
@@ -8089,6 +8062,14 @@ packages:
       lru-cache: 4.0.2
     dev: false
 
+  /lucide-react/0.105.0-alpha.4_react@18.2.0:
+    resolution: {integrity: sha512-QclWOzKYj7sDW33jTQK4enmxL1LmI2SHFqEEP56EWhvs4mmlbbFe6ALYcdcdGysNISNovEbH5WBHg8tN5DLn0w==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /make-dir/3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
     engines: {node: '>=8'}
@@ -8996,29 +8977,8 @@ packages:
       scheduler: 0.23.0
     dev: false
 
-  /react-dropzone/14.2.3_react@18.2.0:
-    resolution: {integrity: sha512-O3om8I+PkFKbxCukfIR3QAGftYXDZfOE2N1mr/7qebQJHs7U+/RSL/9xomJNpRg9kM5h9soQSdf0Gc7OHF5Fug==}
-    engines: {node: '>= 10.13'}
-    peerDependencies:
-      react: '>= 16.8 || 18.0.0'
-    dependencies:
-      attr-accept: 2.2.2
-      file-selector: 0.6.0
-      prop-types: 15.8.1
-      react: 18.2.0
-    dev: false
-
   /react-fast-compare/3.2.0:
     resolution: {integrity: sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA==}
-    dev: false
-
-  /react-feather/2.0.10_react@18.2.0:
-    resolution: {integrity: sha512-BLhukwJ+Z92Nmdcs+EMw6dy1Z/VLiJTzEQACDUEnWMClhYnFykJCGWQx+NmwP/qQHGX/5CzQ+TGi8ofg2+HzVQ==}
-    peerDependencies:
-      react: '>=16.8.6'
-    dependencies:
-      prop-types: 15.8.1
-      react: 18.2.0
     dev: false
 
   /react-focus-lock/2.9.2_kzbn2opkn2327fwg5yzwzya5o4:
