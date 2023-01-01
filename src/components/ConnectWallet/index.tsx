@@ -1,21 +1,335 @@
 import {
   ButtonProps,
-  chakra,
-  useColorModeValue,
   forwardRef,
+  Menu,
+  MenuButton,
+  Avatar,
+  MenuList,
+  MenuItem,
+  MenuDivider,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  VStack,
+  AvatarGroup,
+  Divider,
+  Text,
+  useDisclosure,
+  Image,
+  chakra,
+  HStack,
+  Collapse,
+  Link,
+  Icon,
 } from "@chakra-ui/react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import {
+  BackpackWalletName,
+  TorusWalletName,
+} from "@solana/wallet-adapter-wallets";
+import axios from "axios";
+import { MouseEventHandler, useCallback } from "react";
+import Blockies from "react-blockies";
+import { signIn, signOut, useSession } from "next-auth/react";
+import base58 from "bs58";
+import { truncateString } from "../../utils/truncate";
+import { ExternalLink } from "lucide-react";
 
-const ConnectWallet = forwardRef<ButtonProps, "button">((props, ref) => {
-  const ChakraConnectWallet = chakra(WalletMultiButton, {
-    baseStyle: {
-      height: "40px",
-      _hover: {
-        bg: useColorModeValue("gray.100", "gray.700"),
+interface ConnectWalletProps extends ButtonProps {
+  callbackUrl?: string;
+}
+
+const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
+  ({ children, callbackUrl, ...otherProps }, ref) => {
+    const {
+      isOpen: isModalOpen,
+      onOpen: onModalOpen,
+      onClose: onModalClose,
+    } = useDisclosure();
+
+    const modalState = useWalletModal();
+    const {
+      wallet,
+      connect,
+      select,
+      publicKey,
+      disconnect,
+      signMessage,
+      wallets,
+    } = useWallet();
+
+    const {
+      isOpen: isCollapsedWalletsOpen,
+      onToggle: onCollapsedWalletsToggle,
+    } = useDisclosure();
+
+    const { data: session } = useSession();
+
+    const ChakraBlockies = chakra(Blockies, {
+      shouldForwardProp: (prop) => prop === "size",
+    });
+
+    const connectWithWallet: MouseEventHandler<HTMLButtonElement> = useCallback(
+      async (e) => {
+        if (e.defaultPrevented) return;
+
+        if (!wallet) {
+          modalState.setVisible(true);
+        } else {
+          connect().catch(() => {});
+        }
       },
-    },
-  });
-  return <ChakraConnectWallet ref={ref} {...props} />;
-});
+      [wallet, connect, modalState]
+    );
+
+    const connectWithBackpack: MouseEventHandler<HTMLButtonElement> =
+      useCallback(
+        async (e) => {
+          if (e.defaultPrevented) return;
+
+          select(BackpackWalletName);
+        },
+        [select]
+      );
+
+    const connectWithTorus: MouseEventHandler<HTMLButtonElement> = useCallback(
+      async (e) => {
+        if (e.defaultPrevented) return;
+
+        select(TorusWalletName);
+      },
+      [select]
+    );
+
+    const logout: MouseEventHandler<HTMLButtonElement> = useCallback(
+      async (e) => {
+        if (e.defaultPrevented) return;
+
+        await disconnect();
+
+        await signOut();
+      },
+      [disconnect]
+    );
+
+    const login = useCallback(async () => {
+      const res = await axios.get("/api/nonce");
+
+      if (res.status != 200) {
+        console.error("failed to fetch nonce");
+        return;
+      }
+
+      const { nonce } = res.data;
+
+      const message = `Sign this message for authenticating with your wallet. Nonce: ${nonce}`;
+      const encodedMessage = new TextEncoder().encode(message);
+
+      if (!signMessage) {
+        console.error("signMessage is not defined");
+        return;
+      }
+
+      const signedMessage = await signMessage(encodedMessage);
+
+      signIn("credentials", {
+        publicKey: publicKey?.toBase58(),
+        signature: base58.encode(signedMessage),
+        callbackUrl: callbackUrl ?? `${window.location.origin}/`,
+      });
+    }, [signMessage, publicKey, callbackUrl]);
+
+    return publicKey && session ? (
+      <Menu>
+        <MenuButton
+          as={Button}
+          variant="ghost"
+          h="fit-content"
+          minW="36"
+          py={2}
+        >
+          <HStack gap={2}>
+            <ChakraBlockies
+              size={8}
+              rounded="full"
+              seed={publicKey.toBase58()}
+            />
+            <Text fontSize="xs">{truncateString(publicKey.toBase58())}</Text>
+          </HStack>
+        </MenuButton>
+        <MenuList background="brand.primary">
+          <MenuItem
+            background="brand.primary"
+            _hover={{
+              background: "brand.secondary",
+            }}
+          >
+            Account
+          </MenuItem>
+          <MenuDivider />
+          <MenuItem
+            background="brand.primary"
+            _hover={{
+              background: "brand.secondary",
+            }}
+            textColor="red.500"
+            onClick={logout}
+          >
+            Logout
+          </MenuItem>
+        </MenuList>
+      </Menu>
+    ) : (
+      <>
+        <Button w="40" onClick={onModalOpen} {...otherProps}>
+          {children || "Get Started"}
+        </Button>
+
+        <Modal isOpen={isModalOpen} onClose={onModalClose} size="xs">
+          <ModalOverlay />
+          <ModalContent>
+            <ModalBody p={2}>
+              <VStack>
+                {publicKey ? (
+                  <Button onClick={login}>Sign Message</Button>
+                ) : (
+                  <>
+                    <VStack my={4} gap={4}>
+                      {wallets.filter(
+                        (wallet) => wallet.readyState === "Installed"
+                      ).length > 0 ? (
+                        wallets
+                          .filter((wallet) => wallet.readyState === "Installed")
+                          .map((wallet) => (
+                            <Button
+                              key={wallet.adapter.name}
+                              onClick={() => select(wallet.adapter.name)}
+                              leftIcon={
+                                <Image
+                                  src={wallet.adapter.icon}
+                                  alt={wallet.adapter.name}
+                                  h={6}
+                                  w={6}
+                                />
+                              }
+                            >
+                              <Text>{wallet.adapter.name}</Text>
+                            </Button>
+                          ))
+                      ) : (
+                        <>
+                          <Text mx={4} textAlign="center">
+                            Looks like you don&apos;t have a Solana wallet
+                            installed. We recommend using{" "}
+                            <Link
+                              href="https://phantom.app"
+                              color="purple.400"
+                              _hover={{ color: "purple.500" }}
+                            >
+                              Phantom
+                            </Link>{" "}
+                            if you are just starting out.
+                          </Text>
+
+                          <Button
+                            isExternal
+                            href="https://phantom.app"
+                            as={Link}
+                            leftIcon={
+                              <Avatar src="/assets/phantom.png" h={5} w={5} />
+                            }
+                            rightIcon={<Icon as={ExternalLink} />}
+                          >
+                            Get Phantom
+                          </Button>
+
+                          <Text mx={4} textAlign="center">
+                            Alternatively, click on the button below to login
+                            with Google or email (this uses{" "}
+                            <Link
+                              href="https://tor.us"
+                              color="blue.400"
+                              _hover={{ color: "blue.500" }}
+                            >
+                              Torus
+                            </Link>{" "}
+                            which creates a non-custodial wallet associated to
+                            your login method)
+                          </Text>
+                        </>
+                      )}
+
+                      <Button onClick={onCollapsedWalletsToggle}>
+                        Show unavailable wallets
+                      </Button>
+                      <Collapse in={isCollapsedWalletsOpen} unmountOnExit>
+                        <VStack my={4} gap={4}>
+                          {wallets.filter(
+                            (wallet) => wallet.readyState !== "Installed"
+                          ).length > 0 ? (
+                            wallets
+                              .filter(
+                                (wallet) => wallet.readyState !== "Installed"
+                              )
+                              .map((wallet) => (
+                                <Button
+                                  key={wallet.adapter.name}
+                                  onClick={() => select(wallet.adapter.name)}
+                                  leftIcon={
+                                    <Image
+                                      src={wallet.adapter.icon}
+                                      alt={wallet.adapter.name}
+                                      h={6}
+                                      w={6}
+                                    />
+                                  }
+                                >
+                                  <Text>{wallet.adapter.name}</Text>
+                                </Button>
+                              ))
+                          ) : (
+                            <Text>No unavailable wallets!</Text>
+                          )}
+                        </VStack>
+                      </Collapse>
+                    </VStack>
+                    <Divider />
+                    <Button
+                      onClick={connectWithTorus}
+                      variant="unstyled"
+                      w="full"
+                      _hover={{
+                        background: "brand.secondary",
+                      }}
+                      h="fit-content"
+                      py={4}
+                    >
+                      <VStack gap={4}>
+                        <AvatarGroup>
+                          <Avatar
+                            name="Google"
+                            src="/assets/google.png"
+                            backgroundColor="brand.secondary"
+                          />
+                          <Avatar name="Torus" src="/assets/torus.svg" />
+                        </AvatarGroup>
+                        <Text wordBreak="break-all">
+                          Login with email or Google
+                        </Text>
+                      </VStack>
+                    </Button>
+                  </>
+                )}
+              </VStack>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      </>
+    );
+  }
+);
 
 export default ConnectWallet;
