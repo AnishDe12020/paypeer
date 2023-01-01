@@ -28,12 +28,8 @@ const links: INavLink[] = [
     href: "/",
   },
   {
-    content: "Payment",
-    href: "/payment",
-  },
-  {
-    content: "QR Code",
-    href: "/qr",
+    content: "Dashboard",
+    href: "/dashboard",
   },
 ];
 
