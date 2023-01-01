@@ -87,7 +87,7 @@ const PaymentConfirmedPage: NextPage = () => {
               }}
             >
               <Icon
-                as={hasCopiedReference ? CheckIcon : CopyIcon}
+                as={hasCopiedReference ? Check : ClipboardCopy}
                 aria-label={"Copy Command"}
                 w={4}
                 h={4}
