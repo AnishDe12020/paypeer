@@ -51,7 +51,7 @@ const handleGetTransactions = async (
       },
     });
 
-    if (!organization) {
+    if (!organization?.members?.length) {
       return res.status(404).json({ message: "Not found" });
     }
 
