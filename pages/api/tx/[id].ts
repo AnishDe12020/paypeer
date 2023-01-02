@@ -3,17 +3,31 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { Connection, PublicKey } from "@solana/web3.js";
 
-import { getRpc, getUSDCAddress } from "../../src/utils/cluster";
+import { getRpc, getUSDCAddress } from "../../../src/utils/cluster";
 import { createTransfer } from "@solana/pay";
 import BigNumber from "bignumber.js";
+import { prisma } from "../../../src/lib/db";
 
 // const MERCHANT_WALLET = new PublicKey(process.env.MERCHANT_WALLET as string);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const org = await prisma.organization.findUnique({
+    where: {
+      id: req.query.id as string,
+    },
+  });
+
+  if (!org) {
+    res.status(404).json({
+      error: "Organization not found",
+    });
+    return;
+  }
+
   switch (req.method) {
     case "GET":
-      const label = req.query.shopName ?? "Test Merchant";
-      const icon = req.query.shopLogo ?? "https://tenor.com/bKSc4.gif";
+      const label = org.name;
+      const icon = org.logoUrl;
 
       res.status(200).send({
         label,
@@ -56,14 +70,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return;
       }
 
-      const merchantAddress = req.query.merchantAddress;
-      if (!merchantAddress) {
-        res.status(400).json({
-          error: "Missing merchantAddress parameter",
-        });
-        return;
-      }
-
       const cluster = req.query.cluster;
       if (!cluster) {
         res.status(400).json({
@@ -73,7 +79,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
 
       const buyerPubkey = new PublicKey(buyerAccount);
-      const merchantPubkey = new PublicKey(merchantAddress);
+      const merchantPubkey = new PublicKey(org.fundsPubkey);
 
       const usdcAddress = getUSDCAddress(cluster as string);
 

@@ -5,6 +5,7 @@ import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
   GlowWalletAdapter,
+  TorusWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
 import {
   ConnectionProvider,
@@ -18,13 +19,28 @@ import dynamic from "next/dynamic";
 import "../src/styles/wallet-adapter.css";
 import useCluster from "../src/hooks/useCluster";
 
+import { QueryClient, QueryClientProvider } from "react-query";
+import { SessionProvider } from "next-auth/react";
+
 const ReactUIWalletModalProviderDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletModalProvider,
   { ssr: false }
 );
 
-export default function App({ Component, pageProps }: AppProps) {
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   const { rpc } = useCluster();
 
   const wallets = useMemo(
@@ -32,6 +48,7 @@ export default function App({ Component, pageProps }: AppProps) {
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
       new GlowWalletAdapter(),
+      new TorusWalletAdapter(),
     ],
     []
   );
@@ -41,7 +58,11 @@ export default function App({ Component, pageProps }: AppProps) {
       <ChakraProvider theme={theme}>
         <WalletProvider wallets={wallets} autoConnect>
           <ReactUIWalletModalProviderDynamic>
-            <Component {...pageProps} />
+            <QueryClientProvider client={queryClient}>
+              <SessionProvider session={session}>
+                <Component {...pageProps} />
+              </SessionProvider>
+            </QueryClientProvider>
           </ReactUIWalletModalProviderDynamic>
         </WalletProvider>
       </ChakraProvider>

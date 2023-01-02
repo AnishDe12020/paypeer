@@ -10,12 +10,12 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import NextLink from "next/link";
 import { useRef } from "react";
 import useCluster from "../../hooks/useCluster";
 import { Cluster } from "../../types/cluster";
 import { Rotate } from "hamburger-react";
+import ConnectWallet from "../ConnectWallet";
 
 interface INavLink {
   content: string;
@@ -28,12 +28,8 @@ const links: INavLink[] = [
     href: "/",
   },
   {
-    content: "Payment",
-    href: "/payment",
-  },
-  {
-    content: "QR Code",
-    href: "/qr",
+    content: "Dashboard",
+    href: "/dashboard",
   },
 ];
 
@@ -107,16 +103,17 @@ const Header = () => {
           </ListItem>
         ))}
       </HStack>
-      <HStack>
-        <WalletMultiButton />
-
+      <HStack gap={4}>
         <Select
           onChange={(e) => setCluster(e.target.value as Cluster)}
           value={cluster}
+          h="8"
         >
           <option value="mainnet-beta">Mainnet</option>
           <option value="devnet">Devnet</option>
         </Select>
+
+        <ConnectWallet />
       </HStack>
     </HStack>
   );

@@ -1,4 +1,3 @@
-import { CheckIcon, CopyIcon } from "@chakra-ui/icons";
 import {
   Container,
   Heading,
@@ -14,6 +13,7 @@ import {
   IconButton,
   Tooltip,
 } from "@chakra-ui/react";
+import { Check, ClipboardCopy } from "lucide-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -86,7 +86,7 @@ const PaymentConfirmedPage: NextPage = () => {
               }}
             >
               <Icon
-                as={hasCopiedReference ? CheckIcon : CopyIcon}
+                as={hasCopiedReference ? Check : ClipboardCopy}
                 aria-label={"Copy Command"}
                 w={4}
                 h={4}
@@ -130,7 +130,7 @@ const PaymentConfirmedPage: NextPage = () => {
                   }}
                   icon={
                     <Icon
-                      as={hasCopiedSignature ? CheckIcon : CopyIcon}
+                      as={hasCopiedSignature ? Check : ClipboardCopy}
                       aria-label={"Copy Command"}
                       w={4}
                       h={4}

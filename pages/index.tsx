@@ -5,7 +5,7 @@ import MainLayout from "../src/layouts/MainLayout";
 const HomePage: NextPage = () => {
   return (
     <MainLayout>
-      <Heading>Solana Pay POS</Heading>
+      <Heading>PayPeer</Heading>
       <Text>
         A No-Code POS that helps merchants accept payments via Solana Pay
       </Text>

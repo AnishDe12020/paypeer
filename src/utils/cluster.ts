@@ -31,3 +31,14 @@ export const getUSDCAddress = (cluster: string) => {
       return USDC_MINT_DEVNET;
   }
 };
+
+export const getWeb3authChainId = (cluster: string) => {
+  switch (cluster) {
+    case Cluster.MainnetBeta:
+      return "0x1";
+    case Cluster.Devnet:
+      return "0x3";
+    default:
+      return "0x3";
+  }
+};

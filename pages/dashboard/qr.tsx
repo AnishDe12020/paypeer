@@ -8,10 +8,6 @@ import {
   Button,
   chakra,
   Icon,
-  FormControl,
-  FormLabel,
-  Input,
-  FormHelperText,
   Spinner,
   Alert,
   AlertIcon,
@@ -20,6 +16,7 @@ import {
   useToast,
   Heading,
 } from "@chakra-ui/react";
+import { Organization } from "@prisma/client";
 import {
   createAssociatedTokenAccountInstruction,
   getAccount,
@@ -29,16 +26,24 @@ import {
 } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { Transaction } from "@solana/web3.js";
+import { PublicKey, Transaction } from "@solana/web3.js";
 import { Check, ClipboardCopy } from "lucide-react";
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
+import { unstable_getServerSession } from "next-auth";
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import useCluster from "../../src/hooks/useCluster";
-import MainLayout from "../../src/layouts/MainLayout";
+import useSelectedOrganization from "../../src/hooks/useSelectedOrganization";
+import DashboardLayout from "../../src/layouts/DashboardLayout";
+import { prisma } from "../../src/lib/db";
 import { truncateURL } from "../../src/utils/truncate";
+import { authOptions } from "../api/auth/[...nextauth]";
 
-const QRPage: NextPage = () => {
+interface DashboardQRPageProps {
+  orgs: Organization[];
+}
+
+const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
   const { publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
   const [size, setSize] = useState(() =>
@@ -46,8 +51,6 @@ const QRPage: NextPage = () => {
       ? 400
       : Math.min(window.screen.availWidth - 160, 400)
   );
-  const [shopName, setShopName] = useState<string | undefined>();
-  const [shopLogo, setShopLogo] = useState<string | undefined>();
   const [hasTokenAccount, setHasTokenAccount] = useState<boolean>();
   const [isLoadingTokenAccount, setIsLoadingTokenAccount] = useState(false);
   const [isCreatingTokenAccount, setIsCreatingTokenAccount] = useState(false);
@@ -56,25 +59,36 @@ const QRPage: NextPage = () => {
 
   const { cluster, usdcAddress } = useCluster();
 
+  const { selectedOrg } = useSelectedOrganization();
+
   const toast = useToast();
 
   useEffect(() => {
-    if (publicKey) {
-      setValue(
-        `${
-          process.env.NEXT_PUBLIC_VERCEL_URL || process.env.NEXT_PUBLIC_BASE_URL
-        }/qr/${publicKey}?cluster=${cluster}${
-          shopName ? `&shopName=${shopName}` : ""
-        }`
-      );
+    if (!selectedOrg) {
+      toast({
+        title: "No organization selected",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
     }
-  }, [publicKey, setValue, shopName, shopLogo, cluster]);
+
+    setValue(
+      `${
+        process.env.NEXT_PUBLIC_VERCEL_URL || process.env.NEXT_PUBLIC_BASE_URL
+      }/pay/${selectedOrg.id}?cluster=${cluster}`
+    );
+  }, [setValue, cluster, selectedOrg, toast]);
 
   useEffect(() => {
     const checkForTokenAccount = async () => {
       setIsLoadingTokenAccount(true);
-      if (!publicKey || !usdcAddress) return;
-      const ata = await getAssociatedTokenAddress(usdcAddress, publicKey);
+      if (!selectedOrg?.fundsPubkey || !usdcAddress) return;
+      const ata = await getAssociatedTokenAddress(
+        usdcAddress,
+        new PublicKey(selectedOrg.fundsPubkey)
+      );
       try {
         const tokenAccount = await getAccount(connection, ata);
         if (!tokenAccount.isInitialized) {
@@ -106,7 +120,7 @@ const QRPage: NextPage = () => {
     };
 
     checkForTokenAccount();
-  }, [publicKey, connection, usdcAddress, toast]);
+  }, [selectedOrg?.fundsPubkey, connection, usdcAddress, toast]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -119,17 +133,20 @@ const QRPage: NextPage = () => {
 
   const createTokenAccount = useCallback(async () => {
     setIsCreatingTokenAccount(true);
-    if (!publicKey || !usdcAddress) return;
+    if (!selectedOrg?.fundsPubkey || !usdcAddress) return;
 
     const usdcMint = await getMint(connection, usdcAddress);
-    const ata = await getAssociatedTokenAddress(usdcAddress, publicKey);
+    const ata = await getAssociatedTokenAddress(
+      usdcAddress,
+      new PublicKey(selectedOrg.fundsPubkey)
+    );
 
     const tx = new Transaction();
 
     const ix = createAssociatedTokenAccountInstruction(
-      publicKey,
+      new PublicKey(selectedOrg.fundsPubkey),
       ata,
-      publicKey,
+      new PublicKey(selectedOrg.fundsPubkey),
       usdcMint.address
     );
 
@@ -169,10 +186,16 @@ const QRPage: NextPage = () => {
     } finally {
       setIsCreatingTokenAccount(false);
     }
-  }, [connection, publicKey, usdcAddress, sendTransaction, toast]);
+  }, [
+    connection,
+    selectedOrg?.fundsPubkey,
+    usdcAddress,
+    sendTransaction,
+    toast,
+  ]);
 
   return (
-    <MainLayout>
+    <DashboardLayout initialOrgs={orgs}>
       <VStack gap={8}>
         {publicKey ? (
           isLoadingTokenAccount ? (
@@ -239,18 +262,6 @@ const QRPage: NextPage = () => {
                   />
                 </chakra.span>
               </Button>
-
-              <VStack gap={4}>
-                <FormControl>
-                  <FormLabel>Shop Name</FormLabel>
-                  <Input
-                    placeholder="ACME Inc."
-                    onChange={(e) => setShopName(e.target.value)}
-                    value={shopName}
-                  />
-                  <FormHelperText>(Optional)</FormHelperText>
-                </FormControl>
-              </VStack>
             </VStack>
           ) : (
             <Alert status="error" rounded="lg">
@@ -284,8 +295,41 @@ const QRPage: NextPage = () => {
           <WalletMultiButton />
         )}
       </VStack>
-    </MainLayout>
+    </DashboardLayout>
   );
 };
 
-export default QRPage;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions(context.req)
+  );
+
+  if (!session?.user?.name) {
+    return {
+      redirect: {
+        destination: "/auth",
+        permanent: false,
+      },
+    };
+  }
+
+  const orgs = await prisma.organization.findMany({
+    where: {
+      members: {
+        some: {
+          profile: {
+            pubkey: session.user.name,
+          },
+        },
+      },
+    },
+  });
+
+  return {
+    props: { orgs: JSON.parse(JSON.stringify(orgs)) },
+  };
+};
+
+export default DashboardQRPage;
