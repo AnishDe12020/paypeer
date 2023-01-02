@@ -22,6 +22,7 @@ import useSelectedOrganization from "../hooks/useSelectedOrganization";
 import { getAllOrgs } from "../utils/queries";
 import { useQuery } from "react-query";
 import { Settings, QrCode, Check } from "lucide-react";
+import Avvvatars from "avvvatars-react";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -62,11 +63,16 @@ const DashboardLayout = ({ children, initialOrgs }: DashboardLayoutProps) => {
                   as={Button}
                   size="sm"
                   leftIcon={
-                    <Avatar
-                      src={selectedOrg?.logoUrl ?? undefined}
-                      h={5}
-                      w={5}
-                    />
+                    selectedOrg &&
+                    (selectedOrg?.logoUrl ? (
+                      <Avatar src={selectedOrg.logoUrl} h={5} w={5} />
+                    ) : (
+                      <Avvvatars
+                        style="shape"
+                        value={selectedOrg.name}
+                        size={20}
+                      />
+                    ))
                   }
                   mx={4}
                 >
@@ -82,7 +88,11 @@ const DashboardLayout = ({ children, initialOrgs }: DashboardLayoutProps) => {
                       }}
                       onClick={() => setSelectedOrg(org)}
                       icon={
-                        <Avatar src={org?.logoUrl ?? undefined} h={5} w={5} />
+                        org.logoUrl ? (
+                          <Avatar src={org.logoUrl} h={5} w={5} />
+                        ) : (
+                          <Avvvatars style="shape" value={org.name} size={20} />
+                        )
                       }
                     >
                       <HStack justifyContent="space-between" gap={2}>

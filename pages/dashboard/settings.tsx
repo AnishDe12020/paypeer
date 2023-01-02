@@ -9,6 +9,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Organization } from "@prisma/client";
+import Avvvatars from "avvvatars-react";
 import axios from "axios";
 import { GetServerSideProps, NextPage } from "next";
 import { unstable_getServerSession } from "next-auth";
@@ -93,8 +94,15 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ orgs }) => {
     <DashboardLayout initialOrgs={orgs}>
       <VStack gap={4} as="form" onSubmit={handleSubmit((data) => mutate(data))}>
         <VStack gap={2}>
-          <Avatar src={logoUrl} />
-
+          {logoUrl ? (
+            <Avatar src={logoUrl} />
+          ) : (
+            <Avvvatars
+              style="shape"
+              value={selectedOrg?.name ?? "Org"}
+              size={48}
+            />
+          )}
           <FileUpload
             name="logo"
             acceptedFileTypes="image/*"

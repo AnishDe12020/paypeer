@@ -32,11 +32,11 @@ import {
 } from "@solana/wallet-adapter-wallets";
 import axios from "axios";
 import { MouseEventHandler, useCallback, useState } from "react";
-import Blockies from "react-blockies";
 import { signIn, signOut, useSession } from "next-auth/react";
 import base58 from "bs58";
 import { truncateString } from "../../utils/truncate";
 import { ExternalLink } from "lucide-react";
+import Avvvatars from "avvvatars-react";
 
 interface ConnectWalletProps extends ButtonProps {
   callbackUrl?: string;
@@ -69,10 +69,6 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
     const [isSigningIn, setIsSigningIn] = useState(false);
 
     const { data: session } = useSession();
-
-    const ChakraBlockies = chakra(Blockies, {
-      shouldForwardProp: (prop) => prop === "size",
-    });
 
     const connectWithWallet: MouseEventHandler<HTMLButtonElement> = useCallback(
       async (e) => {
@@ -157,11 +153,7 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
           py={2}
         >
           <HStack gap={2}>
-            <ChakraBlockies
-              size={8}
-              rounded="full"
-              seed={publicKey.toBase58()}
-            />
+            <Avvvatars style="shape" border value={publicKey.toBase58()} />
             <Text fontSize="xs">{truncateString(publicKey.toBase58())}</Text>
           </HStack>
         </MenuButton>
