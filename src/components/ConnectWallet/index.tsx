@@ -31,7 +31,7 @@ import {
   TorusWalletName,
 } from "@solana/wallet-adapter-wallets";
 import axios from "axios";
-import { MouseEventHandler, useCallback } from "react";
+import { MouseEventHandler, useCallback, useState } from "react";
 import Blockies from "react-blockies";
 import { signIn, signOut, useSession } from "next-auth/react";
 import base58 from "bs58";
@@ -65,6 +65,8 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
       isOpen: isCollapsedWalletsOpen,
       onToggle: onCollapsedWalletsToggle,
     } = useDisclosure();
+
+    const [isSigningIn, setIsSigningIn] = useState(false);
 
     const { data: session } = useSession();
 
@@ -116,6 +118,7 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
     );
 
     const login = useCallback(async () => {
+      setIsSigningIn(true);
       const res = await axios.get("/api/nonce");
 
       if (res.status != 200) {
@@ -135,11 +138,13 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
 
       const signedMessage = await signMessage(encodedMessage);
 
-      signIn("credentials", {
+      await signIn("credentials", {
         publicKey: publicKey?.toBase58(),
         signature: base58.encode(signedMessage),
         callbackUrl: callbackUrl ?? `${window.location.origin}/`,
       });
+
+      setIsSigningIn(false);
     }, [signMessage, publicKey, callbackUrl]);
 
     return publicKey && session ? (
@@ -194,7 +199,9 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
             <ModalBody p={2}>
               <VStack>
                 {publicKey ? (
-                  <Button onClick={login}>Sign Message</Button>
+                  <Button onClick={login} isLoading={isSigningIn}>
+                    Sign Message
+                  </Button>
                 ) : (
                   <>
                     <VStack my={4} gap={4}>
