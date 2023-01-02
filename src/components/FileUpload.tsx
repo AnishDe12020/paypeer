@@ -41,7 +41,9 @@ const FileUpload = ({
         },
       });
 
-      const puburl = `https://${process.env.NEXT_PUBLIC_AWS_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${file.name}`;
+      const puburl = `https://${process.env.NEXT_PUBLIC_AWS_BUCKET_NAME}.s3.${
+        process.env.NEXT_PUBLIC_AWS_REGION
+      }.amazonaws.com/${filename ?? file.name}`;
 
       onUpload && onUpload(puburl);
 
