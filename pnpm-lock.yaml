@@ -52,6 +52,7 @@ specifiers:
   react-query: ^3.39.2
   tweetnacl: ^1.0.3
   typescript: 4.9.4
+  use-async-memo: ^1.2.4
 
 dependencies:
   '@aws-sdk/client-s3': 3.238.0
@@ -98,6 +99,7 @@ dependencies:
   react-query: 3.39.2_biqbaboplfbrettd7655fr4n2y
   tweetnacl: 1.0.3
   typescript: 4.9.4
+  use-async-memo: 1.2.4_react@18.2.0
 
 devDependencies:
   '@chakra-ui/cli': 2.2.0_73migmg77y47omm5253gettkxi
@@ -10013,6 +10015,14 @@ packages:
     dependencies:
       prepend-http: 2.0.0
     dev: true
+
+  /use-async-memo/1.2.4_react@18.2.0:
+    resolution: {integrity: sha512-J4RLCD/Gxh3VYRldO6xLLYuqwyOfXhFOqlVNCAAA+kvhE2DNsUB6YLJKvSJ8GCS3aiSiI8jJ/AvI7GYWCa/Djw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /use-callback-ref/1.3.0_kzbn2opkn2327fwg5yzwzya5o4:
     resolution: {integrity: sha512-3FT9PRuRdbB9HfXhEq35u4oZkvpJ5kuYbpqhCfmiZyReuRgpnhDlbr2ZEnnuS0RrJAPn6l23xjFg9kpDM+Ms7w==}

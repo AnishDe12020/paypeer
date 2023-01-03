@@ -1,28 +1,15 @@
 import {
-  HStack,
-  Menu,
-  MenuButton,
-  Spinner,
-  VStack,
-  Text,
-  MenuItem,
-  MenuList,
-  Button,
   Box,
-  Divider,
-  MenuDivider,
-  Icon,
-  Avatar,
+  Drawer,
+  DrawerContent,
+  DrawerOverlay,
+  HStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { Organization } from "@prisma/client";
-import { ReactNode, useEffect } from "react";
-import ConnectWallet from "../components/ConnectWallet";
-import { useRouter } from "next/router";
-import useSelectedOrganization from "../hooks/useSelectedOrganization";
-import { getAllOrgs } from "../utils/queries";
-import { useQuery } from "react-query";
-import { Settings, QrCode, Check } from "lucide-react";
-import Avvvatars from "avvvatars-react";
+import { Rotate } from "hamburger-react";
+import { ReactNode, useRef } from "react";
+import Sidebar from "../components/Sidebar";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -30,126 +17,52 @@ interface DashboardLayoutProps {
 }
 
 const DashboardLayout = ({ children, initialOrgs }: DashboardLayoutProps) => {
-  const { selectedOrg, setSelectedOrg } = useSelectedOrganization();
-
-  const { data: orgs } = useQuery<Organization[]>("orgs", getAllOrgs, {
-    initialData: initialOrgs,
-  });
-
-  useEffect(() => {
-    if (orgs && orgs.length > 0 && !selectedOrg) {
-      setSelectedOrg(orgs[0]);
-    }
-  }, [selectedOrg, orgs, setSelectedOrg]);
-
-  const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <HStack h="100vh" alignItems="start">
-      <VStack
-        as="nav"
-        h="full"
-        w="48"
-        py={8}
-        borderRight="1px solid"
-        borderRightColor="brand.tertiary"
-        justifyContent="space-between"
+    <Box minH="100vh">
+      <Sidebar
+        initialOrgs={initialOrgs}
+        display={{ base: "none", md: "flex" }}
+      />
+
+      <Drawer
+        isOpen={isOpen}
+        onClose={onClose}
+        placement="left"
+        size="full"
+        initialFocusRef={closeButtonRef}
       >
-        <VStack spacing={4}>
-          {orgs ? (
-            orgs.length > 0 ? (
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  size="sm"
-                  leftIcon={
-                    selectedOrg &&
-                    (selectedOrg?.logoUrl ? (
-                      <Avatar src={selectedOrg.logoUrl} h={5} w={5} />
-                    ) : (
-                      <Avvvatars
-                        style="shape"
-                        value={selectedOrg.name}
-                        size={20}
-                      />
-                    ))
-                  }
-                  mx={4}
-                >
-                  {selectedOrg?.name}
-                </MenuButton>
-                <MenuList background="brand.primary">
-                  {orgs.map((org) => (
-                    <MenuItem
-                      key={org.id}
-                      background="brand.primary"
-                      _hover={{
-                        background: "brand.secondary",
-                      }}
-                      onClick={() => setSelectedOrg(org)}
-                      icon={
-                        org.logoUrl ? (
-                          <Avatar src={org.logoUrl} h={5} w={5} />
-                        ) : (
-                          <Avvvatars style="shape" value={org.name} size={20} />
-                        )
-                      }
-                    >
-                      <HStack justifyContent="space-between" gap={2}>
-                        <Text>{org.name}</Text>
-                        {selectedOrg?.id === org.id && <Check />}
-                      </HStack>
-                    </MenuItem>
-                  ))}
-
-                  <MenuDivider />
-
-                  <MenuItem
-                    background="brand.primary"
-                    _hover={{
-                      background: "brand.secondary",
-                    }}
-                    onClick={() => router.push("/dashboard/new-org")}
-                  >
-                    New Organization
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            ) : (
-              <Button onClick={() => router.push("/dashboard/new-org")}>
-                New Organization
-              </Button>
-            )
-          ) : (
-            <Spinner />
-          )}
-
-          <Divider />
-
-          <Button
-            variant="ghost"
-            onClick={() => router.push("/dashboard/qr")}
-            leftIcon={<Icon as={QrCode} />}
-            mx={4}
-          >
-            QR Code
-          </Button>
-        </VStack>
-        <VStack px={4}>
-          <Button
-            variant="ghost"
-            onClick={() => router.push("/dashboard/settings")}
-            leftIcon={<Icon as={Settings} />}
-          >
-            Org Settings
-          </Button>
-          <ConnectWallet />
-        </VStack>
-      </VStack>
-      <Box as="main" py={8} pl={8}>
-        {children}
+        <DrawerContent mt={20} backgroundColor="brand.primary">
+          <Sidebar initialOrgs={initialOrgs} w="full" borderRight="none" />
+        </DrawerContent>
+      </Drawer>
+      <Box ml={{ base: "none", md: 48 }}>
+        <HStack
+          borderBottom="1px solid"
+          borderBottomColor="brand.secondary"
+          height={20}
+          px={8}
+          py={6}
+          display={{ base: "inline-flex", md: "none" }}
+        >
+          <Box>
+            <Rotate
+              toggle={onOpen}
+              toggled={isOpen}
+              direction="right"
+              label="Menu"
+              size={24}
+              rounded
+            />
+          </Box>
+        </HStack>
+        <Box as="main" p={8}>
+          {children}
+        </Box>
       </Box>
-    </HStack>
+    </Box>
   );
 };
 

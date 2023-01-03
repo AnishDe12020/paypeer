@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Cluster } from "../types/cluster";
 import { USDC_MINT_DEVNET, USDC_MINT_MAINNET } from "./constants";
 
@@ -41,4 +42,21 @@ export const getWeb3authChainId = (cluster: string) => {
     default:
       return "0x3";
   }
+};
+
+export const getTokenListUrl = (cluster: string) => {
+  switch (cluster) {
+    case Cluster.MainnetBeta:
+      return "https://cache.jup.ag/tokens";
+    case Cluster.Devnet:
+      return "https://api.jup.ag/api/tokens/devnet";
+    default:
+      return "https://cache.jup.ag/tokens";
+  }
+};
+
+export const getTokenList = async (cluster: string) => {
+  const url = getTokenListUrl(cluster);
+  const { data } = await axios.get(url);
+  return data;
 };

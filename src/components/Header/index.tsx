@@ -41,7 +41,7 @@ const Header = () => {
   return (
     <HStack
       as="nav"
-      px={[2, 12, 24]}
+      px={[4, 12, 24]}
       py={6}
       justifyContent="space-between"
       alignItems="center"
