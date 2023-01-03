@@ -21,7 +21,7 @@ import { useRouter } from "next/router";
 import useSelectedOrganization from "../hooks/useSelectedOrganization";
 import { getAllOrgs } from "../utils/queries";
 import { useQuery } from "react-query";
-import { Settings, QrCode, Check } from "lucide-react";
+import { Settings, QrCode, Check, BarChart2 } from "lucide-react";
 import Avvvatars from "avvvatars-react";
 
 interface DashboardLayoutProps {
@@ -43,6 +43,8 @@ const DashboardLayout = ({ children, initialOrgs }: DashboardLayoutProps) => {
   }, [selectedOrg, orgs, setSelectedOrg]);
 
   const router = useRouter();
+
+  console.log(router.pathname);
 
   return (
     <HStack h="100vh" alignItems="start">
@@ -128,9 +130,22 @@ const DashboardLayout = ({ children, initialOrgs }: DashboardLayoutProps) => {
 
           <Button
             variant="ghost"
+            onClick={() => router.push("/dashboard")}
+            leftIcon={<Icon as={BarChart2} />}
+            mx={4}
+            bgColor={router.pathname === "/dashboard" ? "brand.tertiary" : ""}
+          >
+            Analytics
+          </Button>
+
+          <Button
+            variant="ghost"
             onClick={() => router.push("/dashboard/qr")}
             leftIcon={<Icon as={QrCode} />}
             mx={4}
+            bgColor={
+              router.pathname === "/dashboard/qr" ? "brand.tertiary" : ""
+            }
           >
             QR Code
           </Button>
