@@ -57,14 +57,10 @@ const Sidebar = ({ initialOrgs, ...otherProps }: SidebarProps) => {
       pos="fixed"
       zIndex="sticky"
       alignItems={{ base: "flex-start", md: "center" }}
+      px={{ base: 12, md: 0 }}
       {...otherProps}
     >
-      <VStack
-        spacing={4}
-        alignItems={{ base: "flex-start", md: "center" }}
-        w="full"
-        px={{ base: 12, md: 0 }}
-      >
+      <VStack spacing={8} alignItems="flex-start" w="full">
         {orgs ? (
           orgs.length > 0 ? (
             <Menu>
@@ -133,7 +129,6 @@ const Sidebar = ({ initialOrgs, ...otherProps }: SidebarProps) => {
           <Spinner />
         )}
 
-        <Divider />
         <VStack px={{ base: 0, md: 4 }} spacing={4}>
           <Button
             variant="ghost"
@@ -156,11 +151,7 @@ const Sidebar = ({ initialOrgs, ...otherProps }: SidebarProps) => {
           </Button>
         </VStack>
       </VStack>
-      <VStack
-        px={{ base: 12, md: 4 }}
-        alignItems={{ base: "flex-start", md: "center" }}
-        spacing={4}
-      >
+      <VStack alignItems="flex-start" spacing={4}>
         <Button
           variant="ghost"
           onClick={() => router.push("/dashboard/settings")}

@@ -151,9 +151,15 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
           h="fit-content"
           minW="36"
           py={2}
+          left={-2}
         >
           <HStack gap={2}>
-            <Avvvatars style="shape" border value={publicKey.toBase58()} />
+            <Avvvatars
+              style="shape"
+              size={32}
+              border
+              value={publicKey.toBase58()}
+            />
             <Text fontSize="xs">{truncateString(publicKey.toBase58())}</Text>
           </HStack>
         </MenuButton>
