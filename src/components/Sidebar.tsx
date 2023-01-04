@@ -165,6 +165,9 @@ const Sidebar = ({ initialOrgs, ...otherProps }: SidebarProps) => {
           variant="ghost"
           onClick={() => router.push("/dashboard/settings")}
           leftIcon={<Icon as={Settings} />}
+          bgColor={
+            router.pathname === "/dashboard/settings" ? "brand.tertiary" : ""
+          }
         >
           Org Settings
         </Button>

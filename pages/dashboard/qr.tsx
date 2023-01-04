@@ -133,7 +133,7 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
 
   const createTokenAccount = useCallback(async () => {
     setIsCreatingTokenAccount(true);
-    if (!selectedOrg?.fundsPubkey || !usdcAddress) return;
+    if (!selectedOrg?.fundsPubkey || !usdcAddress || !publicKey) return;
 
     const usdcMint = await getMint(connection, usdcAddress);
     const ata = await getAssociatedTokenAddress(
@@ -144,7 +144,7 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
     const tx = new Transaction();
 
     const ix = createAssociatedTokenAccountInstruction(
-      new PublicKey(selectedOrg.fundsPubkey),
+      new PublicKey(publicKey),
       ata,
       new PublicKey(selectedOrg.fundsPubkey),
       usdcMint.address
