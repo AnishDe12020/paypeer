@@ -32,46 +32,42 @@ import { format } from "date-fns";
 import useCluster from "../../src/hooks/useCluster";
 import { truncateString } from "../../src/utils/truncate";
 import { ExternalLink } from "lucide-react";
-import { JUPITER_PRICE_API } from "../../src/utils/constants";
+import {
+  Bar,
+  BarChart,
+  Legend,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip as ChartTooltip,
+  CartesianGrid,
+} from "recharts";
 
 interface DashboardPageProps {
   orgs: Organization[];
 }
 
-interface AnalyticsResponse {
-  _sum: {
-    amount: number;
-  };
-  _avg: {
-    amount: number;
-  };
-  _count: number;
-}
-
-interface TokenAnalyticsResponse extends AnalyticsResponse {
-  tokenPubkey: string;
-}
-
-interface AnalyticsResponse {
-  all: AnalyticsResponse;
-  tokenAnalytics: TokenAnalyticsResponse[];
-}
-
 interface TokenAnalytics {
-  price: number;
-  amount: number;
-  avg: number;
-  amountInUSD: number;
-  avgInUSD: number;
+  sum: string;
+  avg: string;
   count: number;
+  date: string;
+  tokenPubkey: string;
+  usdPrice: number;
+  totalInUSD: number;
+  avgInUSD: number;
 }
+
+type DateAnalytics = Omit<
+  TokenAnalytics,
+  "sum" | "avg" | "tokenPubkey" | "usdPruce"
+>;
 
 interface Analytics {
-  all: {
-    totalSales: number;
-    avgSales: number;
-  };
+  totalInUSD: number;
+  avgInUSD: number;
   tokenAnalytics: TokenAnalytics[];
+  dateAnalytics: DateAnalytics[];
 }
 
 const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
@@ -98,43 +94,11 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
   const { data: analytics, isLoading: analyticsLoading } = useQuery<Analytics>(
     ["analytics", selectedOrg?.id],
     async ({ queryKey }) => {
-      const { data: analyticsData } = await axios.get<AnalyticsResponse>(
+      const { data: analyticsData } = await axios.get(
         `/api/transactions/analytics?organizationId=${queryKey[1]}`
       );
 
-      const tokens = analyticsData.tokenAnalytics.map(
-        (token) => token.tokenPubkey
-      );
-
-      const {
-        data: { data: prices },
-      } = await axios.get(`${JUPITER_PRICE_API}?ids=${tokens.join(",")}`);
-
-      const tokenAnalytics = analyticsData.tokenAnalytics.map((token) => ({
-        price: prices[token.tokenPubkey].price,
-        amount: token._sum.amount,
-        avg: token._avg.amount,
-        amountInUSD: token._sum.amount * prices[token.tokenPubkey].price,
-        avgInUSD: token._avg.amount * prices[token.tokenPubkey].price,
-        count: token._count,
-      }));
-
-      const totalSales = tokenAnalytics.reduce(
-        (acc, token) => acc + token.amountInUSD,
-        0
-      );
-
-      const avgSales =
-        tokenAnalytics.reduce((acc, token) => acc + token.avgInUSD, 0) /
-        tokenAnalytics.length;
-
-      return {
-        all: {
-          totalSales,
-          avgSales,
-        },
-        tokenAnalytics,
-      };
+      return analyticsData;
     },
     { enabled: !!selectedOrg }
   );
@@ -143,14 +107,26 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
 
   return (
     <DashboardLayout initialOrgs={orgs}>
-      <Grid>
-        {analytics && (
+      {analytics && (
+        <Grid>
           <Stat backgroundColor="brand.secondary" rounded="xl" p={4}>
             <StatLabel>Sales (last 30 days)</StatLabel>
-            <StatNumber>${analytics.all.totalSales}</StatNumber>
+            <StatNumber>${analytics.totalInUSD.toFixed(2)}</StatNumber>
           </Stat>
-        )}
-      </Grid>
+
+          <ResponsiveContainer width="100%" height={450}>
+            <BarChart data={analytics.dateAnalytics} width={150} height={150}>
+              <CartesianGrid strokeDasharray={"3 3"} />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <ChartTooltip />
+              <Legend />
+              <Bar dataKey="totalInUSD" stackId="a" fill="#8884d8" />
+              <Bar dataKey="avgInUSD" stackId="a" fill="#82ca9d" />
+            </BarChart>
+          </ResponsiveContainer>
+        </Grid>
+      )}
       <VStack mt={16}>
         {tokenList && transactions ? (
           transactions.length > 0 ? (
