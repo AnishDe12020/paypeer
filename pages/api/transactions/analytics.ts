@@ -4,35 +4,35 @@ import { prisma } from "../../../src/lib/db";
 import { authOptions } from "../auth/[...nextauth]";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (!req.query.organizationId) {
-    return res.status(400).json({ message: "Bad request" });
-  }
+  // if (!req.query.organizationId) {
+  //   return res.status(400).json({ message: "Bad request" });
+  // }
 
-  const session = await unstable_getServerSession(req, res, authOptions(req));
+  // const session = await unstable_getServerSession(req, res, authOptions(req));
 
-  if (!session?.user?.name) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
+  // if (!session?.user?.name) {
+  //   return res.status(401).json({ message: "Unauthorized" });
+  // }
 
-  // check if authenticated user is a member of the organization
-  const organization = await prisma.organization.findUnique({
-    where: {
-      id: req.query.organizationId as string,
-    },
-    include: {
-      members: {
-        where: {
-          profile: {
-            pubkey: session.user.name,
-          },
-        },
-      },
-    },
-  });
+  // // check if authenticated user is a member of the organization
+  // const organization = await prisma.organization.findUnique({
+  //   where: {
+  //     id: req.query.organizationId as string,
+  //   },
+  //   include: {
+  //     members: {
+  //       where: {
+  //         profile: {
+  //           pubkey: session.user.name,
+  //         },
+  //       },
+  //     },
+  //   },
+  // });
 
-  if (!organization?.members?.length) {
-    return res.status(404).json({ message: "Not found" });
-  }
+  // if (!organization?.members?.length) {
+  //   return res.status(404).json({ message: "Not found" });
+  // }
 
   const txAnalytics = await prisma.transaction.aggregate({
     _sum: {
@@ -61,7 +61,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  res.status(200).json({ analytics: txAnalytics, byToken: txAnalyticsByToken });
+  res
+    .status(200)
+    .json({ all: txAnalytics, tokenAnalytics: txAnalyticsByToken });
 };
 
 export default handler;
