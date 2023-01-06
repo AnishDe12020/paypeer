@@ -8,17 +8,7 @@ import Card from "./card";
 import Modal from "./modal";
 import Popover from "./popover";
 import FormLabel from "./form-label";
-
-export { Button };
-export { Input };
-export { FormControl };
-export { FormError };
-export { Textarea };
-export { Tooltip };
-export { Card };
-export { Modal };
-export { Popover };
-export { FormLabel };
+import Tabs from "./tabs";
 
 export const components = {
   Button,
@@ -31,4 +21,5 @@ export const components = {
   Modal,
   Popover,
   FormLabel,
+  Tabs,
 };

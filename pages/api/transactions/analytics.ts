@@ -114,6 +114,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     totalInUSD,
     avgInUSD,
     dateAnalytics: byDateWithUSDPriceArr,
+    tokenPubkeys,
   });
 };
 
