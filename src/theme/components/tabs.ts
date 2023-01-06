@@ -6,6 +6,7 @@ const variantCustomTabs: PartsStyleFunction = () => {
       borderRadius: "md",
       fontWeight: "semibold",
       color: "gray.300",
+      fontSize: { base: "sm", md: "md" },
       _selected: {
         color: `white`,
         bg: `brand.secondary`,
@@ -23,6 +24,7 @@ const variantCustomTabs: PartsStyleFunction = () => {
       borderStyle: "solid",
       borderWidth: "1px",
       borderColor: "brand.secondary",
+      overflowX: "auto",
     },
   };
 };

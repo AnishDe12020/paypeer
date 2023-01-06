@@ -18,7 +18,7 @@ interface ChartProps {
 const Chart = ({ data }: ChartProps) => {
   return (
     <ResponsiveContainer width="100%" height={450}>
-      <AreaChart width={150} height={150} data={data}>
+      <AreaChart width={1000} height={150} data={data}>
         <CartesianGrid strokeDasharray={"3 3"} stroke="#454545" />
         <XAxis
           dataKey="date"
@@ -49,10 +49,10 @@ const Chart = ({ data }: ChartProps) => {
                   <Text>Number of sales: {props.payload[0].payload.count}</Text>
 
                   <Text color="#8884d8">
-                    Total sales: {props.payload[0].value}
+                    Total sales: {Number(props.payload[0].value).toFixed(2)}
                   </Text>
                   <Text color="#82ca9d">
-                    Avg sales: {props.payload[1].value}
+                    Avg sales: {Number(props.payload[1].value).toFixed(2)}
                   </Text>
                 </Box>
               )

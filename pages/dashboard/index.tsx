@@ -1,6 +1,7 @@
 import { GetServerSideProps, NextPage } from "next";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import {
+  css,
   Grid,
   GridItem,
   HStack,
@@ -82,65 +83,58 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
   return (
     <DashboardLayout initialOrgs={orgs}>
       {analytics && (
-        <Grid gap={8}>
-          <Stat
-            as={GridItem}
-            backgroundColor="brand.secondary"
-            rounded="xl"
-            p={4}
-          >
+        <VStack gap={8} w="full">
+          <Stat backgroundColor="brand.secondary" rounded="xl" p={4} w="full">
             <StatLabel>Sales (last 30 days)</StatLabel>
             <StatNumber>${analytics.totalInUSD.toFixed(2)}</StatNumber>
           </Stat>
-          <GridItem>
-            <Tabs variant="custom">
-              <TabList mx={8}>
-                <Tab>Last 7 Days</Tab>
-                {tokenList &&
-                  analytics.tokenPubkeys.map((tokenPubkey) => {
-                    const token = tokenList.find(
-                      (token) => token.address === tokenPubkey
-                    );
+          <Tabs variant="custom" w="full">
+            <TabList overflowX="auto">
+              <Tab>Last 7 Days</Tab>
+              {tokenList &&
+                analytics.tokenPubkeys.map((tokenPubkey) => {
+                  const token = tokenList.find(
+                    (token) => token.address === tokenPubkey
+                  );
 
-                    return (
-                      <HStack key={tokenPubkey} as={Tab} spacing={2}>
-                        <Text>{token?.symbol}</Text>
-                        <Image
-                          src={token?.logoURI}
-                          alt={token?.symbol}
-                          boxSize="20px"
-                          rounded="full"
-                        />
-                      </HStack>
-                    );
-                  })}
-              </TabList>
+                  return (
+                    <HStack key={tokenPubkey} as={Tab} spacing={2}>
+                      <Text>{token?.symbol}</Text>
+                      <Image
+                        src={token?.logoURI}
+                        alt={token?.symbol}
+                        boxSize="20px"
+                        rounded="full"
+                      />
+                    </HStack>
+                  );
+                })}
+            </TabList>
 
-              <TabPanels mt={8}>
-                <TabPanel w="full">
-                  <Chart data={analytics.dateAnalytics} />
-                </TabPanel>
+            <TabPanels mt={8} w="full">
+              <TabPanel w="full" px={{ base: 0, md: 8 }}>
+                <Chart data={analytics.dateAnalytics} />
+              </TabPanel>
 
-                {tokenList &&
-                  analytics.tokenPubkeys.map((tokenPubkey) => {
-                    const token = tokenList.find(
-                      (token) => token.address === tokenPubkey
-                    );
+              {tokenList &&
+                analytics.tokenPubkeys.map((tokenPubkey) => {
+                  const data = analytics.tokenAnalytics.filter(
+                    (token) => token.tokenPubkey === tokenPubkey
+                  );
 
-                    const data = analytics.tokenAnalytics.filter(
-                      (token) => token.tokenPubkey === tokenPubkey
-                    );
-
-                    return (
-                      <TabPanel key={tokenPubkey}>
-                        <Chart data={data} />
-                      </TabPanel>
-                    );
-                  })}
-              </TabPanels>
-            </Tabs>
-          </GridItem>
-        </Grid>
+                  return (
+                    <TabPanel
+                      key={tokenPubkey}
+                      w="full"
+                      px={{ base: 0, md: 8 }}
+                    >
+                      <Chart data={data} />
+                    </TabPanel>
+                  );
+                })}
+            </TabPanels>
+          </Tabs>
+        </VStack>
       )}
       <VStack mt={16}>
         {tokenList && transactions ? (
@@ -166,8 +160,10 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
                     return (
                       <Tr key={transaction.id}>
                         <Td>
-                          <HStack>
-                            <Text>{transaction.amount.toString()}</Text>
+                          <HStack w={24}>
+                            <Text>
+                              {Number(transaction.amount).toFixed(2).toString()}
+                            </Text>
                             <Tooltip label={token?.symbol}>
                               <Link
                                 href={`https://solscan.io/address/${transaction.tokenPubkey}`}
@@ -177,6 +173,7 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
                                   src={token?.logoURI}
                                   alt={token?.symbol}
                                   boxSize="20px"
+                                  rounded="full"
                                 />
                               </Link>
                             </Tooltip>
