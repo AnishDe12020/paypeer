@@ -1,7 +1,9 @@
 import { GetServerSideProps, NextPage } from "next";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import {
+  Box,
   Grid,
+  GridItem,
   HStack,
   Icon,
   Image,
@@ -33,14 +35,13 @@ import useCluster from "../../src/hooks/useCluster";
 import { truncateString } from "../../src/utils/truncate";
 import { ExternalLink } from "lucide-react";
 import {
-  Bar,
-  BarChart,
-  Legend,
   ResponsiveContainer,
   XAxis,
   YAxis,
   Tooltip as ChartTooltip,
   CartesianGrid,
+  AreaChart,
+  Area,
 } from "recharts";
 
 interface DashboardPageProps {
@@ -108,23 +109,98 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
   return (
     <DashboardLayout initialOrgs={orgs}>
       {analytics && (
-        <Grid>
-          <Stat backgroundColor="brand.secondary" rounded="xl" p={4}>
+        <Grid gap={8}>
+          <Stat
+            as={GridItem}
+            backgroundColor="brand.secondary"
+            rounded="xl"
+            p={4}
+          >
             <StatLabel>Sales (last 30 days)</StatLabel>
             <StatNumber>${analytics.totalInUSD.toFixed(2)}</StatNumber>
           </Stat>
+          <GridItem>
+            <ResponsiveContainer width="100%" height={450}>
+              <AreaChart
+                data={analytics.dateAnalytics}
+                width={50}
+                height={150}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray={"3 3"} stroke="#454545" />
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(v) => format(new Date(v), "MMM dd")}
+                />
+                <YAxis tickFormatter={(v) => `$${v}`} />
+                <ChartTooltip
+                  cursor={{ fill: "#ffffff", fillOpacity: 0.5 }}
+                  content={(props) => {
+                    console.log(props.payload);
+                    return (
+                      props &&
+                      props.payload &&
+                      props.payload.length > 0 && (
+                        <Box
+                          bg="brand.primary"
+                          border="1px solid"
+                          borderColor="brand.secondary"
+                          px={4}
+                          py={2}
+                          rounded="xl"
+                        >
+                          <Text>
+                            {format(
+                              new Date(props.payload[0].payload.date),
+                              "MMM dd"
+                            )}
+                          </Text>
 
-          <ResponsiveContainer width="100%" height={450}>
-            <BarChart data={analytics.dateAnalytics} width={150} height={150}>
-              <CartesianGrid strokeDasharray={"3 3"} />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <ChartTooltip />
-              <Legend />
-              <Bar dataKey="totalInUSD" stackId="a" fill="#8884d8" />
-              <Bar dataKey="avgInUSD" stackId="a" fill="#82ca9d" />
-            </BarChart>
-          </ResponsiveContainer>
+                          <Text color="#8884d8">
+                            Total sales: {props.payload[0].value}
+                          </Text>
+                          <Text color="#82ca9d">
+                            Avg sales: {props.payload[1].value}
+                          </Text>
+                        </Box>
+                      )
+                    );
+                  }}
+                />
+
+                <defs>
+                  <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                    <stop offset="100%" stopColor="#8884d8" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorAvg" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                    <stop offset="100%" stopColor="#82ca9d" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+
+                <Area
+                  type="monotone"
+                  dataKey="totalInUSD"
+                  stroke="#8884d8"
+                  fillOpacity={1}
+                  fill="url(#colorTotal)"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="avgInUSD"
+                  stroke="#82ca9d"
+                  fillOpacity={1}
+                  fill="url(#colorAvg)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </GridItem>
         </Grid>
       )}
       <VStack mt={16}>
