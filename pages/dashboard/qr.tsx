@@ -15,6 +15,8 @@ import {
   AlertDescription,
   useToast,
   Heading,
+  Divider,
+  Code,
 } from "@chakra-ui/react";
 import { Organization } from "@prisma/client";
 import {
@@ -30,8 +32,10 @@ import { PublicKey, Transaction } from "@solana/web3.js";
 import { Check, ClipboardCopy } from "lucide-react";
 import { GetServerSideProps, NextPage } from "next";
 import { unstable_getServerSession } from "next-auth";
+import Router, { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
+import ConnectWallet from "../../src/components/ConnectWallet";
 import useCluster from "../../src/hooks/useCluster";
 import useSelectedOrganization from "../../src/hooks/useSelectedOrganization";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
@@ -49,10 +53,12 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
   const [size, setSize] = useState(() =>
     typeof window === "undefined"
       ? 400
-      : Math.min(window.screen.availWidth - 160, 400)
+      : Math.min(window.screen.availWidth - 240, 300)
   );
   const [hasTokenAccount, setHasTokenAccount] = useState<boolean>();
-  const [isLoadingTokenAccount, setIsLoadingTokenAccount] = useState(false);
+  const [recipientValid, setRecipientValid] = useState<boolean>();
+  const [isCheckingForValidRecipient, setIsCheckingForValidRecipient] =
+    useState(false);
   const [isCreatingTokenAccount, setIsCreatingTokenAccount] = useState(false);
 
   const { onCopy, hasCopied, setValue, value } = useClipboard("");
@@ -62,6 +68,8 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
   const { selectedOrg } = useSelectedOrganization();
 
   const toast = useToast();
+
+  const router = useRouter();
 
   useEffect(() => {
     if (!selectedOrg) {
@@ -82,9 +90,22 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
   }, [setValue, cluster, selectedOrg, toast]);
 
   useEffect(() => {
-    const checkForTokenAccount = async () => {
-      setIsLoadingTokenAccount(true);
+    const checkIfValidRecipient = async () => {
+      setIsCheckingForValidRecipient(true);
       if (!selectedOrg?.fundsPubkey || !usdcAddress) return;
+
+      const accInfo = await connection.getAccountInfo(
+        new PublicKey(selectedOrg.fundsPubkey)
+      );
+
+      if (!accInfo) {
+        setRecipientValid(false);
+        setIsCheckingForValidRecipient(false);
+        return;
+      }
+
+      setRecipientValid(true);
+
       const ata = await getAssociatedTokenAddress(
         usdcAddress,
         new PublicKey(selectedOrg.fundsPubkey)
@@ -115,11 +136,11 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
           setHasTokenAccount(false);
         }
       } finally {
-        setIsLoadingTokenAccount(false);
+        setIsCheckingForValidRecipient(false);
       }
     };
 
-    checkForTokenAccount();
+    checkIfValidRecipient();
   }, [selectedOrg?.fundsPubkey, connection, usdcAddress, toast]);
 
   useEffect(() => {
@@ -133,7 +154,7 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
 
   const createTokenAccount = useCallback(async () => {
     setIsCreatingTokenAccount(true);
-    if (!selectedOrg?.fundsPubkey || !usdcAddress) return;
+    if (!selectedOrg?.fundsPubkey || !usdcAddress || !publicKey) return;
 
     const usdcMint = await getMint(connection, usdcAddress);
     const ata = await getAssociatedTokenAddress(
@@ -144,7 +165,7 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
     const tx = new Transaction();
 
     const ix = createAssociatedTokenAccountInstruction(
-      new PublicKey(selectedOrg.fundsPubkey),
+      new PublicKey(publicKey),
       ata,
       new PublicKey(selectedOrg.fundsPubkey),
       usdcMint.address
@@ -173,6 +194,8 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
         duration: 5000,
         isClosable: true,
       });
+
+      router.reload();
     } catch (error) {
       console.error(error);
       toast({
@@ -192,15 +215,16 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
     usdcAddress,
     sendTransaction,
     toast,
+    publicKey,
   ]);
 
   return (
     <DashboardLayout initialOrgs={orgs}>
       <VStack gap={8}>
-        {publicKey ? (
-          isLoadingTokenAccount ? (
-            <Spinner />
-          ) : hasTokenAccount ? (
+        {isCheckingForValidRecipient ? (
+          <Spinner />
+        ) : recipientValid ? (
+          hasTokenAccount ? (
             <VStack gap={8}>
               <VStack gap={4}>
                 <Heading fontSize="4xl" textAlign="center">
@@ -281,18 +305,44 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
                   button below to initiate a transaction to create a token
                   account.
                 </AlertDescription>
-
-                <Button
-                  isLoading={isCreatingTokenAccount}
-                  onClick={createTokenAccount}
-                >
-                  Create Token Account
-                </Button>
+                {publicKey ? (
+                  <Button
+                    isLoading={isCreatingTokenAccount}
+                    onClick={createTokenAccount}
+                  >
+                    Create Token Account
+                  </Button>
+                ) : (
+                  <ConnectWallet />
+                )}
               </VStack>
             </Alert>
           )
         ) : (
-          <WalletMultiButton />
+          <Alert status="error" rounded="lg">
+            <VStack alignItems="start" gap={4}>
+              <HStack>
+                <AlertIcon />
+
+                <AlertTitle>Your organization wallet is not active</AlertTitle>
+              </HStack>
+
+              {/* getAccountInfo returns a null value for the account */}
+              <AlertDescription>
+                If you just created a new wallet or updated the organization
+                wallet in the organization settings, it will not be active
+                unless you hold some SOL (even a very small amount will do). You
+                may transfer some SOL to your account on the Solana mainnet in
+                order for it be active. Note that transferring other tokens like
+                USDC will not make the account active.
+                <Divider my={4} />
+                Reload the window after you transfer some SOL to your account.
+                <Divider my={4} />
+                Your organization wallet address is{" "}
+                <Code>{selectedOrg?.fundsPubkey}</Code>
+              </AlertDescription>
+            </VStack>
+          </Alert>
         )}
       </VStack>
     </DashboardLayout>
