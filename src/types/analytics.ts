@@ -17,6 +17,7 @@ export type DateAnalytics = Omit<
 export interface Analytics {
   totalInUSD: number;
   avgInUSD: number;
+  totalSales: number;
   tokenAnalytics: TokenAnalytics[];
   dateAnalytics: DateAnalytics[];
   tokenPubkeys: string[];

@@ -2,6 +2,7 @@ import { GetServerSideProps, NextPage } from "next";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import {
   css,
+  Flex,
   Grid,
   GridItem,
   HStack,
@@ -84,12 +85,52 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
     <DashboardLayout initialOrgs={orgs}>
       {analytics && (
         <VStack gap={8} w="full">
-          <Stat backgroundColor="brand.secondary" rounded="xl" p={4} w="full">
-            <StatLabel>Sales (last 30 days)</StatLabel>
-            <StatNumber>${analytics.totalInUSD.toFixed(2)}</StatNumber>
-          </Stat>
-          <Tabs variant="custom" w="full">
-            <TabList overflowX="auto">
+          <Grid
+            w="full"
+            gap={4}
+            templateColumns="repeat(auto-fit, minmax(300px, 1fr))"
+          >
+            <Stat
+              backgroundColor="brand.secondary"
+              rounded="xl"
+              p={4}
+              w="full"
+              as={GridItem}
+            >
+              <StatLabel>Total Sales (last 7 days)</StatLabel>
+              <StatNumber>${analytics.totalInUSD.toFixed(2)}</StatNumber>
+            </Stat>
+
+            <Stat
+              backgroundColor="brand.secondary"
+              rounded="xl"
+              p={4}
+              w="full"
+              as={GridItem}
+            >
+              <StatLabel>Average Sales (last 7 days)</StatLabel>
+              <StatNumber>${analytics.avgInUSD.toFixed(2)}</StatNumber>
+            </Stat>
+
+            <Stat
+              backgroundColor="brand.secondary"
+              rounded="xl"
+              p={4}
+              w="full"
+              as={GridItem}
+            >
+              <StatLabel>Transactions (last 7 days)</StatLabel>
+              <StatNumber>{analytics.totalSales}</StatNumber>
+            </Stat>
+          </Grid>
+          <Tabs
+            variant="custom"
+            w="full"
+            alignItems="center"
+            display="flex"
+            flexDir="column"
+          >
+            <TabList overflowX="auto" maxW={{ base: 80, md: "fit-content" }}>
               <Tab>Last 7 Days</Tab>
               {tokenList &&
                 analytics.tokenPubkeys.map((tokenPubkey) => {

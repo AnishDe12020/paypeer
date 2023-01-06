@@ -109,10 +109,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     totalInUSD /
     byDateWithUSDPriceArr.reduce((acc: number, data) => acc + data.count, 0);
 
+  const totalSales = byDateWithUSDPriceArr.reduce(
+    (acc: number, data) => acc + data.count,
+    0
+  );
+
   return res.status(200).json({
     tokenAnalytics: byTokenAndDateWithUSDPrice,
     totalInUSD,
     avgInUSD,
+    totalSales,
     dateAnalytics: byDateWithUSDPriceArr,
     tokenPubkeys,
   });
