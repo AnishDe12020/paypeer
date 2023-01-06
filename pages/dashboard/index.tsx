@@ -1,7 +1,6 @@
 import { GetServerSideProps, NextPage } from "next";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import {
-  Box,
   Grid,
   GridItem,
   HStack,
@@ -39,43 +38,12 @@ import { format } from "date-fns";
 import useCluster from "../../src/hooks/useCluster";
 import { truncateString } from "../../src/utils/truncate";
 import { ExternalLink } from "lucide-react";
-import {
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Tooltip as ChartTooltip,
-  CartesianGrid,
-  AreaChart,
-  Area,
-} from "recharts";
-import { createNoSubstitutionTemplateLiteral } from "typescript";
+
+import { Analytics } from "../../src/types/analytics";
+import Chart from "../../src/components/Dashboard/Chart";
 
 interface DashboardPageProps {
   orgs: Organization[];
-}
-
-interface TokenAnalytics {
-  sum: string;
-  avg: string;
-  count: number;
-  date: string;
-  tokenPubkey: string;
-  usdPrice: number;
-  totalInUSD: number;
-  avgInUSD: number;
-}
-
-type DateAnalytics = Omit<
-  TokenAnalytics,
-  "sum" | "avg" | "tokenPubkey" | "usdPruce"
->;
-
-interface Analytics {
-  totalInUSD: number;
-  avgInUSD: number;
-  tokenAnalytics: TokenAnalytics[];
-  dateAnalytics: DateAnalytics[];
-  tokenPubkeys: string[];
 }
 
 const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
@@ -150,107 +118,7 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
 
               <TabPanels mt={8}>
                 <TabPanel w="full">
-                  <ResponsiveContainer width="100%" height={450}>
-                    <AreaChart
-                      data={analytics.dateAnalytics}
-                      width={50}
-                      height={150}
-                    >
-                      <CartesianGrid strokeDasharray={"3 3"} stroke="#454545" />
-                      <XAxis
-                        dataKey="date"
-                        tickFormatter={(v) => format(new Date(v), "MMM dd")}
-                      />
-                      <YAxis tickFormatter={(v) => `$${v}`} />
-                      <ChartTooltip
-                        cursor={{ fill: "#ffffff", fillOpacity: 0.5 }}
-                        content={(props) => {
-                          return (
-                            props &&
-                            props.payload &&
-                            props.payload.length > 0 && (
-                              <Box
-                                bg="brand.primary"
-                                border="1px solid"
-                                borderColor="brand.secondary"
-                                px={4}
-                                py={2}
-                                rounded="xl"
-                              >
-                                <Text>
-                                  {format(
-                                    new Date(props.payload[0].payload.date),
-                                    "MMM dd"
-                                  )}
-                                </Text>
-
-                                <Text color="#8884d8">
-                                  Total sales: {props.payload[0].value}
-                                </Text>
-                                <Text color="#82ca9d">
-                                  Avg sales: {props.payload[1].value}
-                                </Text>
-                              </Box>
-                            )
-                          );
-                        }}
-                      />
-
-                      <defs>
-                        <linearGradient
-                          id="colorTotal"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor="#8884d8"
-                            stopOpacity={0.8}
-                          />
-                          <stop
-                            offset="100%"
-                            stopColor="#8884d8"
-                            stopOpacity={0}
-                          />
-                        </linearGradient>
-                        <linearGradient
-                          id="colorAvg"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor="#82ca9d"
-                            stopOpacity={0.8}
-                          />
-                          <stop
-                            offset="100%"
-                            stopColor="#82ca9d"
-                            stopOpacity={0}
-                          />
-                        </linearGradient>
-                      </defs>
-
-                      <Area
-                        type="monotone"
-                        dataKey="totalInUSD"
-                        stroke="#8884d8"
-                        fillOpacity={1}
-                        fill="url(#colorTotal)"
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="avgInUSD"
-                        stroke="#82ca9d"
-                        fillOpacity={1}
-                        fill="url(#colorAvg)"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                  <Chart data={analytics.dateAnalytics} />
                 </TabPanel>
 
                 {tokenList &&
@@ -263,114 +131,9 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
                       (token) => token.tokenPubkey === tokenPubkey
                     );
 
-                    console.log(data);
-
                     return (
                       <TabPanel key={tokenPubkey}>
-                        <ResponsiveContainer width="100%" height={450}>
-                          <AreaChart width={50} height={150} data={data}>
-                            <CartesianGrid
-                              strokeDasharray={"3 3"}
-                              stroke="#454545"
-                            />
-                            <XAxis
-                              dataKey="date"
-                              tickFormatter={(v) =>
-                                format(new Date(v), "MMM dd")
-                              }
-                            />
-                            <YAxis tickFormatter={(v) => `$${v}`} />
-                            <ChartTooltip
-                              cursor={{ fill: "#ffffff", fillOpacity: 0.5 }}
-                              content={(props) => {
-                                return (
-                                  props &&
-                                  props.payload &&
-                                  props.payload.length > 0 && (
-                                    <Box
-                                      bg="brand.primary"
-                                      border="1px solid"
-                                      borderColor="brand.secondary"
-                                      px={4}
-                                      py={2}
-                                      rounded="xl"
-                                    >
-                                      <Text>
-                                        {format(
-                                          new Date(
-                                            props.payload[0].payload.date
-                                          ),
-                                          "MMM dd"
-                                        )}
-                                      </Text>
-
-                                      <Text color="#8884d8">
-                                        Total sales: {props.payload[0].value}
-                                      </Text>
-                                      <Text color="#82ca9d">
-                                        Avg sales: {props.payload[1].value}
-                                      </Text>
-                                    </Box>
-                                  )
-                                );
-                              }}
-                            />
-
-                            <defs>
-                              <linearGradient
-                                id="colorTotal"
-                                x1="0"
-                                y1="0"
-                                x2="0"
-                                y2="1"
-                              >
-                                <stop
-                                  offset="5%"
-                                  stopColor="#8884d8"
-                                  stopOpacity={0.8}
-                                />
-                                <stop
-                                  offset="100%"
-                                  stopColor="#8884d8"
-                                  stopOpacity={0}
-                                />
-                              </linearGradient>
-                              <linearGradient
-                                id="colorAvg"
-                                x1="0"
-                                y1="0"
-                                x2="0"
-                                y2="1"
-                              >
-                                <stop
-                                  offset="5%"
-                                  stopColor="#82ca9d"
-                                  stopOpacity={0.8}
-                                />
-                                <stop
-                                  offset="100%"
-                                  stopColor="#82ca9d"
-                                  stopOpacity={0}
-                                />
-                              </linearGradient>
-                            </defs>
-
-                            <Area
-                              type="monotone"
-                              dataKey="avgInUSD"
-                              stroke="#82ca9d"
-                              fillOpacity={1}
-                              fill="url(#colorAvg)"
-                            />
-                            <Area
-                              type="monotone"
-                              dataKey="totalInUSD"
-                              stroke="#8884d8"
-                              fillOpacity={1}
-                              fill="url(#colorTotal)"
-                            />
-                          </AreaChart>
-                        </ResponsiveContainer>
+                        <Chart data={data} />
                       </TabPanel>
                     );
                   })}
