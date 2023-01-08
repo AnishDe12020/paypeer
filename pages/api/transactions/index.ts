@@ -58,6 +58,7 @@ const handleGetTransactions = async (
     const transactions = await prisma.transaction.findMany({
       where: {
         organizationId: req.query.organizationId as string,
+        status: "SUCCESS",
       },
     });
 
@@ -76,14 +77,6 @@ const handleAddTransaction = async (
     return res.status(400).json({ message: "Bad request" });
   }
 
-  if (!req.body.signature) {
-    return res.status(400).json({ message: "Bad request" });
-  }
-
-  if (!req.body.reference) {
-    return res.status(400).json({ message: "Bad request" });
-  }
-
   if (!req.body.amount) {
     return res.status(400).json({ message: "Bad request" });
   }
@@ -92,7 +85,7 @@ const handleAddTransaction = async (
     return res.status(400).json({ message: "Bad request" });
   }
 
-  if (!req.body.customerPubkey) {
+  if (!req.body.reference) {
     return res.status(400).json({ message: "Bad request" });
   }
 
@@ -127,19 +120,34 @@ const handleAddTransaction = async (
       { commitment: "confirmed" }
     );
 
-    const transaction = await prisma.transaction.create({
-      data: {
-        organizationId: req.body.organizationId,
-        signature: req.body.signature,
-        reference: req.body.reference,
-        amount: new Decimal(req.body.amount),
-        tokenPubkey: req.body.tokenPubkey,
-        customerPubkey: req.body.customerPubkey,
-        messsage: req.body.message,
-      },
-    });
+    if (req.body.signature && req.body.customerPubkey) {
+      const transaction = await prisma.transaction.create({
+        data: {
+          organizationId: req.body.organizationId,
+          signature: req.body.signature,
+          reference: req.body.reference,
+          amount: new Decimal(req.body.amount),
+          tokenPubkey: req.body.tokenPubkey,
+          customerPubkey: req.body.customerPubkey,
+          messsage: req.body.message,
+          status: "SUCCESS",
+        },
+      });
 
-    return res.status(200).json({ transaction });
+      return res.status(200).json({ transaction });
+    } else {
+      const transaction = await prisma.transaction.create({
+        data: {
+          organizationId: req.body.organizationId,
+          amount: new Decimal(req.body.amount),
+          tokenPubkey: req.body.tokenPubkey,
+          messsage: req.body.message,
+          status: "PENDING",
+        },
+      });
+
+      return res.status(200).json({ transaction });
+    }
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error", error });

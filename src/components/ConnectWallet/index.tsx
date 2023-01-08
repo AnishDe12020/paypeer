@@ -268,7 +268,8 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
                       )}
 
                       <Button onClick={onCollapsedWalletsToggle}>
-                        Show unavailable wallets
+                        {isCollapsedWalletsOpen ? "Hide" : "Show"} unavailable
+                        wallets
                       </Button>
                       <Collapse in={isCollapsedWalletsOpen} unmountOnExit>
                         <VStack my={4} gap={4}>

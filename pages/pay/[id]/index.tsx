@@ -53,13 +53,22 @@ const PayPage: NextPage<PayPageProps> = ({ org }) => {
         amount,
         tokenPubkey: usdcAddress.toString(),
         customerPubkey: customerPubkey,
+        message,
       });
 
       router.push(`/pay/${org.id}/success?txId=${tx.data.id}`);
     },
 
-    () => {
-      router.push(`/pay/${org.id}/fail`);
+    async () => {
+      const tx = await axios.put("/api/transactions", {
+        organizationId: org.id,
+        reference: reference.toString(),
+        amount,
+        tokenPubkey: usdcAddress.toString(),
+        message,
+      });
+
+      router.push(`/pay/${org.id}/fail?txId=${tx.data.id}`);
     }
   );
 

@@ -21,7 +21,7 @@ import { GetServerSideProps, NextPage } from "next";
 import SolanaIcon from "../../../src/components/Icons/Solana";
 import BaseLayout from "../../../src/layouts/BaseLayout";
 import { prisma } from "../../../src/lib/db";
-import { TransactionWithOrganization } from "../../../src/types/model";
+import { TransactionWithOrganizationAllRequired } from "../../../src/types/model";
 import { Token } from "../../../src/types/tokens";
 import {
   JUPITER_PRICE_API,
@@ -30,7 +30,7 @@ import {
 import { truncateString } from "../../../src/utils/truncate";
 
 interface PaySuccessPageProps {
-  tx: TransactionWithOrganization;
+  tx: TransactionWithOrganizationAllRequired;
   amountInUSD: number;
   token: Token;
 }
@@ -100,7 +100,7 @@ const PaySuccessPage: NextPage<PaySuccessPageProps> = ({
           </VStack>
         </VStack>
 
-        <Button onClick={onToggle}>Show details</Button>
+        <Button onClick={onToggle}>{isOpen ? "Hide" : "Show"} details</Button>
 
         <Collapse in={isOpen} unmountOnExit>
           <VStack gap={4}>

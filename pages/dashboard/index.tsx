@@ -1,8 +1,6 @@
 import { GetServerSideProps, NextPage } from "next";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import {
-  css,
-  Flex,
   Grid,
   GridItem,
   HStack,
