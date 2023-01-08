@@ -7,7 +7,7 @@ interface BaseLayoutProps {
 
 const BaseLayout: React.FC<BaseLayoutProps> = ({ children }) => {
   return (
-    <chakra.main mt={24} px={[4, 8, 16, 32]}>
+    <chakra.main mt={16} px={[4, 8, 16, 32]}>
       {children}
     </chakra.main>
   );

@@ -72,7 +72,6 @@ const Chart = ({ data }: ChartProps) => {
         </defs>
 
         <Area
-          type="monotone"
           dataKey="avgInUSD"
           stroke="#82ca9d"
           fillOpacity={1}
@@ -80,7 +79,6 @@ const Chart = ({ data }: ChartProps) => {
         />
 
         <Area
-          type="monotone"
           dataKey="totalInUSD"
           stroke="#8884d8"
           fillOpacity={1}
