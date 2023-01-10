@@ -54,7 +54,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     ByToken[]
   >`SELECT SUM("public"."Transaction"."amount"), AVG("public"."Transaction"."amount"), COUNT("public"."Transaction"."amount")::INT, date("public"."Transaction"."createdAt"), "public"."Transaction"."tokenPubkey" FROM "public"."Transaction" WHERE ("public"."Transaction"."organizationId" = ${
     req.query.organizationId as string
-  } AND "public"."Transaction"."status" = "SUCCESS") GROUP BY "public"."Transaction"."tokenPubkey", date("createdAt")`;
+  } AND "public"."Transaction"."status" = 'SUCCESS') GROUP BY "public"."Transaction"."tokenPubkey", date("createdAt")`;
 
   const tokenPubkeysWithDups = byTokenAndDate.map((token) => token.tokenPubkey);
 
