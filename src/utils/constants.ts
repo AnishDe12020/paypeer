@@ -9,3 +9,4 @@ export const USDC_MINT_DEVNET = new PublicKey(
 );
 
 export const JUPITER_PRICE_API = "https://price.jup.ag/v3/price";
+export const JUPITER_TOKEN_LIST = "https://cache.jup.ag/tokens";
