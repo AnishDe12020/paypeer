@@ -22,9 +22,8 @@ import { getAllOrgs } from "../utils/queries";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Avvvatars from "avvvatars-react";
-import { BarChart2, Check, QrCode, Settings } from "lucide-react";
+import { AlertCircle, BarChart2, Check, QrCode, Settings } from "lucide-react";
 import ConnectWallet from "./ConnectWallet";
-import { NonceAccount } from "@solana/web3.js";
 
 interface SidebarProps extends StackProps {
   initialOrgs: Organization[];
@@ -148,6 +147,17 @@ const Sidebar = ({ initialOrgs, ...otherProps }: SidebarProps) => {
             }
           >
             QR Code
+          </Button>
+
+          <Button
+            variant="ghost"
+            onClick={() => router.push("/dashboard/pending")}
+            leftIcon={<Icon as={AlertCircle} />}
+            bgColor={
+              router.pathname === "/dashboard/pending" ? "brand.tertiary" : ""
+            }
+          >
+            Pending
           </Button>
         </VStack>
       </VStack>

@@ -216,6 +216,7 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
     sendTransaction,
     toast,
     publicKey,
+    router,
   ]);
 
   return (

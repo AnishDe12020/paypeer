@@ -6,6 +6,7 @@ import { authOptions } from "../auth/[...nextauth]";
 import { getRpc } from "../../../src/utils/cluster";
 import { validateTransfer } from "../../../src/utils/validateTransfer";
 import { Decimal } from "@prisma/client/runtime";
+import { TransactionStatus } from "@prisma/client";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
@@ -14,6 +15,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       break;
     case "PUT":
       await handleAddTransaction(req, res);
+      break;
+    case "PATCH":
+      await handlePatchTransaction(req, res);
       break;
     default:
       res.status(405).json({ message: "Method not allowed" });
@@ -58,7 +62,9 @@ const handleGetTransactions = async (
     const transactions = await prisma.transaction.findMany({
       where: {
         organizationId: req.query.organizationId as string,
-        status: "SUCCESS",
+        status: req.query.txStatus
+          ? (req.query.txStatus as TransactionStatus)
+          : "SUCCESS",
       },
     });
 
@@ -143,11 +149,79 @@ const handleAddTransaction = async (
           tokenPubkey: req.body.tokenPubkey,
           messsage: req.body.message,
           status: "PENDING",
+          reference: req.body.reference,
         },
       });
 
       return res.status(200).json({ transaction });
     }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error", error });
+  }
+};
+
+const handlePatchTransaction = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  if (!req.body.txId) {
+    return res.status(400).json({ message: "Bad request" });
+  }
+
+  if (!req.body.txStatus) {
+    return res.status(400).json({ message: "Bad request" });
+  }
+
+  if (!req.body.signature) {
+    return res.status(400).json({ message: "Bad request" });
+  }
+
+  if (!req.body.customerPubkey) {
+    return res.status(400).json({ message: "Bad request" });
+  }
+
+  const session = await unstable_getServerSession(req, res, authOptions(req));
+
+  if (!session?.user?.name) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    // check if authenticated user is a member of the organization
+    const organization = await prisma.organization.findUnique({
+      where: {
+        id: req.query.organizationId as string,
+      },
+      include: {
+        members: {
+          where: {
+            profile: {
+              pubkey: session.user.name,
+            },
+          },
+        },
+      },
+    });
+
+    if (!organization?.members?.length) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    console.log("id", req.body.txId);
+
+    const transaction = await prisma.transaction.update({
+      where: {
+        id: req.body.txId,
+      },
+      data: {
+        signature: req.body.signature,
+        customerPubkey: req.body.customerPubkey,
+        status: req.body.txStatus,
+      },
+    });
+
+    return res.status(200).json({ transaction });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error", error });

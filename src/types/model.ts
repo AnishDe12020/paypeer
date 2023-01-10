@@ -9,3 +9,8 @@ export type TransactionWithOrganizationAllRequired =
     customerPubkey: string;
     signature: string;
   };
+
+export type SuccessFullTransaction = Transaction & {
+  customerPubkey: string;
+  signature: string;
+};

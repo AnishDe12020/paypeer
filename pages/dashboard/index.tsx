@@ -41,6 +41,7 @@ import { ExternalLink } from "lucide-react";
 
 import { Analytics } from "../../src/types/analytics";
 import Chart from "../../src/components/Dashboard/Chart";
+import { SuccessFullTransaction } from "../../src/types/model";
 
 interface DashboardPageProps {
   orgs: Organization[];
@@ -51,15 +52,11 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
 
   const { tokenList } = useCluster();
 
-  const { data: transactions, isLoading } = useQuery<Transaction[]>(
+  const { data: transactions, isLoading } = useQuery<SuccessFullTransaction[]>(
     ["transactions", selectedOrg?.id],
     async ({ queryKey }) => {
       const txs = await axios.get(
         `/api/transactions?organizationId=${queryKey[1]}`
-      );
-
-      const analytics = await axios.get(
-        `/api/transactions/analytics?organizationId=${queryKey[1]}`
       );
 
       return txs.data.transactions;
