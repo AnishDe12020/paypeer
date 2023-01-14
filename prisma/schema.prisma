@@ -15,6 +15,12 @@ enum Role {
     VIEWER // Can read
 }
 
+enum AcceptedTokenTypes {
+    ONLY
+    SOME
+    ANY
+}
+
 enum TransactionStatus {
     SUCCESS
     PENDING
@@ -44,16 +50,18 @@ model Member {
 }
 
 model Organization {
-    id           String        @id @default(cuid())
-    createdAt    DateTime      @default(now())
-    updatedAt    DateTime      @updatedAt
-    name         String
-    fundsPubkey  String        @db.VarChar(44)
-    website      String?
-    twitter      String?
-    logoUrl      String?
-    members      Member[]
-    transactions Transaction[]
+    id             String             @id @default(cuid())
+    createdAt      DateTime           @default(now())
+    updatedAt      DateTime           @updatedAt
+    name           String
+    fundsPubkey    String             @db.VarChar(44)
+    website        String?
+    twitter        String?
+    logoUrl        String?
+    members        Member[]
+    transactions   Transaction[]
+    acceptedTokens AcceptedTokenTypes @default(ONLY)
+    tokenPubkeys   String[]
 }
 
 model Transaction {

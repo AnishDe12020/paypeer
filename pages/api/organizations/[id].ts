@@ -90,6 +90,8 @@ const handleEditOrganization = async (
       return res.status(404).json({ message: "Not found" });
     }
 
+    console.log(req.body);
+
     const updatedOrganization = await prisma.organization.update({
       where: {
         id: req.query.id as string,
@@ -100,6 +102,8 @@ const handleEditOrganization = async (
         website: req.body.website,
         twitter: req.body.twitter,
         logoUrl: req.body.logoUrl,
+        acceptedTokens: req.body.acceptedTokens,
+        tokenPubkeys: req.body.tokenPubkeys,
       },
     });
 

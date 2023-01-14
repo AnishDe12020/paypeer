@@ -35,6 +35,7 @@ import useCluster from "../../src/hooks/useCluster";
 import useSelectedOrganization from "../../src/hooks/useSelectedOrganization";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import { prisma } from "../../src/lib/db";
+import { TOKEN_LIST } from "../../src/utils/constants";
 import { truncateString } from "../../src/utils/truncate";
 import { validateTransfer } from "../../src/utils/validateTransfer";
 import { authOptions } from "../api/auth/[...nextauth]";
@@ -48,7 +49,7 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
 }) => {
   const { selectedOrg } = useSelectedOrganization();
 
-  const { tokenList, usdcAddress } = useCluster();
+  const { usdcAddress } = useCluster();
   const { connection } = useConnection();
 
   const queryClient = useQueryClient();
@@ -136,6 +137,7 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
       selectedOrg?.fundsPubkey,
       selectedOrg?.id,
       queryClient,
+      toast,
     ]
   );
 
@@ -162,7 +164,7 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
           </VStack>
         </Alert>
 
-        {tokenList && transactions ? (
+        {transactions ? (
           transactions.length > 0 ? (
             <TableContainer w="full">
               <Table variant="simple">
@@ -177,7 +179,7 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
                 </Thead>
                 <Tbody>
                   {transactions.map((transaction) => {
-                    const token = tokenList.find(
+                    const token = TOKEN_LIST.find(
                       (token) => token.address === transaction.tokenPubkey
                     );
 
