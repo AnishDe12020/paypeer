@@ -31,7 +31,6 @@ import { GetServerSideProps, NextPage } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { useCallback, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
-import useCluster from "../../src/hooks/useCluster";
 import useSelectedOrganization from "../../src/hooks/useSelectedOrganization";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import { prisma } from "../../src/lib/db";
@@ -49,7 +48,6 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
 }) => {
   const { selectedOrg } = useSelectedOrganization();
 
-  const { usdcAddress } = useCluster();
   const { connection } = useConnection();
 
   const queryClient = useQueryClient();
@@ -71,7 +69,12 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
   );
 
   const checkTransaction = useCallback(
-    async (reference: string, amount: number, txId: string) => {
+    async (
+      reference: string,
+      amount: number,
+      txId: string,
+      tokenPubkey: string
+    ) => {
       if (!selectedOrg?.fundsPubkey) {
         return;
       }
@@ -94,7 +97,7 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
           {
             recipient: new PublicKey(selectedOrg.fundsPubkey),
             amount: new BigNumber(amount ?? 0),
-            splToken: usdcAddress,
+            splToken: new PublicKey(tokenPubkey),
           },
           { commitment: "confirmed" }
         );
@@ -131,14 +134,7 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
         setIsCheckingTx(false);
       }
     },
-    [
-      connection,
-      usdcAddress,
-      selectedOrg?.fundsPubkey,
-      selectedOrg?.id,
-      queryClient,
-      toast,
-    ]
+    [connection, selectedOrg?.fundsPubkey, selectedOrg?.id, queryClient, toast]
   );
 
   return (
@@ -234,7 +230,8 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
                               checkTransaction(
                                 transaction.reference,
                                 Number(transaction.amount),
-                                transaction.id
+                                transaction.id,
+                                transaction.tokenPubkey
                               )
                             }
                             isLoading={isCheckingTx}

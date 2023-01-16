@@ -14,3 +14,9 @@ export type SuccessFullTransaction = Transaction & {
   customerPubkey: string;
   signature: string;
 };
+
+export interface TokenOption {
+  label: string;
+  value: string;
+  logoUrl: string;
+}

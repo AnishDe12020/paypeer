@@ -24,11 +24,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
 import FileUpload from "../../src/components/FileUpload";
-import useCluster from "../../src/hooks/useCluster";
 import useSelectedOrganization from "../../src/hooks/useSelectedOrganization";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import { prisma } from "../../src/lib/db";
 import reactSelectStyles from "../../src/styles/chakra-react-select";
+import { TokenOption } from "../../src/types/model";
 import { TOKEN_LIST } from "../../src/utils/constants";
 import { authOptions } from "../api/auth/[...nextauth]";
 
@@ -43,12 +43,6 @@ interface UpdateOrgForm {
   twitter: string;
   acceptedTokensType: AcceptedTokenTypes;
   acceptedTokens: TokenOption[];
-}
-
-interface TokenOption {
-  label: string;
-  value: string;
-  logoUrl: string;
 }
 
 const SettingsPage: NextPage<SettingsPageProps> = ({ orgs }) => {

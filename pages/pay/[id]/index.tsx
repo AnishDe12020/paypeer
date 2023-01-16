@@ -10,32 +10,40 @@ import {
   HStack,
   Spinner,
   useToast,
+  InputGroup,
+  Image,
+  Flex,
+  InputRightElement,
 } from "@chakra-ui/react";
-import { Organization } from "@prisma/client";
+import { AcceptedTokenTypes, Organization } from "@prisma/client";
 import { encodeURL, TransactionRequestURLFields } from "@solana/pay";
 import { Keypair } from "@solana/web3.js";
 import axios from "axios";
+import { Select } from "chakra-react-select";
 import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
-import useCluster from "../../../src/hooks/useCluster";
 import useTransactionListener from "../../../src/hooks/useTransactionListener";
 import BaseLayout from "../../../src/layouts/BaseLayout";
 import { prisma } from "../../../src/lib/db";
+import reactSelectStyles from "../../../src/styles/chakra-react-select";
+import { TokenOption } from "../../../src/types/model";
 import { TxStatus } from "../../../src/types/pay";
+import { TOKEN_LIST } from "../../../src/utils/constants";
 
 interface PayPageProps {
   org: Organization;
+  tokens: TokenOption[];
 }
 
-const PayPage: NextPage<PayPageProps> = ({ org }) => {
+const PayPage: NextPage<PayPageProps> = ({ org, tokens }) => {
   const [amount, setAmount] = useState<string | undefined>();
   const [message, setMessage] = useState<string | undefined>();
+  const [selectedToken, setSelectedToken] = useState<TokenOption>(tokens[0]);
   const [txStatus, setTxStatus] = useState<TxStatus>();
 
   const toast = useToast();
   const router = useRouter();
-  const { usdcAddress } = useCluster();
 
   const reference = useMemo(() => Keypair.generate().publicKey, []);
 
@@ -44,6 +52,9 @@ const PayPage: NextPage<PayPageProps> = ({ org }) => {
     txStatus,
     org.fundsPubkey,
     amount,
+    org.acceptedTokens === AcceptedTokenTypes.ONLY
+      ? tokens[0].value
+      : selectedToken.value,
     setTxStatus,
     async (signature, customerPubkey) => {
       const tx = await axios.put("/api/transactions", {
@@ -51,12 +62,15 @@ const PayPage: NextPage<PayPageProps> = ({ org }) => {
         signature,
         reference: reference.toString(),
         amount,
-        tokenPubkey: usdcAddress.toString(),
+        tokenPubkey:
+          org.acceptedTokens === AcceptedTokenTypes.ONLY
+            ? tokens[0].value
+            : selectedToken.value,
         customerPubkey: customerPubkey,
         message,
       });
 
-      router.push(`/pay/${org.id}/success?txId=${tx.data.id}`);
+      router.push(`/pay/${org.id}/success?txId=${tx.data.transaction.id}`);
     },
 
     async () => {
@@ -64,11 +78,11 @@ const PayPage: NextPage<PayPageProps> = ({ org }) => {
         organizationId: org.id,
         reference: reference.toString(),
         amount,
-        tokenPubkey: usdcAddress.toString(),
+        tokenPubkey: selectedToken.value,
         message,
       });
 
-      router.push(`/pay/${org.id}/fail?txId=${tx.data.id}`);
+      router.push(`/pay/${org.id}/fail?txId=${tx.data.transaction.id}`);
     }
   );
 
@@ -95,6 +109,12 @@ const PayPage: NextPage<PayPageProps> = ({ org }) => {
     if (message) {
       txApiParams.append("message", message);
     }
+    txApiParams.append(
+      "tokenPubkey",
+      org.acceptedTokens === AcceptedTokenTypes.ONLY
+        ? tokens[0].value
+        : selectedToken.value
+    );
 
     const { location } = window;
 
@@ -125,12 +145,50 @@ const PayPage: NextPage<PayPageProps> = ({ org }) => {
         <VStack gap={4}>
           <FormControl isRequired>
             <FormLabel>Amount</FormLabel>
-            <Input
-              placeholder="5"
-              onChange={(e) => setAmount(e.target.value)}
-              value={amount}
-            />
-            <FormHelperText>in USDC</FormHelperText>
+            <InputGroup>
+              <Input
+                placeholder="5"
+                onChange={(e) => setAmount(e.target.value)}
+                value={amount}
+                h={12}
+              />
+              <InputRightElement h={12} w={48}>
+                {org.acceptedTokens === "ONLY" ? (
+                  <HStack>
+                    <Image
+                      src={tokens[0].logoUrl}
+                      alt={tokens[0].value}
+                      h={6}
+                      w={6}
+                    />
+                    <Text>{tokens[0].label}</Text>
+                  </HStack>
+                ) : (
+                  <VStack>
+                    <Select
+                      chakraStyles={reactSelectStyles}
+                      options={tokens}
+                      formatOptionLabel={(option: any) => {
+                        return (
+                          <Flex alignItems="center">
+                            <Image
+                              src={option.logoUrl}
+                              alt={option.label}
+                              mr={2}
+                              boxSize={6}
+                              rounded="full"
+                            />
+                            <Text>{option.label}</Text>
+                          </Flex>
+                        );
+                      }}
+                      onChange={(v) => setSelectedToken(v as TokenOption)}
+                      value={selectedToken}
+                    />
+                  </VStack>
+                )}
+              </InputRightElement>
+            </InputGroup>
           </FormControl>
 
           <FormControl>
@@ -177,9 +235,52 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+  if (!org) {
+    return {
+      notFound: true,
+    };
+  }
+
+  let tokens;
+
+  if (org.acceptedTokens === AcceptedTokenTypes.SOME) {
+    tokens = org.tokenPubkeys.map((t) => {
+      const token = TOKEN_LIST.find((token) => token.address === t);
+      if (!token) {
+        throw new Error("Token not found");
+      }
+      return {
+        label: token.symbol,
+        value: token.address,
+        logoUrl: token.logoURI,
+      };
+    });
+  } else if (org.acceptedTokens === AcceptedTokenTypes.ONLY) {
+    const token = TOKEN_LIST.find((t) => t.address === org.tokenPubkeys[0]);
+
+    if (!token) {
+      throw new Error("Token not found");
+    }
+
+    tokens = [
+      {
+        label: token.symbol,
+        value: token.address,
+        logoUrl: token.logoURI,
+      },
+    ];
+  } else {
+    tokens = TOKEN_LIST.map((token) => ({
+      label: token.symbol,
+      value: token.address,
+      logoUrl: token.logoURI,
+    }));
+  }
+
   return {
     props: {
       org: JSON.parse(JSON.stringify(org)),
+      tokens,
     },
   };
 };

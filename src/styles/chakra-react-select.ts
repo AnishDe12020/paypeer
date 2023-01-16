@@ -13,6 +13,10 @@ const reactSelectStyles: ChakraStylesConfig = {
       background: "brand.secondary",
     },
   }),
+  input: (provided) => ({
+    ...provided,
+    minW: "24",
+  }),
 };
 
 export default reactSelectStyles;
