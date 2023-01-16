@@ -12,13 +12,13 @@ export default function useTransactionListener(
   txStatus: TxStatus | undefined,
   recipient: string,
   amount: string | undefined,
+  tokenPubkey: string,
 
   setTxStatus: (txStatus: TxStatus) => void,
   onSuccess?: (signature: string, customerPubkey: string) => void,
   onFail?: () => void
 ) {
   const { connection } = useConnection();
-  const { usdcAddress } = useCluster();
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -46,7 +46,7 @@ export default function useTransactionListener(
           {
             recipient: new PublicKey(recipient),
             amount: new BigNumber(amount ?? 0),
-            splToken: usdcAddress,
+            splToken: new PublicKey(tokenPubkey),
           },
           { commitment: "confirmed" }
         );
@@ -79,6 +79,6 @@ export default function useTransactionListener(
     onSuccess,
     amount,
     recipient,
-    usdcAddress,
+    tokenPubkey,
   ]);
 }

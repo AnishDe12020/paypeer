@@ -42,6 +42,7 @@ import { ExternalLink } from "lucide-react";
 import { Analytics } from "../../src/types/analytics";
 import Chart from "../../src/components/Dashboard/Chart";
 import { SuccessFullTransaction } from "../../src/types/model";
+import { TOKEN_LIST } from "../../src/utils/constants";
 
 interface DashboardPageProps {
   orgs: Organization[];
@@ -49,8 +50,6 @@ interface DashboardPageProps {
 
 const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
   const { selectedOrg, setSelectedOrg } = useSelectedOrganization();
-
-  const { tokenList } = useCluster();
 
   const { data: transactions, isLoading } = useQuery<SuccessFullTransaction[]>(
     ["transactions", selectedOrg?.id],
@@ -127,24 +126,23 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
           >
             <TabList overflowX="auto" maxW={{ base: 80, md: "fit-content" }}>
               <Tab>Last 7 Days</Tab>
-              {tokenList &&
-                analytics.tokenPubkeys.map((tokenPubkey) => {
-                  const token = tokenList.find(
-                    (token) => token.address === tokenPubkey
-                  );
+              {analytics.tokenPubkeys.map((tokenPubkey) => {
+                const token = TOKEN_LIST.find(
+                  (token) => token.address === tokenPubkey
+                );
 
-                  return (
-                    <HStack key={tokenPubkey} as={Tab} spacing={2}>
-                      <Text>{token?.symbol}</Text>
-                      <Image
-                        src={token?.logoURI}
-                        alt={token?.symbol}
-                        boxSize="20px"
-                        rounded="full"
-                      />
-                    </HStack>
-                  );
-                })}
+                return (
+                  <HStack key={tokenPubkey} as={Tab} spacing={2}>
+                    <Text>{token?.symbol}</Text>
+                    <Image
+                      src={token?.logoURI}
+                      alt={token?.symbol}
+                      boxSize="20px"
+                      rounded="full"
+                    />
+                  </HStack>
+                );
+              })}
             </TabList>
 
             <TabPanels mt={8} w="full">
@@ -152,28 +150,23 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
                 <Chart data={analytics.dateAnalytics} />
               </TabPanel>
 
-              {tokenList &&
-                analytics.tokenPubkeys.map((tokenPubkey) => {
-                  const data = analytics.tokenAnalytics.filter(
-                    (token) => token.tokenPubkey === tokenPubkey
-                  );
+              {analytics.tokenPubkeys.map((tokenPubkey) => {
+                const data = analytics.tokenAnalytics.filter(
+                  (token) => token.tokenPubkey === tokenPubkey
+                );
 
-                  return (
-                    <TabPanel
-                      key={tokenPubkey}
-                      w="full"
-                      px={{ base: 0, md: 8 }}
-                    >
-                      <Chart data={data} />
-                    </TabPanel>
-                  );
-                })}
+                return (
+                  <TabPanel key={tokenPubkey} w="full" px={{ base: 0, md: 8 }}>
+                    <Chart data={data} />
+                  </TabPanel>
+                );
+              })}
             </TabPanels>
           </Tabs>
         </VStack>
       )}
       <VStack mt={16}>
-        {tokenList && transactions ? (
+        {transactions ? (
           transactions.length > 0 ? (
             <TableContainer>
               <Table variant="simple">
@@ -189,7 +182,7 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
                 </Thead>
                 <Tbody>
                   {transactions.map((transaction) => {
-                    const token = tokenList.find(
+                    const token = TOKEN_LIST.find(
                       (token) => token.address === transaction.tokenPubkey
                     );
 

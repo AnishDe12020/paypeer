@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { Connection, PublicKey } from "@solana/web3.js";
 
-import { getRpc, getUSDCAddress } from "../../../src/utils/cluster";
+import { getRpc } from "../../../src/utils/cluster";
 import { createTransfer } from "@solana/pay";
 import BigNumber from "bignumber.js";
 import { prisma } from "../../../src/lib/db";
@@ -78,14 +78,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         return;
       }
 
+      const tokenAddress = req.query.tokenPubkey;
+      if (!tokenAddress) {
+        res.status(400).json({
+          error: "Missing tokenPubkey parameter",
+        });
+        return;
+      }
+
       const buyerPubkey = new PublicKey(buyerAccount);
       const merchantPubkey = new PublicKey(org.fundsPubkey);
-
-      const usdcAddress = getUSDCAddress(cluster as string);
+      const tokenPubkey = new PublicKey(tokenAddress as string);
 
       console.log("buyer", buyerPubkey.toBase58());
       console.log("merchant", merchantPubkey.toBase58());
-      console.log("splToken", usdcAddress.toBase58());
+      console.log("splToken", tokenPubkey.toBase58());
 
       const endpoint = getRpc(cluster as string);
       const connection = new Connection(endpoint);
@@ -96,7 +103,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         recipient: merchantPubkey,
         amount,
         reference: new PublicKey(reference as string),
-        splToken: usdcAddress,
+        splToken: tokenPubkey,
       });
 
       const serializedTx = tx.serialize({ requireAllSignatures: false });

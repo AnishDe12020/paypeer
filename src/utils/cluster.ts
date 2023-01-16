@@ -1,6 +1,13 @@
+import { TorusWalletName } from "@solana/wallet-adapter-wallets";
 import axios from "axios";
+import { arrayBuffer } from "stream/consumers";
 import { Cluster } from "../types/cluster";
-import { USDC_MINT_DEVNET, USDC_MINT_MAINNET } from "./constants";
+import { Token } from "../types/tokens";
+import {
+  AVAILABLE_TOKENS,
+  USDC_MINT_DEVNET,
+  USDC_MINT_MAINNET,
+} from "./constants";
 
 export const getRpc = (cluster: string) => {
   switch (cluster) {
@@ -57,6 +64,11 @@ export const getTokenListUrl = (cluster: string) => {
 
 export const getTokenList = async (cluster: string) => {
   const url = getTokenListUrl(cluster);
-  const { data } = await axios.get(url);
-  return data;
+  const { data } = await axios.get<Token[]>(url);
+
+  const tokens = data.filter((token) => {
+    return AVAILABLE_TOKENS.includes(token.address);
+  });
+
+  return tokens;
 };

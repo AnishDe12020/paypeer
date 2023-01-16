@@ -4,6 +4,7 @@
     "dashboard",
     "analytics",
     "pay",
-    "tx-analytics-api"
+    "tx-analytics-api",
+    "dashboard-settings"
   ]
 }

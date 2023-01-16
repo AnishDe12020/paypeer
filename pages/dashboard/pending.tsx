@@ -31,10 +31,10 @@ import { GetServerSideProps, NextPage } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { useCallback, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
-import useCluster from "../../src/hooks/useCluster";
 import useSelectedOrganization from "../../src/hooks/useSelectedOrganization";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import { prisma } from "../../src/lib/db";
+import { TOKEN_LIST } from "../../src/utils/constants";
 import { truncateString } from "../../src/utils/truncate";
 import { validateTransfer } from "../../src/utils/validateTransfer";
 import { authOptions } from "../api/auth/[...nextauth]";
@@ -48,7 +48,6 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
 }) => {
   const { selectedOrg } = useSelectedOrganization();
 
-  const { tokenList, usdcAddress } = useCluster();
   const { connection } = useConnection();
 
   const queryClient = useQueryClient();
@@ -70,7 +69,12 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
   );
 
   const checkTransaction = useCallback(
-    async (reference: string, amount: number, txId: string) => {
+    async (
+      reference: string,
+      amount: number,
+      txId: string,
+      tokenPubkey: string
+    ) => {
       if (!selectedOrg?.fundsPubkey) {
         return;
       }
@@ -93,7 +97,7 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
           {
             recipient: new PublicKey(selectedOrg.fundsPubkey),
             amount: new BigNumber(amount ?? 0),
-            splToken: usdcAddress,
+            splToken: new PublicKey(tokenPubkey),
           },
           { commitment: "confirmed" }
         );
@@ -130,13 +134,7 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
         setIsCheckingTx(false);
       }
     },
-    [
-      connection,
-      usdcAddress,
-      selectedOrg?.fundsPubkey,
-      selectedOrg?.id,
-      queryClient,
-    ]
+    [connection, selectedOrg?.fundsPubkey, selectedOrg?.id, queryClient, toast]
   );
 
   return (
@@ -162,7 +160,7 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
           </VStack>
         </Alert>
 
-        {tokenList && transactions ? (
+        {transactions ? (
           transactions.length > 0 ? (
             <TableContainer w="full">
               <Table variant="simple">
@@ -177,7 +175,7 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
                 </Thead>
                 <Tbody>
                   {transactions.map((transaction) => {
-                    const token = tokenList.find(
+                    const token = TOKEN_LIST.find(
                       (token) => token.address === transaction.tokenPubkey
                     );
 
@@ -232,7 +230,8 @@ const DashboardPendingPage: NextPage<DashboardPendingPageProps> = ({
                               checkTransaction(
                                 transaction.reference,
                                 Number(transaction.amount),
-                                transaction.id
+                                transaction.id,
+                                transaction.tokenPubkey
                               )
                             }
                             isLoading={isCheckingTx}
