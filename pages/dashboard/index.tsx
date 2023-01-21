@@ -70,6 +70,8 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
         `/api/transactions/analytics?organizationId=${queryKey[1]}`
       );
 
+      console.log(analyticsData);
+
       return analyticsData;
     },
     { enabled: !!selectedOrg }
@@ -77,7 +79,7 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
 
   return (
     <DashboardLayout initialOrgs={orgs}>
-      {analytics && (
+      {analytics?.avgInUSD && (
         <VStack gap={8} w="full">
           <Grid
             w="full"
@@ -94,7 +96,6 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
               <StatLabel>Total Sales (last 7 days)</StatLabel>
               <StatNumber>${analytics.totalInUSD.toFixed(2)}</StatNumber>
             </Stat>
-
             <Stat
               backgroundColor="brand.secondary"
               rounded="xl"
@@ -105,7 +106,6 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
               <StatLabel>Average Sales (last 7 days)</StatLabel>
               <StatNumber>${analytics.avgInUSD.toFixed(2)}</StatNumber>
             </Stat>
-
             <Stat
               backgroundColor="brand.secondary"
               rounded="xl"
@@ -117,52 +117,62 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ orgs }) => {
               <StatNumber>{analytics.totalSales}</StatNumber>
             </Stat>
           </Grid>
-          <Tabs
-            variant="custom"
-            w="full"
-            alignItems="center"
-            display="flex"
-            flexDir="column"
-          >
-            <TabList overflowX="auto" maxW={{ base: 80, md: "fit-content" }}>
-              <Tab>Last 7 Days</Tab>
-              {analytics.tokenPubkeys.map((tokenPubkey) => {
-                const token = TOKEN_LIST.find(
-                  (token) => token.address === tokenPubkey
-                );
+          {analytics.dateAnalytics.length > 0 &&
+            analytics.tokenAnalytics.length > 0 && (
+              <Tabs
+                variant="custom"
+                w="full"
+                alignItems="center"
+                display="flex"
+                flexDir="column"
+              >
+                <TabList
+                  overflowX="auto"
+                  maxW={{ base: 80, md: "fit-content" }}
+                >
+                  <Tab>Last 7 Days</Tab>
+                  {analytics.tokenPubkeys.map((tokenPubkey) => {
+                    const token = TOKEN_LIST.find(
+                      (token) => token.address === tokenPubkey
+                    );
 
-                return (
-                  <HStack key={tokenPubkey} as={Tab} spacing={2}>
-                    <Text>{token?.symbol}</Text>
-                    <Image
-                      src={token?.logoURI}
-                      alt={token?.symbol}
-                      boxSize="20px"
-                      rounded="full"
-                    />
-                  </HStack>
-                );
-              })}
-            </TabList>
+                    return (
+                      <HStack key={tokenPubkey} as={Tab} spacing={2}>
+                        <Text>{token?.symbol}</Text>
+                        <Image
+                          src={token?.logoURI}
+                          alt={token?.symbol}
+                          boxSize="20px"
+                          rounded="full"
+                        />
+                      </HStack>
+                    );
+                  })}
+                </TabList>
 
-            <TabPanels mt={8} w="full">
-              <TabPanel w="full" px={{ base: 0, md: 8 }}>
-                <Chart data={analytics.dateAnalytics} />
-              </TabPanel>
-
-              {analytics.tokenPubkeys.map((tokenPubkey) => {
-                const data = analytics.tokenAnalytics.filter(
-                  (token) => token.tokenPubkey === tokenPubkey
-                );
-
-                return (
-                  <TabPanel key={tokenPubkey} w="full" px={{ base: 0, md: 8 }}>
-                    <Chart data={data} />
+                <TabPanels mt={8} w="full">
+                  <TabPanel w="full" px={{ base: 0, md: 8 }}>
+                    <Chart data={analytics.dateAnalytics} />
                   </TabPanel>
-                );
-              })}
-            </TabPanels>
-          </Tabs>
+
+                  {analytics.tokenPubkeys.map((tokenPubkey) => {
+                    const data = analytics.tokenAnalytics.filter(
+                      (token) => token.tokenPubkey === tokenPubkey
+                    );
+
+                    return (
+                      <TabPanel
+                        key={tokenPubkey}
+                        w="full"
+                        px={{ base: 0, md: 8 }}
+                      >
+                        <Chart data={data} />
+                      </TabPanel>
+                    );
+                  })}
+                </TabPanels>
+              </Tabs>
+            )}
         </VStack>
       )}
       <VStack mt={16}>
