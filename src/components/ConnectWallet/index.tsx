@@ -50,6 +50,7 @@ import {
 } from "lucide-react";
 import Avvvatars from "avvvatars-react";
 import { Router, useRouter } from "next/router";
+import useSelectedOrganization from "../../hooks/useSelectedOrganization";
 
 interface ConnectWalletProps extends ButtonProps {
   callbackUrl?: string;
@@ -58,6 +59,8 @@ interface ConnectWalletProps extends ButtonProps {
 const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
   ({ children, callbackUrl, ...otherProps }, ref) => {
     const { publicKey, disconnect } = useWallet();
+
+    const { selectedOrg, setSelectedOrg } = useSelectedOrganization();
 
     const { data: session } = useSession();
 
@@ -74,10 +77,10 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
         if (e.defaultPrevented) return;
 
         await disconnect();
-
+        setSelectedOrg(null);
         await signOut();
       },
-      [disconnect]
+      [disconnect, setSelectedOrg]
     );
 
     return publicKey && session ? (

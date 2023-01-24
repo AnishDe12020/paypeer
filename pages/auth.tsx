@@ -8,6 +8,9 @@ import {
   Icon,
   Avatar,
   Collapse,
+  Divider,
+  AvatarGroup,
+  HStack,
 } from "@chakra-ui/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { TorusWalletName } from "@solana/wallet-adapter-wallets";
@@ -212,6 +215,26 @@ const HomePage: NextPage = () => {
                 )}
               </VStack>
             </Collapse>
+
+            <HStack color="gray.300">
+              <Divider w="28" />
+              <span>OR</span>
+              <Divider w="28" />
+            </HStack>
+
+            <Button onClick={connectWithTorus} w="64" h="fit-content" py={4}>
+              <VStack gap={4}>
+                <AvatarGroup>
+                  <Avatar
+                    name="Google"
+                    src="/assets/google.png"
+                    backgroundColor="brand.secondary"
+                  />
+                  <Avatar name="Torus" src="/assets/torus.svg" />
+                </AvatarGroup>
+                <Text wordBreak="break-all">Login with email or Google</Text>
+              </VStack>
+            </Button>
           </VStack>
         </Step>
 
@@ -226,29 +249,6 @@ const HomePage: NextPage = () => {
           </Text>
         </Step>
       </Steps>
-      {/* <Divider />
-      <Button
-        onClick={connectWithTorus}
-        variant="unstyled"
-        w="full"
-        _hover={{
-          background: "brand.secondary",
-        }}
-        h="fit-content"
-        py={4}
-      >
-        <VStack gap={4}>
-          <AvatarGroup>
-            <Avatar
-              name="Google"
-              src="/assets/google.png"
-              backgroundColor="brand.secondary"
-            />
-            <Avatar name="Torus" src="/assets/torus.svg" />
-          </AvatarGroup>
-          <Text wordBreak="break-all">Login with email or Google</Text>
-        </VStack>
-      </Button> */}
     </MainLayout>
   );
 };
