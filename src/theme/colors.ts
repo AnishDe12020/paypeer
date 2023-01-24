@@ -5,7 +5,7 @@ export const mainColors = {
   },
   "brand.secondary": {
     default: "#eeeeee",
-    _dark: "#180D30",
+    _dark: "#291552",
   },
   "brand.tertiary": {
     default: "#cecfd1",

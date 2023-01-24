@@ -1,9 +1,10 @@
 import { extendTheme } from "@chakra-ui/react";
+import { StepsTheme } from "chakra-ui-steps";
 import { accentColors, accentTokens, mainColors, stateColors } from "./colors";
 import { components } from "./components";
 
 const theme = extendTheme({
-  components,
+  components: { ...components, Steps: StepsTheme },
   colors: { ...accentColors },
   semanticTokens: {
     colors: { ...mainColors, ...stateColors, ...accentTokens },

@@ -31,6 +31,7 @@ specifiers:
   bignumber.js: ^9.1.1
   bs58: ^5.0.0
   chakra-react-select: ^4.4.3
+  chakra-ui-steps: ^2.0.1
   cookie: ^0.5.0
   date-fns: ^2.29.3
   eslint: 8.29.0
@@ -81,6 +82,7 @@ dependencies:
   bignumber.js: 9.1.1
   bs58: 5.0.0
   chakra-react-select: 4.4.3_4llgpzr5xwpi7n6npcru5odvvu
+  chakra-ui-steps: 2.0.1_cky3hbrrpnfqt7e2hx7es2reoy
   cookie: 0.5.0
   date-fns: 2.29.3
   eslint: 8.29.0
@@ -5645,6 +5647,22 @@ packages:
     transitivePeerDependencies:
       - '@babel/core'
       - '@types/react'
+    dev: false
+
+  /chakra-ui-steps/2.0.1_cky3hbrrpnfqt7e2hx7es2reoy:
+    resolution: {integrity: sha512-7txEzqmviPRq8TSA1Pyd8nNr2mnjZNG8XzdZaz91+F+KfOmKDSH+SemXv7sqsq3uHM7TKdTsKzWQIuZtWZaKVA==}
+    peerDependencies:
+      '@chakra-ui/react': '*'
+      '@emotion/react': '*'
+      '@emotion/styled': '*'
+      framer-motion: '*'
+      react: '>=18'
+    dependencies:
+      '@chakra-ui/react': 2.4.3_366jsnbj2fqgpp64v3qddukxli
+      '@emotion/react': 11.10.5_kzbn2opkn2327fwg5yzwzya5o4
+      '@emotion/styled': 11.10.5_qvatmowesywn4ye42qoh247szu
+      framer-motion: 7.6.19_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
     dev: false
 
   /chalk/2.4.2:
