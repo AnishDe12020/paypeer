@@ -83,7 +83,7 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
       [disconnect, setSelectedOrg]
     );
 
-    return publicKey && session ? (
+    return session?.user?.name ? (
       <Popover>
         <PopoverTrigger>
           <Button
@@ -95,7 +95,7 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
           >
             <HStack>
               <Icon as={Wallet} />
-              <Text fontSize="xs">{truncatePubkey(publicKey.toBase58())}</Text>
+              <Text fontSize="xs">{truncatePubkey(session.user.name)}</Text>
             </HStack>
           </Button>
         </PopoverTrigger>
@@ -118,7 +118,7 @@ const ConnectWallet = forwardRef<ConnectWalletProps, "button">(
               fontSize={["xs", "sm", "md"]}
             >
               <Text color="gray.300" fontFamily="mono" fontSize="xs">
-                Address: {truncatePubkey(publicKey.toBase58())}
+                Address: {truncatePubkey(session.user.name)}
               </Text>
               <chakra.span
                 bg={hasCopiedPubkey ? "green.600" : "brand.tertiary"}

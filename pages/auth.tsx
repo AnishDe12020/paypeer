@@ -107,148 +107,146 @@ const HomePage: NextPage = () => {
 
   return (
     <MainLayout>
-      <Steps activeStep={activeStep} mb={8}>
-        <Step>
-          <VStack gap={4} alignItems="start">
-            {wallets.filter((wallet) => wallet.readyState === "Installed")
-              .length > 0 ? (
-              wallets
-                .filter((wallet) => wallet.readyState === "Installed")
-                .map((wallet) => (
+      <VStack>
+        <Steps activeStep={activeStep} mb={8}>
+          <Step maxW="96">
+            <VStack gap={4}>
+              {wallets.filter((wallet) => wallet.readyState === "Installed")
+                .length > 0 ? (
+                wallets
+                  .filter((wallet) => wallet.readyState === "Installed")
+                  .map((wallet) => (
+                    <Button
+                      key={wallet.adapter.name}
+                      onClick={() => select(wallet.adapter.name)}
+                      w="64"
+                      size="lg"
+                      fontSize="md"
+                      leftIcon={
+                        <Image
+                          src={wallet.adapter.icon}
+                          alt={wallet.adapter.name}
+                          h={6}
+                          w={6}
+                        />
+                      }
+                    >
+                      {wallet.adapter.name}
+                    </Button>
+                  ))
+              ) : (
+                <VStack maxW="96" gap={8}>
+                  <Text textAlign="center">
+                    Looks like you don&apos;t have a Solana wallet installed. We
+                    recommend using{" "}
+                    <Link
+                      href="https://phantom.app"
+                      color="purple.400"
+                      _hover={{ color: "purple.500" }}
+                    >
+                      Phantom
+                    </Link>{" "}
+                    if you are just starting out.
+                  </Text>
+
                   <Button
-                    key={wallet.adapter.name}
-                    onClick={() => select(wallet.adapter.name)}
-                    w="64"
-                    justifyContent="start"
-                    size="lg"
-                    fontSize="md"
-                    leftIcon={
-                      <Image
-                        src={wallet.adapter.icon}
-                        alt={wallet.adapter.name}
-                        h={6}
-                        w={6}
-                      />
-                    }
-                  >
-                    {wallet.adapter.name}
-                  </Button>
-                ))
-            ) : (
-              <>
-                <Text mx={4} textAlign="center">
-                  Looks like you don&apos;t have a Solana wallet installed. We
-                  recommend using{" "}
-                  <Link
+                    isExternal
                     href="https://phantom.app"
-                    color="purple.400"
-                    _hover={{ color: "purple.500" }}
+                    as={Link}
+                    leftIcon={<Avatar src="/assets/phantom.png" h={5} w={5} />}
+                    rightIcon={<Icon as={ExternalLink} />}
                   >
-                    Phantom
-                  </Link>{" "}
-                  if you are just starting out.
-                </Text>
+                    Get Phantom
+                  </Button>
 
-                <Button
-                  isExternal
-                  href="https://phantom.app"
-                  as={Link}
-                  leftIcon={<Avatar src="/assets/phantom.png" h={5} w={5} />}
-                  rightIcon={<Icon as={ExternalLink} />}
-                >
-                  Get Phantom
-                </Button>
+                  <Text mx={4} textAlign="center">
+                    Alternatively, click on the button below to login with
+                    Google or email (this uses{" "}
+                    <Link
+                      href="https://tor.us"
+                      color="blue.400"
+                      _hover={{ color: "blue.500" }}
+                    >
+                      Torus
+                    </Link>{" "}
+                    which creates a non-custodial wallet)
+                  </Text>
+                </VStack>
+              )}
 
-                <Text mx={4} textAlign="center">
-                  Alternatively, click on the button below to login with Google
-                  or email (this uses{" "}
-                  <Link
-                    href="https://tor.us"
-                    color="blue.400"
-                    _hover={{ color: "blue.500" }}
-                  >
-                    Torus
-                  </Link>{" "}
-                  which creates a non-custodial wallet associated to your login
-                  method)
-                </Text>
-              </>
-            )}
+              <Button
+                onClick={onCollapsedWalletsToggle}
+                w="64"
+                size="lg"
+                fontSize="md"
+              >
+                {isCollapsedWalletsOpen ? "Hide" : "Show"} unavailable wallets
+              </Button>
+              <Collapse in={isCollapsedWalletsOpen} unmountOnExit>
+                <VStack gap={4}>
+                  {wallets.filter((wallet) => wallet.readyState !== "Installed")
+                    .length > 0 ? (
+                    wallets
+                      .filter((wallet) => wallet.readyState !== "Installed")
+                      .map((wallet) => (
+                        <Button
+                          key={wallet.adapter.name}
+                          onClick={() => select(wallet.adapter.name)}
+                          w="64"
+                          size="lg"
+                          fontSize="md"
+                          leftIcon={
+                            <Image
+                              src={wallet.adapter.icon}
+                              alt={wallet.adapter.name}
+                              h={6}
+                              w={6}
+                            />
+                          }
+                        >
+                          <Text>{wallet.adapter.name}</Text>
+                        </Button>
+                      ))
+                  ) : (
+                    <Text>No unavailable wallets!</Text>
+                  )}
+                </VStack>
+              </Collapse>
 
-            <Button
-              onClick={onCollapsedWalletsToggle}
-              w="64"
-              justifyContent="start"
-              size="lg"
-              fontSize="md"
-            >
-              {isCollapsedWalletsOpen ? "Hide" : "Show"} unavailable wallets
+              <HStack color="gray.300">
+                <Divider w="28" />
+                <span>OR</span>
+                <Divider w="28" />
+              </HStack>
+
+              <Button onClick={connectWithTorus} w="64" h="fit-content" py={4}>
+                <VStack gap={4}>
+                  <AvatarGroup>
+                    <Avatar
+                      name="Google"
+                      src="/assets/google.png"
+                      backgroundColor="brand.secondary"
+                    />
+                    <Avatar name="Torus" src="/assets/torus.svg" />
+                  </AvatarGroup>
+                  <Text wordBreak="break-all">Login with email or Google</Text>
+                </VStack>
+              </Button>
+            </VStack>
+          </Step>
+
+          <Step maxW="96">
+            <Button onClick={login} isLoading={isSigningIn}>
+              Sign Message
             </Button>
-            <Collapse in={isCollapsedWalletsOpen} unmountOnExit>
-              <VStack gap={4}>
-                {wallets.filter((wallet) => wallet.readyState !== "Installed")
-                  .length > 0 ? (
-                  wallets
-                    .filter((wallet) => wallet.readyState !== "Installed")
-                    .map((wallet) => (
-                      <Button
-                        key={wallet.adapter.name}
-                        onClick={() => select(wallet.adapter.name)}
-                        w="64"
-                        justifyContent="start"
-                        size="lg"
-                        fontSize="md"
-                        leftIcon={
-                          <Image
-                            src={wallet.adapter.icon}
-                            alt={wallet.adapter.name}
-                            h={6}
-                            w={6}
-                          />
-                        }
-                      >
-                        <Text>{wallet.adapter.name}</Text>
-                      </Button>
-                    ))
-                ) : (
-                  <Text>No unavailable wallets!</Text>
-                )}
-              </VStack>
-            </Collapse>
-
-            <HStack color="gray.300">
-              <Divider w="28" />
-              <span>OR</span>
-              <Divider w="28" />
-            </HStack>
-
-            <Button onClick={connectWithTorus} w="64" h="fit-content" py={4}>
-              <VStack gap={4}>
-                <AvatarGroup>
-                  <Avatar
-                    name="Google"
-                    src="/assets/google.png"
-                    backgroundColor="brand.secondary"
-                  />
-                  <Avatar name="Torus" src="/assets/torus.svg" />
-                </AvatarGroup>
-                <Text wordBreak="break-all">Login with email or Google</Text>
-              </VStack>
-            </Button>
-          </VStack>
-        </Step>
-
-        <Step>
-          <Button onClick={login} isLoading={isSigningIn}>
-            Sign Message
-          </Button>
-          <Text mt={8} color="gray.300" maxW="96">
-            This opens your wallet and prompts you to sign a message. It{" "}
-            <b>does not</b> trigger a blockchain transaction and hence no gas
-            fees are incurred.
-          </Text>
-        </Step>
-      </Steps>
+            <Text mt={8} color="gray.300" maxW="96">
+              This opens your wallet and prompts you to sign a message. It{" "}
+              <b>does not</b> trigger a blockchain transaction and hence no gas
+              fees are incurred.
+            </Text>
+          </Step>
+        </Steps>
+      </VStack>
     </MainLayout>
   );
 };
