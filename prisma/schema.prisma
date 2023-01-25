@@ -61,7 +61,7 @@ model Organization {
     members        Member[]
     transactions   Transaction[]
     acceptedTokens AcceptedTokenTypes @default(ONLY)
-    tokenPubkeys   String[]
+    tokenPubkeys   String[]           @default(["EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"])
 }
 
 model Transaction {

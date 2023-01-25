@@ -6,14 +6,11 @@ import {
   Link,
   List,
   ListItem,
-  Select,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRef } from "react";
-import useCluster from "../../hooks/useCluster";
-import { Cluster } from "../../types/cluster";
 import { Rotate } from "hamburger-react";
 import ConnectWallet from "../ConnectWallet";
 
@@ -34,7 +31,6 @@ const links: INavLink[] = [
 ];
 
 const Header = () => {
-  const { cluster, setCluster } = useCluster();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -103,18 +99,7 @@ const Header = () => {
           </ListItem>
         ))}
       </HStack>
-      <HStack gap={4}>
-        <Select
-          onChange={(e) => setCluster(e.target.value as Cluster)}
-          value={cluster}
-          h="8"
-        >
-          <option value="mainnet-beta">Mainnet</option>
-          <option value="devnet">Devnet</option>
-        </Select>
-
-        <ConnectWallet />
-      </HStack>
+      <ConnectWallet />
     </HStack>
   );
 };

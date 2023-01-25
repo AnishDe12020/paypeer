@@ -51,7 +51,7 @@ const Sidebar = ({ initialOrgs, ...otherProps }: SidebarProps) => {
       h={{ base: "90vh", md: "100vh" }}
       w={{ base: "full", md: 48 }}
       borderRight="1px solid"
-      borderRightColor="brand.tertiary"
+      borderRightColor="brand.secondary"
       justifyContent="space-between"
       pos="fixed"
       zIndex="sticky"
@@ -161,7 +161,12 @@ const Sidebar = ({ initialOrgs, ...otherProps }: SidebarProps) => {
           </Button>
         </VStack>
       </VStack>
-      <VStack alignItems="flex-start" spacing={4}>
+      <VStack
+        alignItems="flex-start"
+        spacing={4}
+        w="full"
+        px={{ base: 0, md: 4 }}
+      >
         <Button
           variant="ghost"
           onClick={() => router.push("/dashboard/settings")}
