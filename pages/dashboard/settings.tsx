@@ -27,7 +27,7 @@ import FileUpload from "../../src/components/FileUpload";
 import useSelectedOrganization from "../../src/hooks/useSelectedOrganization";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import { prisma } from "../../src/lib/db";
-import reactSelectStyles from "../../src/styles/chakra-react-select";
+import { reactSelectStyles } from "../../src/styles/chakra-react-select";
 import { TokenOption } from "../../src/types/model";
 import { TOKEN_LIST } from "../../src/utils/constants";
 import { authOptions } from "../api/auth/[...nextauth]";

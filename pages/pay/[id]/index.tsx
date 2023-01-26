@@ -3,17 +3,15 @@ import {
   VStack,
   Text,
   FormControl,
-  FormLabel,
   Input,
   FormHelperText,
   Button,
   HStack,
   Spinner,
   useToast,
-  InputGroup,
   Image,
   Flex,
-  InputRightElement,
+  Link,
 } from "@chakra-ui/react";
 import { AcceptedTokenTypes, Organization } from "@prisma/client";
 import { encodeURL, TransactionRequestURLFields } from "@solana/pay";
@@ -23,10 +21,11 @@ import { Select } from "chakra-react-select";
 import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
+import SolanaPayIcon from "../../../src/components/Icons/SolanaPay";
 import useTransactionListener from "../../../src/hooks/useTransactionListener";
 import BaseLayout from "../../../src/layouts/BaseLayout";
 import { prisma } from "../../../src/lib/db";
-import reactSelectStyles from "../../../src/styles/chakra-react-select";
+import { reactSelectStyles } from "../../../src/styles/chakra-react-select";
 import { TokenOption } from "../../../src/types/model";
 import { TxStatus } from "../../../src/types/pay";
 import { TOKEN_LIST } from "../../../src/utils/constants";
@@ -139,73 +138,100 @@ const PayPage: NextPage<PayPageProps> = ({ org, tokens }) => {
     <BaseLayout>
       <VStack gap={16}>
         <VStack gap={4}>
-          <Heading textAlign="center">Pay {org.name}</Heading>
+          {org.logoUrl && (
+            <Image
+              src={org.logoUrl}
+              alt={org.name}
+              h={16}
+              w={16}
+              rounded="full"
+            />
+          )}
+          <Heading fontSize="2xl" textAlign="center">
+            Paying {org.name}
+          </Heading>
           <Text fontSize="xs">{org.fundsPubkey}</Text>
         </VStack>
-        <VStack gap={4}>
-          <FormControl isRequired>
-            <FormLabel>Amount</FormLabel>
-            <InputGroup>
-              <Input
-                placeholder="5"
-                onChange={(e) => setAmount(e.target.value)}
-                value={amount}
-                h={12}
-              />
-              <InputRightElement h={12} w={48}>
-                {org.acceptedTokens === "ONLY" ? (
-                  <HStack>
-                    <Image
-                      src={tokens[0].logoUrl}
-                      alt={tokens[0].value}
-                      h={6}
-                      w={6}
-                    />
-                    <Text>{tokens[0].label}</Text>
-                  </HStack>
-                ) : (
-                  <VStack>
-                    <Select
-                      chakraStyles={reactSelectStyles}
-                      options={tokens}
-                      formatOptionLabel={(option: any) => {
-                        return (
-                          <Flex alignItems="center">
-                            <Image
-                              src={option.logoUrl}
-                              alt={option.label}
-                              mr={2}
-                              boxSize={6}
-                              rounded="full"
-                            />
-                            <Text>{option.label}</Text>
-                          </Flex>
-                        );
-                      }}
-                      onChange={(v) => setSelectedToken(v as TokenOption)}
-                      value={selectedToken}
-                    />
-                  </VStack>
-                )}
-              </InputRightElement>
-            </InputGroup>
+        <VStack gap={8}>
+          <FormControl isRequired as={VStack}>
+            <Input
+              placeholder="0"
+              onChange={(e) => setAmount(e.target.value)}
+              value={amount}
+              type="number"
+              autoFocus
+              w="48"
+              rounded="xl"
+              h="12"
+              variant="filled"
+              textAlign="center"
+              fontSize="xl"
+            />
           </FormControl>
 
-          <FormControl>
-            <FormLabel>Message</FormLabel>
+          {org.acceptedTokens === "ONLY" ? (
+            <HStack>
+              <Image
+                src={tokens[0].logoUrl}
+                alt={tokens[0].value}
+                h={6}
+                w={6}
+              />
+              <Text>{tokens[0].label}</Text>
+            </HStack>
+          ) : (
+            <VStack>
+              <Select
+                chakraStyles={reactSelectStyles}
+                variant="filled"
+                size="lg"
+                options={tokens}
+                isSearchable={false}
+                formatOptionLabel={(option: any) => {
+                  return (
+                    <Flex alignItems="center">
+                      <Image
+                        src={option.logoUrl}
+                        alt={option.label}
+                        mr={2}
+                        boxSize={6}
+                        rounded="full"
+                      />
+                      <Text>{option.label}</Text>
+                    </Flex>
+                  );
+                }}
+                onChange={(v) => setSelectedToken(v as TokenOption)}
+                value={selectedToken}
+              />
+            </VStack>
+          )}
+
+          <FormControl as={VStack}>
             <Input
-              placeholder="Thank you for your purchase!"
+              placeholder="What's this for?"
               onChange={(e) => setMessage(e.target.value)}
               value={message}
+              w="48"
+              rounded="xl"
+              h="12"
+              variant="filled"
+              textAlign="center"
             />
-            <FormHelperText>(Optional)</FormHelperText>
+            <FormHelperText>Optional message to the merchant</FormHelperText>
           </FormControl>
 
-          <Button onClick={pay}>Pay</Button>
+          <Button w="64" size="lg" rounded="xl" h={12} onClick={pay}>
+            Pay
+          </Button>
 
-          <Text textAlign="center">
-            Note: make sure you have sufficient funds in your wallet or else the
-            transaction <b>will fail.</b>
+          <Text>
+            Powered by{" "}
+            <span>
+              <Link isExternal href="https://solanapay.com/">
+                <SolanaPayIcon ml={1} h="6" w="12" />
+              </Link>
+            </span>
           </Text>
         </VStack>
         {txStatus === TxStatus.PENDING && (

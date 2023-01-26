@@ -1,6 +1,6 @@
 import { ChakraStylesConfig } from "chakra-react-select";
 
-const reactSelectStyles: ChakraStylesConfig = {
+export const reactSelectStyles: ChakraStylesConfig = {
   menuList: (provided) => ({
     ...provided,
     background: "brand.primary",
@@ -13,10 +13,8 @@ const reactSelectStyles: ChakraStylesConfig = {
       background: "brand.secondary",
     },
   }),
-  input: (provided) => ({
+  container: (provided) => ({
     ...provided,
-    minW: "24",
+    minW: "40",
   }),
 };
-
-export default reactSelectStyles;
