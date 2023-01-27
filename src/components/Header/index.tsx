@@ -8,11 +8,13 @@ import {
   ListItem,
   useDisclosure,
   VStack,
+  chakra,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRef } from "react";
 import { Rotate } from "hamburger-react";
 import ConnectWallet from "../ConnectWallet";
+import Logo from "../Icons/Logo";
 
 interface INavLink {
   content: string;
@@ -20,10 +22,6 @@ interface INavLink {
 }
 
 const links: INavLink[] = [
-  {
-    content: "Home",
-    href: "/",
-  },
   {
     content: "Dashboard",
     href: "/dashboard",
@@ -45,7 +43,7 @@ const Header = () => {
       borderBottom="1px solid"
       borderBottomColor="brand.secondary"
     >
-      <Box display={{ base: "inline-flex", md: "none" }}>
+      {/* <Box display={{ base: "inline-flex", md: "none" }}>
         <Rotate
           toggle={onOpen}
           toggled={isOpen}
@@ -54,7 +52,7 @@ const Header = () => {
           size={24}
           rounded
         />
-      </Box>
+      </Box> */}
 
       <Drawer
         isOpen={isOpen}
@@ -90,7 +88,20 @@ const Header = () => {
           </VStack>
         </DrawerContent>
       </Drawer>
-      <HStack gap={2} display={{ base: "none", md: "flex" }} as={List}>
+      <Link as={NextLink} href={"/"}>
+        <Box cursor="pointer" _hover={{ opacity: 0.6 }}>
+          <Logo ml={1} aria-label="Home" h={8} w={8} />
+          <chakra.span ml={1} color="accent.primary" fontWeight="bold">
+            PayPeer
+          </chakra.span>
+        </Box>
+      </Link>
+      <HStack
+        gap={2}
+        display={{ base: "none", md: "flex" }}
+        as={List}
+        alignItems="center"
+      >
         {links.map((link) => (
           <ListItem key={link.content}>
             <Link as={NextLink} href={link.href} _hover={{ opacity: 0.6 }}>

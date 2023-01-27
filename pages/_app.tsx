@@ -12,6 +12,7 @@ import {
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { useMemo } from "react";
+import NextNProgress from "nextjs-progressbar";
 
 import theme from "../src/theme";
 import dynamic from "next/dynamic";
@@ -60,6 +61,10 @@ export default function App({
           <ReactUIWalletModalProviderDynamic>
             <QueryClientProvider client={queryClient}>
               <SessionProvider session={session}>
+                <NextNProgress
+                  color="#6133C1"
+                  options={{ showSpinner: false }}
+                />
                 <Box
                   bg="#f53598"
                   filter="blur(200px)"
