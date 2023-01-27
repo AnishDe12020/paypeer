@@ -14,6 +14,7 @@ specifiers:
   '@next-auth/prisma-adapter': ^1.0.5
   '@prisma/client': ^4.8.0
   '@solana/pay': ^0.2.4
+  '@solana/qr-code-styling': 1.6.0-beta.0
   '@solana/spl-token': ^0.3.6
   '@solana/wallet-adapter-base': ^0.9.19
   '@solana/wallet-adapter-react': ^0.15.25
@@ -73,6 +74,7 @@ dependencies:
   '@next-auth/prisma-adapter': 1.0.5_o5bqbtvtgq3azu224hvvkl6nwy
   '@prisma/client': 4.8.0_prisma@4.8.0
   '@solana/pay': 0.2.4
+  '@solana/qr-code-styling': 1.6.0-beta.0
   '@solana/spl-token': 0.3.6_@solana+web3.js@1.70.1
   '@solana/wallet-adapter-base': 0.9.19_@solana+web3.js@1.70.1
   '@solana/wallet-adapter-react': 0.15.25_rls543pkcroo4v2t2uhagjqgxy
