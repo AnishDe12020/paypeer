@@ -1,7 +1,7 @@
 const truncateURL = (url: string): string => {
   url = url.replace("http://", "").replace("https://", "");
 
-  return truncateString(url);
+  return truncateStr(url, 16, 8);
 };
 
 const truncateString = (address: string | undefined): string => {

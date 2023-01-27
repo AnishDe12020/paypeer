@@ -11,7 +11,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <>
       <Header />
 
-      <chakra.main mt={16} px={[4, 8, 16, 32]}>
+      <chakra.main mt={16} px={[4, 8, 16, 32]} pb={8}>
         {children}
       </chakra.main>
     </>

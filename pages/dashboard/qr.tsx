@@ -17,6 +17,7 @@ import {
   Heading,
   Divider,
   Code,
+  Image,
 } from "@chakra-ui/react";
 import { Organization } from "@prisma/client";
 import {
@@ -27,20 +28,21 @@ import {
   TokenAccountNotFoundError,
 } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { PublicKey, Transaction } from "@solana/web3.js";
-import { Check, ClipboardCopy } from "lucide-react";
+import { Check, ClipboardCopy, DownloadIcon, PrinterIcon } from "lucide-react";
 import { GetServerSideProps, NextPage } from "next";
 import { unstable_getServerSession } from "next-auth";
-import Router, { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
-import QRCode from "react-qr-code";
+import { useRouter } from "next/router";
+import { useCallback, useEffect, useRef, useState } from "react";
+// import ReactToPrint from "react-to-print";
+import html2canvas from "html2canvas";
 import ConnectWallet from "../../src/components/ConnectWallet";
+import Logo from "../../src/components/Icons/Logo";
 import useCluster from "../../src/hooks/useCluster";
 import useSelectedOrganization from "../../src/hooks/useSelectedOrganization";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import { prisma } from "../../src/lib/db";
-import { truncateURL } from "../../src/utils/truncate";
+import { createBrandQr } from "../../src/utils/qr";
 import { authOptions } from "../api/auth/[...nextauth]";
 
 interface DashboardQRPageProps {
@@ -55,6 +57,9 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
       ? 400
       : Math.min(window.screen.availWidth - 240, 300)
   );
+
+  const qrRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const [hasTokenAccount, setHasTokenAccount] = useState<boolean>();
   const [recipientValid, setRecipientValid] = useState<boolean>();
   const [isCheckingForValidRecipient, setIsCheckingForValidRecipient] =
@@ -146,11 +151,22 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const onResize = () => {
-      setSize(Math.min(window.screen.availWidth - 48, 400));
+      setSize(Math.min(window.screen.availWidth - 128, 300));
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  useEffect(() => {
+    if (!value || isCheckingForValidRecipient) return;
+    if (!recipientValid) return;
+    console.log("value", value);
+    const qr = createBrandQr(value, size, "#291552", "#ffffffc3");
+    if (qrRef.current) {
+      qrRef.current.innerHTML = "";
+      qr.append(qrRef.current);
+    }
+  }, [value, size, isCheckingForValidRecipient, recipientValid]);
 
   const createTokenAccount = useCallback(async () => {
     setIsCreatingTokenAccount(true);
@@ -219,6 +235,28 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
     router,
   ]);
 
+  const handleDownloadCard = async () => {
+    const element = cardRef.current;
+    if (!element) return;
+    element.style.borderRadius = "0";
+    const canvas = await html2canvas(element);
+    element.style.borderRadius = "16px";
+
+    const data = canvas.toDataURL("image/jpg");
+    const link = document.createElement("a");
+
+    if (typeof link.download === "string") {
+      link.href = data;
+      link.download = `pay-card-${selectedOrg?.name}.jpg`;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      window.open(data);
+    }
+  };
+
   return (
     <DashboardLayout initialOrgs={orgs}>
       <VStack gap={8}>
@@ -243,9 +281,60 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
                 </Text>
               </VStack>
 
-              <Box p={8} bg="#c9c9c9">
-                <QRCode value={value} size={size} bgColor="#c9c9c9" level="M" />
-              </Box>
+              <VStack
+                bg="brand.secondary"
+                py={6}
+                px={4}
+                rounded="2xl"
+                gap={4}
+                ref={cardRef}
+              >
+                <VStack gap={2}>
+                  {selectedOrg?.logoUrl && (
+                    <Image
+                      src={selectedOrg?.logoUrl}
+                      alt={selectedOrg?.name}
+                      h={16}
+                      w={16}
+                      rounded="full"
+                    />
+                  )}
+                  <Text fontSize="2xl" textAlign="center">
+                    Pay {selectedOrg?.name}
+                  </Text>
+                  <Text fontSize="xs">{selectedOrg?.fundsPubkey}</Text>
+                </VStack>
+                <Box ref={qrRef} />
+
+                <Text>
+                  Powered by{" "}
+                  <span>
+                    <Logo ml={1} />
+                    <chakra.span
+                      ml={1}
+                      color="accent.primary"
+                      fontWeight="bold"
+                    >
+                      PayPeer
+                    </chakra.span>
+                  </span>
+                </Text>
+              </VStack>
+
+              <Button
+                leftIcon={<Icon as={DownloadIcon} />}
+                onClick={handleDownloadCard}
+              >
+                Download QR Code
+              </Button>
+
+              {/* <ReactToPrint
+                trigger={() => (
+                  <Button leftIcon={<Icon as={PrinterIcon} />}>Print it out
+                  </Button>
+                )}
+                content={() => cardRef.current}
+              /> */}
 
               <Button
                 bg="brand.secondary"
@@ -264,7 +353,7 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
                 fontWeight="normal"
               >
                 <Text color="gray.300" fontFamily="mono">
-                  {truncateURL(value)}
+                  Copy Link to Pay Page
                 </Text>
                 <chakra.span
                   bg={hasCopied ? "green.600" : "brand.tertiary"}
