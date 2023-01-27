@@ -123,6 +123,32 @@ const HomePage: NextPage = () => {
           </VStack>
         </SimpleGrid>
       </Container>
+
+      <Container maxW="5xl" py={12}>
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10}>
+          <VStack
+            spacing={8}
+            align={{ base: "center", md: "flex-start" }}
+            textAlign={{ base: "center", md: "left" }}
+            justifyContent="center"
+          >
+            <Heading as="h3">Multi-Token Support</Heading>
+            <Text color="gray.300">
+              You as a merchant can specify which token(s) you want to accept as
+              payment from your customer. Customers can then either choose
+              between the accepted tokens if you have allowed multiple or all
+              tokens or if you have allowed just one token, customers will have
+              to pay with that.
+            </Text>
+          </VStack>
+          <Flex>
+            <Image
+              src="/assets/marketing-multi-token-support.png"
+              alt="marketing-multi-token-support"
+            />
+          </Flex>
+        </SimpleGrid>
+      </Container>
     </MainLayout>
   );
 };
