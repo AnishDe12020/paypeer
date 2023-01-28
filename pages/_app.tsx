@@ -12,6 +12,7 @@ import {
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { useMemo } from "react";
+import NextNProgress from "nextjs-progressbar";
 
 import theme from "../src/theme";
 import dynamic from "next/dynamic";
@@ -21,6 +22,9 @@ import useCluster from "../src/hooks/useCluster";
 
 import { QueryClient, QueryClientProvider } from "react-query";
 import { SessionProvider } from "next-auth/react";
+import { DefaultSeo } from "next-seo";
+
+import SEO from "../src/lib/next-seo.config";
 
 const ReactUIWalletModalProviderDynamic = dynamic(
   async () =>
@@ -60,6 +64,11 @@ export default function App({
           <ReactUIWalletModalProviderDynamic>
             <QueryClientProvider client={queryClient}>
               <SessionProvider session={session}>
+                <NextNProgress
+                  color="#6133C1"
+                  options={{ showSpinner: false }}
+                />
+                <DefaultSeo {...SEO} />
                 <Box
                   bg="#f53598"
                   filter="blur(200px)"

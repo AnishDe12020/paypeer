@@ -114,8 +114,8 @@ const variantFilled = definePartsStyle((props) => {
 
   return {
     field: {
-      border: "2px solid",
-      borderColor: "brand.tertiary",
+      // border: "2px solid",
+      // borderColor: "brand.tertiary",
       bg: "brand.secondary",
       _hover: {
         bg: "brand.tertiary",

@@ -13,6 +13,7 @@ import {
   VStack,
   Image,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { AcceptedTokenTypes, Organization } from "@prisma/client";
 import Avvvatars from "avvvatars-react";
@@ -27,7 +28,7 @@ import FileUpload from "../../src/components/FileUpload";
 import useSelectedOrganization from "../../src/hooks/useSelectedOrganization";
 import DashboardLayout from "../../src/layouts/DashboardLayout";
 import { prisma } from "../../src/lib/db";
-import reactSelectStyles from "../../src/styles/chakra-react-select";
+import { reactSelectStyles } from "../../src/styles/chakra-react-select";
 import { TokenOption } from "../../src/types/model";
 import { TOKEN_LIST } from "../../src/utils/constants";
 import { authOptions } from "../api/auth/[...nextauth]";
@@ -54,6 +55,8 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ orgs }) => {
 
   const queryClient = useQueryClient();
 
+  const toast = useToast();
+
   const handleUpdateOrg = useCallback(
     async (data: UpdateOrgForm) => {
       const org = await axios.patch(`/api/organizations/${selectedOrg?.id}`, {
@@ -68,8 +71,14 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ orgs }) => {
 
       await queryClient.refetchQueries("orgs");
       setSelectedOrg(org.data.organization);
+      toast({
+        title: "Organization updated",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
     },
-    [setSelectedOrg, selectedOrg?.id, logoUrl, queryClient]
+    [setSelectedOrg, selectedOrg?.id, logoUrl, queryClient, toast]
   );
 
   const { mutate, isLoading } = useMutation(handleUpdateOrg);
@@ -122,6 +131,15 @@ const SettingsPage: NextPage<SettingsPageProps> = ({ orgs }) => {
       name: selectedOrg?.name,
       website: selectedOrg?.website as string | undefined,
       twitter: selectedOrg?.twitter as string | undefined,
+      acceptedTokensType: selectedOrg?.acceptedTokens,
+      acceptedTokens: selectedOrg?.tokenPubkeys.map((t) => {
+        const token = TOKEN_LIST.find((token) => token.address === t);
+        return {
+          label: token?.symbol,
+          value: token?.address,
+          logoUrl: token?.logoURI,
+        };
+      }),
     });
 
     setLogoUrl(selectedOrg?.logoUrl ?? undefined);

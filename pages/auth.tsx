@@ -108,7 +108,7 @@ const HomePage: NextPage = () => {
   return (
     <MainLayout>
       <VStack>
-        <Steps activeStep={activeStep} mb={8}>
+        <Steps activeStep={activeStep} mb={8} maxW="3xl">
           <Step maxW="96">
             <VStack gap={4}>
               {wallets.filter((wallet) => wallet.readyState === "Installed")
@@ -155,6 +155,9 @@ const HomePage: NextPage = () => {
                     as={Link}
                     leftIcon={<Avatar src="/assets/phantom.png" h={5} w={5} />}
                     rightIcon={<Icon as={ExternalLink} />}
+                    w="64"
+                    size="lg"
+                    fontSize="md"
                   >
                     Get Phantom
                   </Button>
@@ -236,14 +239,22 @@ const HomePage: NextPage = () => {
           </Step>
 
           <Step maxW="96">
-            <Button onClick={login} isLoading={isSigningIn}>
-              Sign Message
-            </Button>
-            <Text mt={8} color="gray.300" maxW="96">
-              This opens your wallet and prompts you to sign a message. It{" "}
-              <b>does not</b> trigger a blockchain transaction and hence no gas
-              fees are incurred.
-            </Text>
+            <VStack gap={8}>
+              <Button
+                onClick={login}
+                isLoading={isSigningIn}
+                w="64"
+                size="lg"
+                fontSize="md"
+              >
+                Sign Message
+              </Button>
+              <Text color="gray.300" maxW="96" textAlign="center">
+                This opens your wallet and prompts you to sign a message. It{" "}
+                <b>does not</b> trigger a blockchain transaction and hence no
+                gas fees are incurred.
+              </Text>
+            </VStack>
           </Step>
         </Steps>
       </VStack>

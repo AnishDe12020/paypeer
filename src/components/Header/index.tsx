@@ -8,11 +8,14 @@ import {
   ListItem,
   useDisclosure,
   VStack,
+  chakra,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRef } from "react";
 import { Rotate } from "hamburger-react";
 import ConnectWallet from "../ConnectWallet";
+import Logo from "../Icons/Logo";
+import { useSession } from "next-auth/react";
 
 interface INavLink {
   content: string;
@@ -20,10 +23,6 @@ interface INavLink {
 }
 
 const links: INavLink[] = [
-  {
-    content: "Home",
-    href: "/",
-  },
   {
     content: "Dashboard",
     href: "/dashboard",
@@ -33,6 +32,7 @@ const links: INavLink[] = [
 const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const { data: session } = useSession();
 
   return (
     <HStack
@@ -42,10 +42,8 @@ const Header = () => {
       justifyContent="space-between"
       alignItems="center"
       height={20}
-      borderBottom="1px solid"
-      borderBottomColor="brand.secondary"
     >
-      <Box display={{ base: "inline-flex", md: "none" }}>
+      {/* <Box display={{ base: "inline-flex", md: "none" }}>
         <Rotate
           toggle={onOpen}
           toggled={isOpen}
@@ -54,9 +52,9 @@ const Header = () => {
           size={24}
           rounded
         />
-      </Box>
+      </Box> */}
 
-      <Drawer
+      {/* <Drawer
         isOpen={isOpen}
         onClose={onClose}
         placement="left"
@@ -89,17 +87,32 @@ const Header = () => {
             ))}
           </VStack>
         </DrawerContent>
-      </Drawer>
-      <HStack gap={2} display={{ base: "none", md: "flex" }} as={List}>
-        {links.map((link) => (
-          <ListItem key={link.content}>
-            <Link as={NextLink} href={link.href} _hover={{ opacity: 0.6 }}>
-              {link.content}
-            </Link>
-          </ListItem>
-        ))}
-      </HStack>
-      <ConnectWallet />
+      </Drawer> */}
+      <Link as={NextLink} href={"/"}>
+        <Box cursor="pointer" _hover={{ opacity: 0.6 }}>
+          <Logo ml={1} aria-label="Home" h={8} w={8} />
+          <chakra.span ml={1} color="accent.primary" fontWeight="bold">
+            PayPeer
+          </chakra.span>
+        </Box>
+      </Link>
+      {session && (
+        <HStack
+          gap={2}
+          display={{ base: "none", md: "flex" }}
+          as={List}
+          alignItems="center"
+        >
+          {links.map((link) => (
+            <ListItem key={link.content}>
+              <Link as={NextLink} href={link.href} _hover={{ opacity: 0.6 }}>
+                {link.content}
+              </Link>
+            </ListItem>
+          ))}
+        </HStack>
+      )}
+      <ConnectWallet size="lg" rounded="xl" variant="solid" />
     </HStack>
   );
 };
