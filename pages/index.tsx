@@ -11,6 +11,7 @@ import {
   Button,
   SimpleGrid,
   Flex,
+  Link,
 } from "@chakra-ui/react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -66,13 +67,13 @@ const HomePage: NextPage = () => {
                 as={Arrow}
                 w={71}
                 pos="absolute"
-                right="-50px"
+                right="-70px"
                 top="350px"
               />
               <Text
                 fontSize={"lg"}
                 position={"absolute"}
-                right={"-150px"}
+                right={"-170px"}
                 top={"320px"}
                 transform={"rotate(10deg)"}
               >
@@ -160,6 +161,30 @@ const HomePage: NextPage = () => {
             </VStack>
           </SimpleGrid>
         </Container>
+      </VStack>
+
+      <VStack as="footer" mt={8}>
+        <Text>
+          Made by{" "}
+          <Link
+            href="https://twitter.com/AnishDe12020"
+            isExternal
+            color="accent.secondary"
+          >
+            Anish De
+          </Link>
+        </Text>
+
+        <Text>
+          Follow us{" "}
+          <Link
+            href="https://twitter.com/PaypeerHQ"
+            isExternal
+            color="accent.secondary"
+          >
+            @PaypeerHQ
+          </Link>
+        </Text>
       </VStack>
     </MainLayout>
   );
