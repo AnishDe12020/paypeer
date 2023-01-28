@@ -38,7 +38,7 @@ const HomePage: NextPage = () => {
             >
               Accept payments in{" "}
               <chakra.span color="accent.secondary">crypto</chakra.span> at your
-              physical stores via{" "}
+              physical store via{" "}
               <chakra.span color="accent.secondary"> QR Codes</chakra.span>
             </Heading>
 
