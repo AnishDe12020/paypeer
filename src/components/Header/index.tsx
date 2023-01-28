@@ -15,6 +15,7 @@ import { useRef } from "react";
 import { Rotate } from "hamburger-react";
 import ConnectWallet from "../ConnectWallet";
 import Logo from "../Icons/Logo";
+import { useSession } from "next-auth/react";
 
 interface INavLink {
   content: string;
@@ -31,6 +32,7 @@ const links: INavLink[] = [
 const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const { data: session } = useSession();
 
   return (
     <HStack
@@ -40,8 +42,6 @@ const Header = () => {
       justifyContent="space-between"
       alignItems="center"
       height={20}
-      borderBottom="1px solid"
-      borderBottomColor="brand.secondary"
     >
       {/* <Box display={{ base: "inline-flex", md: "none" }}>
         <Rotate
@@ -54,7 +54,7 @@ const Header = () => {
         />
       </Box> */}
 
-      <Drawer
+      {/* <Drawer
         isOpen={isOpen}
         onClose={onClose}
         placement="left"
@@ -87,7 +87,7 @@ const Header = () => {
             ))}
           </VStack>
         </DrawerContent>
-      </Drawer>
+      </Drawer> */}
       <Link as={NextLink} href={"/"}>
         <Box cursor="pointer" _hover={{ opacity: 0.6 }}>
           <Logo ml={1} aria-label="Home" h={8} w={8} />
@@ -96,21 +96,23 @@ const Header = () => {
           </chakra.span>
         </Box>
       </Link>
-      <HStack
-        gap={2}
-        display={{ base: "none", md: "flex" }}
-        as={List}
-        alignItems="center"
-      >
-        {links.map((link) => (
-          <ListItem key={link.content}>
-            <Link as={NextLink} href={link.href} _hover={{ opacity: 0.6 }}>
-              {link.content}
-            </Link>
-          </ListItem>
-        ))}
-      </HStack>
-      <ConnectWallet />
+      {session && (
+        <HStack
+          gap={2}
+          display={{ base: "none", md: "flex" }}
+          as={List}
+          alignItems="center"
+        >
+          {links.map((link) => (
+            <ListItem key={link.content}>
+              <Link as={NextLink} href={link.href} _hover={{ opacity: 0.6 }}>
+                {link.content}
+              </Link>
+            </ListItem>
+          ))}
+        </HStack>
+      )}
+      <ConnectWallet size="lg" rounded="xl" variant="solid" />
     </HStack>
   );
 };

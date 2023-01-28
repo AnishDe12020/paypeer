@@ -29,7 +29,13 @@ import {
 } from "@solana/spl-token";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction } from "@solana/web3.js";
-import { Check, ClipboardCopy, DownloadIcon, PrinterIcon } from "lucide-react";
+import {
+  Check,
+  ClipboardCopy,
+  CopyIcon,
+  DownloadIcon,
+  PrinterIcon,
+} from "lucide-react";
 import { GetServerSideProps, NextPage } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { useRouter } from "next/router";
@@ -88,9 +94,10 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
     }
 
     setValue(
-      `${
-        process.env.NEXT_PUBLIC_VERCEL_URL || process.env.NEXT_PUBLIC_BASE_URL
-      }/pay/${selectedOrg.id}?cluster=${cluster}`
+      `${process.env.NEXT_PUBLIC_BASE_URL || window.location}/pay/${
+        // selectedOrg.id
+        "clcejr3oy0002mh08cxytdukh"
+      }?cluster=${cluster}`
     );
   }, [setValue, cluster, selectedOrg, toast]);
 

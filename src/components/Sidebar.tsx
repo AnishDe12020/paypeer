@@ -50,8 +50,6 @@ const Sidebar = ({ initialOrgs, ...otherProps }: SidebarProps) => {
       py={8}
       h={{ base: "90vh", md: "100vh" }}
       w={{ base: "full", md: 48 }}
-      borderRight="1px solid"
-      borderRightColor="brand.secondary"
       justifyContent="space-between"
       pos="fixed"
       zIndex="sticky"
