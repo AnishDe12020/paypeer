@@ -94,7 +94,7 @@ const DashboardQRPage: NextPage<DashboardQRPageProps> = ({ orgs }) => {
     }
 
     setValue(
-      `${process.env.NEXT_PUBLIC_BASE_URL || window.location}/pay/${
+      `${process.env.NEXT_PUBLIC_BASE_URL || window.location.hostname}/pay/${
         selectedOrg.id
       }?cluster=${cluster}`
     );
