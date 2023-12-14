@@ -25,6 +25,7 @@ import { SessionProvider } from "next-auth/react";
 import { DefaultSeo } from "next-seo";
 
 import SEO from "../src/lib/next-seo.config";
+import Script from "next/script";
 
 const ReactUIWalletModalProviderDynamic = dynamic(
   async () =>
@@ -92,6 +93,15 @@ export default function App({
                   opacity="0.6"
                 />
                 <Component {...pageProps} />
+
+                {process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL &&
+                  process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
+                    <Script
+                      src={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL}
+                      data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+                      strategy="lazyOnload"
+                    />
+                  )}
               </SessionProvider>
             </QueryClientProvider>
           </ReactUIWalletModalProviderDynamic>
